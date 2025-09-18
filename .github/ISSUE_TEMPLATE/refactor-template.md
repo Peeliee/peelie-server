@@ -1,6 +1,6 @@
 ---
 name: refactor template
-about: 리팩토링 이슈 템플릿
+about: 리팩토링 이슈 템플릿- 코드의 내부 구조를 바꿔서 재설계, 기능은 동일
 title: "[refactor]"
 labels: ''
 assignees: ''

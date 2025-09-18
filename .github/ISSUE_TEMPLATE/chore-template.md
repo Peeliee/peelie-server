@@ -1,5 +1,5 @@
 ---
-name: chore 템플릿
+name: chore template
 about: 기능 변경이나 구조 개선이 아닌, 설정이나 빌드/포맷팅 관련 수정
 title: "[chore]"
 labels: ''

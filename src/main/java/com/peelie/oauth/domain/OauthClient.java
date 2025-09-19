@@ -13,5 +13,5 @@ public interface OauthClient {
      * @param code
      * @return
      */
-    OauthProfileResponse fetchProfile(String code);
+    OauthResourceResponse fetchProfile(String code);
 }

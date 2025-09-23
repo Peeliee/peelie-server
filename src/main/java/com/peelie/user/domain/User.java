@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "users")
 public class User extends BaseTimeEntity {
-    private static final String DEFAULT_IMAGE_URL = "default_profile_img_url";
     private static final String PREFIX_USER = "usr_";
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -33,20 +33,20 @@ public class JwtUtil {
     }
 
     // 1: COMPLETED 상태의 최종 액세스 토큰 생성
-    public String createCompletedToken(String userToken) {
+    public String createCompletedJwt(Long userId) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("status", "COMPLETED");
-        return createToken(userToken, claims);
+        return createJwt(userId.toString(), claims);
     }
 
     // 2: PENDING 상태의 임시 액세스 토큰 생성
-    public String createPendingToken(String oauthAccountToken) {
+    public String createPendingJwt(Long oauthAccountId) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("status", "PENDING");
-        return createToken(oauthAccountToken, claims);
+        return createJwt(oauthAccountId.toString(), claims);
     }
 
-    private String createToken(String subject, Map<String, Object> claims) {
+    private String createJwt(String subject, Map<String, Object> claims) {
         Date now = new Date();
         long validityInMilliseconds = accessTokenValidityInMinutes * 60 * 1000;
         Date validity = new Date(now.getTime() + validityInMilliseconds);

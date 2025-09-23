@@ -21,13 +21,12 @@ public class OauthFacade {
 
         if (isLinked) {
             // 기존 유저: 정상 엑세스 토큰 발급
-            String userToken = oauthService.getUserToken(oauthInfo.getUserId());
-            String completedToken = jwtUtil.createCompletedToken(userToken);
-            return new LoginResponse(completedToken, "completed", false);
+            String completedJwt = jwtUtil.createCompletedJwt(oauthInfo.getUserId());
+            return new LoginResponse(completedJwt, "completed", false);
         } else {
             //신규 유저: 임시 토큰 발급
-            String pendingToken = jwtUtil.createPendingToken(oauthInfo.getOauthAccountToken());
-            return new LoginResponse(pendingToken, "pending", true);
+            String pendingJwt = jwtUtil.createPendingJwt(oauthInfo.getId());
+            return new LoginResponse(pendingJwt, "pending", true);
         }
     }
 }

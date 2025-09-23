@@ -1,13 +1,11 @@
 package com.peelie.common.response;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.peelie.common.exception.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ErrorResponse {
 
     private final int status;

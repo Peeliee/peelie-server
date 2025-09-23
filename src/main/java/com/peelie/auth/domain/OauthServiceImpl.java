@@ -52,9 +52,9 @@ public class OauthServiceImpl implements OauthService {
 
     @Override
     @Transactional
-    public OauthInfo linkUser(String oauthAccountToken, Long userId) {
+    public OauthInfo linkUser(Long oauthAccountId, Long userId) {
 
-        OauthAccount oauthAccount = oauthReader.getOauthAccountByToken(oauthAccountToken);
+        OauthAccount oauthAccount = oauthReader.getOauthAccount(oauthAccountId);
 
         if (oauthAccount.isLinked()) {
             throw new BaseException("이미 등록된 사용자입니다.", ErrorCode.VALIDATION_ERROR);
@@ -63,11 +63,5 @@ public class OauthServiceImpl implements OauthService {
         oauthAccount.linkUser(userId);
 
         return new OauthInfo(oauthAccount);
-    }
-
-    @Override
-    public String getUserToken(Long userId) {
-        User user = userReader.getUserById(userId);
-        return user.getUserToken();
     }
 }

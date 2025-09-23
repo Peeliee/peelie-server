@@ -20,8 +20,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public UserInfo getUserInfo(String userToken) {
-        User user = userReader.getUser(userToken);
+    public UserInfo getUserInfo(Long userId) {
+        User user = userReader.getUser(userId);
         return new UserInfo(user);
     }
 }

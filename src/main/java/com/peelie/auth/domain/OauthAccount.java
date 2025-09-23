@@ -1,7 +1,6 @@
 package com.peelie.auth.domain;
 
 import com.peelie.common.jpa.BaseTimeEntity;
-import com.peelie.common.util.TokenGenerator;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -13,13 +12,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "oauth_accounts")
 public class OauthAccount extends BaseTimeEntity {
-    private static final String PREFIX_OAUTH = "oac_"; // Oauth Account
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(nullable = false, unique = true)
-    private String oauthAccountToken;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -38,7 +33,6 @@ public class OauthAccount extends BaseTimeEntity {
 
     @Builder
     public OauthAccount(OauthProvider provider, String oid, String email) {
-        this.oauthAccountToken = TokenGenerator.randomCharacterWithPrefix(PREFIX_OAUTH);
         this.provider = provider;
         this.oid = oid;
         this.email = email;

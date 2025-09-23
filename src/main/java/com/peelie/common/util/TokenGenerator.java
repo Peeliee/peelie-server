@@ -3,6 +3,7 @@ package com.peelie.common.util;
 import org.apache.commons.text.CharacterPredicates;
 import org.apache.commons.text.RandomStringGenerator;
 
+//TODO: MVP 구현 후 대체 키 적용 논의
 public class TokenGenerator {
     private static final int TOKEN_LENGTH = 20;
 

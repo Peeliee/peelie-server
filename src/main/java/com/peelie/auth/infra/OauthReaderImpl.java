@@ -22,8 +22,8 @@ public class OauthReaderImpl implements OauthReader {
     }
 
     @Override
-    public OauthAccount getOauthAccountByToken(String token) {
-        return oauthRepository.findByOauthAccountToken(token)
+    public OauthAccount getOauthAccount(Long oauthAccountId) {
+        return oauthRepository.findById(oauthAccountId)
                 .orElseThrow(() -> new BaseException("해당 토큰에 해당하는 정보가 없습니다.", ErrorCode.NOT_FOUND));
     }
 }

@@ -43,11 +43,11 @@ public class UserController {
             throw new BaseException("회원가입용 임시 토큰이 아닙니다.", ErrorCode.VALIDATION_ERROR);
         }
 
-        // 4. Claims에서 subject(oauthAccountToken) 추출
-        String oauthAccountToken = claims.getSubject();
+        // 4. Claims에서 subject(oauthAccountId) 추출
+        Long oauthAccountId = Long.valueOf(claims.getSubject());
 
         // 5. UserFacade를 통해 회원가입 및 계정 연결 처리
-        String completedAccessToken = userFacade.registerUser(oauthAccountToken);
+        String completedAccessToken = userFacade.registerUser(oauthAccountId);
 
         // 6. 최종 토큰(Completed Access Token) 반환
         return SuccessResponse.ok(completedAccessToken);

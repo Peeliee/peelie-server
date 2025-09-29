@@ -4,7 +4,9 @@ import com.peelie.questionnaire.domain.question.ChoiceQuestion;
 import com.peelie.questionnaire.domain.question.QuestionLevel;
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CategoryInfo {
 
@@ -20,8 +22,8 @@ public class CategoryInfo {
 
             List<QuestionInfo> questionInfoList = category.getChoiceQuestions().stream()
                     .map(QuestionInfo::new)
-                    .toList();
-            questionInfoList.add(new QuestionInfo(category.getL4Question()));
+                    .collect(Collectors.toCollection(ArrayList::new));
+            questionInfoList.add(new QuestionInfo(category.getL4Question())); // 이 부분 수정
 
             this.questions = questionInfoList;
         }
@@ -41,10 +43,10 @@ public class CategoryInfo {
             this.options = question.getOptions();
         }
 
-        public QuestionInfo(String l4Content) {
+        public QuestionInfo(String l4Question) {
             this.level = QuestionLevel.L4;
             this.type = "TEXT";
-            this.content = l4Content;
+            this.content = l4Question;
             this.options = null;
         }
     }

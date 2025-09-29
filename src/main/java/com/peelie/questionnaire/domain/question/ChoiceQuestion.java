@@ -1,5 +1,7 @@
 package com.peelie.questionnaire.domain.question;
 
+import com.peelie.common.exception.BaseException;
+import com.peelie.common.exception.ErrorCode;
 import com.peelie.common.jpa.BaseTimeEntity;
 import com.peelie.questionnaire.domain.Category;
 import jakarta.persistence.*;
@@ -34,6 +36,7 @@ public class ChoiceQuestion extends BaseTimeEntity {
 
     @ElementCollection
     @CollectionTable(name = "question_options", joinColumns = @JoinColumn(name = "question_id"))
+    @OrderColumn(name = "option_idx")
     @Column(name = "option_content")
     private List<String> options = new ArrayList<>();
 
@@ -47,10 +50,10 @@ public class ChoiceQuestion extends BaseTimeEntity {
 
     public void update(String content, List<String> options) {
         if (content == null || content.isBlank()) {
-            throw new IllegalArgumentException("질문내용을 입력해주세요");
+            throw new BaseException("질문내용을 입력해주세요", ErrorCode.VALIDATION_ERROR);
         }
         if (options == null || options.size() != 4) {
-            throw new IllegalArgumentException("객관식 질문은 4개여야합니다");
+            throw new BaseException("객관식 선택지는 4개이어야합니다", ErrorCode.VALIDATION_ERROR);
         }
         this.content = content;
         this.options = options;

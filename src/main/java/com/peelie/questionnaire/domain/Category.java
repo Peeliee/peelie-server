@@ -36,8 +36,8 @@ public class Category extends BaseTimeEntity {
     }
 
     public void addChoiceQuestion(ChoiceQuestion question) {
-        if (choiceQuestions.size() != 4) { // L0~L3
-            throw new BaseException("객관식 질문은 4개를 등록 해야합니다.", ErrorCode.VALIDATION_ERROR);
+        if (choiceQuestions.size() >= 4) { // L0~L3
+            throw new BaseException("객관식 질문은 4개까지 등록 가능합니다.", ErrorCode.VALIDATION_ERROR);
         }
         this.choiceQuestions.add(question);
     }

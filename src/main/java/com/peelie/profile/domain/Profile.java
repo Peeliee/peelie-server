@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.Set;
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -19,7 +20,7 @@ public class Profile extends BaseTimeEntity {
 
     private String userName;
 
-    private String profileImageUrl;
+    private String profileImageUrl; //nullable
 
     private String instagramId;
 
@@ -27,7 +28,7 @@ public class Profile extends BaseTimeEntity {
     private String bio;
 
     @Enumerated(EnumType.STRING)
-    private InteractionStyle interactionStyle;
+    private InteractionStyle interactionStyle = InteractionStyle.UNKNOWN;
 
     @ElementCollection
     @CollectionTable(
@@ -40,7 +41,8 @@ public class Profile extends BaseTimeEntity {
     //생성 메서드
     public static Profile create(Long userId) {
         Profile profile = new Profile();
-        profile.id = userId;
+        profile.id = Objects.requireNonNull(userId, "userId must not be null");
+        profile.interactionStyle = InteractionStyle.UNKNOWN;
         return profile;
     }
 
@@ -54,6 +56,10 @@ public class Profile extends BaseTimeEntity {
     }
 
     public void changeProfileImage(String newImageUrl) {
+        if (newImageUrl == null || newImageUrl.isEmpty()) {
+            this.profileImageUrl = null;
+            return;
+        }
         this.profileImageUrl = newImageUrl;
     }
 
@@ -65,4 +71,12 @@ public class Profile extends BaseTimeEntity {
         this.instagramId = newInstagramId;
     }
 
+    public void applyOnboarding(Set<Long> categoryIds, InteractionStyle style, String bio) {
+        this.interestCategoryIds.clear();
+        if (categoryIds != null) {
+            this.interestCategoryIds.addAll(categoryIds);
+        }
+        this.interactionStyle = (style == null) ? InteractionStyle.UNKNOWN : style;
+        updateBio(bio);
+    }
 }

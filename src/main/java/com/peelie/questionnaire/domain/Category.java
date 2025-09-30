@@ -22,6 +22,7 @@ public class Category extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
     private String categoryName;
 
     // L0 ~ L3 객관식 질문들

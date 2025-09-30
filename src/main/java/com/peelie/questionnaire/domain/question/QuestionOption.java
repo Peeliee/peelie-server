@@ -2,9 +2,11 @@ package com.peelie.questionnaire.domain.question;
 
 import com.peelie.common.jpa.BaseTimeEntity;
 import jakarta.persistence.*;
+import lombok.Getter;
 
 @Entity
 @Table(name = "question_options")
+@Getter
 public class QuestionOption extends BaseTimeEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

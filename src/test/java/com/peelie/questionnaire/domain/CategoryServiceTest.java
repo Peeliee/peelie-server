@@ -23,9 +23,12 @@ class CategoryServiceTest {
     @Autowired
     CategoryStore categoryStore;
 
+    Category category1;
+    Category category2;
+
     @BeforeEach
     void setUp() {
-        Category category1 = new Category("테스트 카테고리1");
+        category1 = new Category("테스트 카테고리1");
 
         for (int i = 0; i < 4; i++) {
             ChoiceQuestion question = new ChoiceQuestion(
@@ -39,7 +42,7 @@ class CategoryServiceTest {
 
         category1.updateL4Question("카테고리 1의 질문 4");
 
-        Category category2 = new Category("테스트 카테고리2");
+        category2 = new Category("테스트 카테고리2");
 
         categoryStore.store(category1);
         categoryStore.store(category2);
@@ -54,32 +57,43 @@ class CategoryServiceTest {
     }
 
     @Test
-    void 단일조회() {
-        assertThat(categoryService.getCategory(1L).getCategoryName()).isEqualTo("테스트 카테고리1");
+    void 단일조회_id조회() {
 
-        assertThat(categoryService.getCategory(1L).getQuestions().get(0).getContent())
+        Long category1Id = category1.getId();
+        Long category2Id = category2.getId();
+
+        assertThat(categoryService.getCategory(category1Id).getCategoryName()).isEqualTo("테스트 카테고리1");
+
+        assertThat(categoryService.getCategory(category1Id).getQuestions().get(0).getContent())
                 .isEqualTo("카테고리 1의 질문 0");
-        assertThat(categoryService.getCategory(1L).getQuestions().get(0).getOptions().size())
+        assertThat(categoryService.getCategory(category1Id).getQuestions().get(0).getOptions().size())
                 .isEqualTo(4);
 
-        assertThat(categoryService.getCategory(1L).getQuestions().get(1).getContent())
+        assertThat(categoryService.getCategory(category1Id).getQuestions().get(1).getContent())
                 .isEqualTo("카테고리 1의 질문 1");
-        assertThat(categoryService.getCategory(1L).getQuestions().get(1).getOptions().size())
+        assertThat(categoryService.getCategory(category1Id).getQuestions().get(1).getOptions().size())
                 .isEqualTo(4);
 
-        assertThat(categoryService.getCategory(1L).getQuestions().get(2).getContent())
+        assertThat(categoryService.getCategory(category1Id).getQuestions().get(2).getContent())
                 .isEqualTo("카테고리 1의 질문 2");
-        assertThat(categoryService.getCategory(1L).getQuestions().get(2).getOptions().size())
+        assertThat(categoryService.getCategory(category1Id).getQuestions().get(2).getOptions().size())
                 .isEqualTo(4);
 
-        assertThat(categoryService.getCategory(1L).getQuestions().get(3).getContent())
+        assertThat(categoryService.getCategory(category1Id).getQuestions().get(3).getContent())
                 .isEqualTo("카테고리 1의 질문 3");
-        assertThat(categoryService.getCategory(1L).getQuestions().get(3).getOptions().size())
+        assertThat(categoryService.getCategory(category1Id).getQuestions().get(3).getOptions().size())
                 .isEqualTo(4);
 
-        assertThat(categoryService.getCategory(1L).getQuestions().getLast().getContent())
+        assertThat(categoryService.getCategory(category1Id).getQuestions().getLast().getContent())
                 .isEqualTo("카테고리 1의 질문 4");
 
-        assertThat(categoryService.getCategory(2L).getCategoryName()).isEqualTo("테스트 카테고리2");
+        assertThat(categoryService.getCategory(category2Id).getCategoryName()).isEqualTo("테스트 카테고리2");
+    }
+
+    @Test
+    void 단일조회_이름으로조회() {
+        Long category1Id = category1.getId();
+        assertThat(categoryService.getCategoryByName("테스트 카테고리1").getCategoryId())
+                .isEqualTo(category1Id);
     }
 }

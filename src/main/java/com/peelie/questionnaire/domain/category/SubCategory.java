@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "onboarding_l0_options")
+@Table(name = "onboarding_subcategories")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SubCategory extends BaseTimeEntity {
@@ -27,7 +27,7 @@ public class SubCategory extends BaseTimeEntity {
     private Category category;
 
     // L1 ~ L3 객관식 질문들
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "subCategory", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> questions = new ArrayList<>();
 
     public SubCategory(String name) {

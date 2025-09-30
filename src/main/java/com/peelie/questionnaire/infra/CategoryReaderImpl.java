@@ -22,6 +22,12 @@ public class CategoryReaderImpl implements CategoryReader {
     }
 
     @Override
+    public Category getCategoryByName(String categoryName) {
+        return categoryRepository.findByCategoryName(categoryName)
+                .orElseThrow(() -> new BaseException(categoryName +  "해당 이름의 카테고리가 존재하지 않습니다.", ErrorCode.NOT_FOUND));
+    }
+
+    @Override
     public List<Category> getAllCategories() {
         return categoryRepository.findAll();
     }

@@ -42,6 +42,12 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    public CategoryInfo.Main getCategoryByName(String categoryName) {
+        Category category = categoryReader.getCategoryByName(categoryName);
+        return new CategoryInfo.Main(category);
+    }
+
+    @Override
     @Transactional
     public CategoryInfo.Main registerQuestion(Long categoryId, CategoryCommand.RegisterQuestion command) {
         Category category = categoryReader.getCategory(categoryId);

@@ -7,5 +7,6 @@ public interface CategoryService {
     CategoryInfo.Main registerCategory(CategoryCommand.RegisterCategory command);
     List<CategoryInfo.Main> getAllCategories();
     CategoryInfo.Main getCategory(Long categoryId);
+    CategoryInfo.Main getCategoryByName(String categoryName);
     CategoryInfo.Main registerQuestion(Long categoryId, CategoryCommand.RegisterQuestion command);
 }

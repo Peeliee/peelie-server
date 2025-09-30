@@ -11,7 +11,7 @@ public class QuestionnaireAppService {
 
     private final CategoryService categoryService;
 
-    public CategoryInfo.Main retrieveCategory(Long id) {
-        return categoryService.getCategory(id);
+    public CategoryInfo.Main retrieveCategory(String categoryName) {
+        return categoryService.getCategoryByName(categoryName);
     }
 }

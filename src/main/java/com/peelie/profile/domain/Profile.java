@@ -1,11 +1,16 @@
 package com.peelie.profile.domain;
 
+import com.peelie.common.exception.BaseException;
+import com.peelie.common.exception.ErrorCode;
 import com.peelie.common.jpa.BaseTimeEntity;
+import com.peelie.user.domain.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.Objects;
 
@@ -15,7 +20,7 @@ import java.util.Objects;
 @Table(name = "profiles")
 public class Profile extends BaseTimeEntity {
 
-    @Id
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String userName;
@@ -27,8 +32,11 @@ public class Profile extends BaseTimeEntity {
     @Lob
     private String bio;
 
+    @Column(unique = true)
+    private Long userId;
+
     @Enumerated(EnumType.STRING)
-    private InteractionStyle interactionStyle = InteractionStyle.UNKNOWN;
+    private InteractionStyle interactionStyle;
 
     @ElementCollection
     @CollectionTable(
@@ -36,18 +44,24 @@ public class Profile extends BaseTimeEntity {
             joinColumns = @JoinColumn(name = "profile_id")
     )
     @Column(name = "category_id")
-    private Set<Long> interestCategoryIds;
+    private Set<Long> interestCategoryIds = new HashSet<>();
 
-    //생성 메서드
-    public static Profile create(Long userId) {
-        Profile profile = new Profile();
-        profile.id = Objects.requireNonNull(userId, "userId must not be null");
-        profile.interactionStyle = InteractionStyle.UNKNOWN;
-        return profile;
+    @Builder
+    public Profile(String userName, String profileImageUrl, String instagramId, String bio) {
+        if (userName.isEmpty()) throw new BaseException("회원 이름이 입력되지 않았습니다", ErrorCode.VALIDATION_ERROR);
+
+        this.userName = userName;
+        this.profileImageUrl = profileImageUrl;
+        this.instagramId = instagramId;
+        this.bio = bio;
+        this.interactionStyle = InteractionStyle.UNKNOWN;
     }
 
     //도메인 메서드
     public void updateName(String newUserName) {
+        if (newUserName.isBlank() || newUserName.isEmpty() || newUserName==null) {
+            throw new BaseException("회원 이름이 입력되지 않았습니다", ErrorCode.VALIDATION_ERROR);
+        }
         this.userName = newUserName;
     }
 

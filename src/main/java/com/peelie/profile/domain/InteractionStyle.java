@@ -5,13 +5,4 @@ public enum InteractionStyle {
     BALANCED, //중간형
     FAST, //신속형
     UNKNOWN; //비정의
-
-    public static InteractionStyle fromString(String value) {
-        if (value == null) return UNKNOWN;
-        try {
-            return InteractionStyle.valueOf(value.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            return UNKNOWN;
-        }
-    }
 }

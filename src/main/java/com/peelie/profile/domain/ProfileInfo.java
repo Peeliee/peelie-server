@@ -4,6 +4,7 @@ import lombok.Getter;
 
 @Getter
 public class ProfileInfo {
+    private final Long profileId;
     private final Long userId;
     private final String userName;
     private final String profileImageUrl;
@@ -12,7 +13,8 @@ public class ProfileInfo {
     private final InteractionStyle interactionStyle;
 
     public ProfileInfo(Profile profile) {
-        this.userId = profile.getId();
+        this.profileId = profile.getId();
+        this.userId = profile.getUserId();
         this.userName = profile.getUserName();
         this.profileImageUrl = profile.getProfileImageUrl();
         this.instagramId = profile.getInstagramId();

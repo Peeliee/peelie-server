@@ -17,21 +17,5 @@ public class OnboardingCommand {
         private Set<Long> categoryIds;
     }
 
-    @Getter
-    @Builder
-    @ToString
-    public static class SubmitAnswers {
-        private Long userId;
-        private Long categoryIds;
-        private List<AnswerItem> answers;
-
-        @Getter
-        @Builder
-        @ToString
-        public static class AnswerItem {
-            private Long questionId;
-            private String value;
-        }
-    }
 
 }

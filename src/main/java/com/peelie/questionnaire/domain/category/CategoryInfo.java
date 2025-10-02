@@ -10,14 +10,14 @@ public class CategoryInfo {
     private final Long categoryId;
     private final String categoryName;
     private final String categoryQuestion;
-    private final List<String> subCategoryNames;
+    private final List<SubCategoryInfo> subCategoryNames;
 
     public CategoryInfo(Category category) {
         this.categoryId = category.getId();
         this.categoryName = category.getName();
         this.categoryQuestion = category.getCategoryQuestion();
         this.subCategoryNames = category.getSubCategories().stream()
-                .map(SubCategory::getName)
+                .map(SubCategoryInfo::new)
                 .toList();
     }
 }

@@ -20,8 +20,8 @@ public class SubCategoryReaderImpl implements SubCategoryReader {
     }
 
     @Override
-    public SubCategory getSubCategoryByName(String name) {
-        return subCategoryRepository.findByName(name)
-                .orElseThrow(() -> new BaseException(name + "해당 이름의 서브카테고리가 존재하지 않습니다", ErrorCode.NOT_FOUND));
+    public SubCategory getSubCategoryByIds(Long categoryId, Long subCategoryId) {
+        return subCategoryRepository.findByIds(categoryId, subCategoryId)
+                .orElseThrow(() -> new BaseException("해당 카테리 내에 요청한 서브카테고리가 존재하지 않습니다.", ErrorCode.NOT_FOUND));
     }
 }

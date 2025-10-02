@@ -12,12 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class OnboardingAnswer {
-    @Column(name = "category_id", nullable = false)
-    private Long categoryId;
 
     @Column(name = "question_id", nullable = false)
     private Long questionId;
-
-    @Column(name = "answer_value", nullable = false, length = 1000)
-    private String value;
 }

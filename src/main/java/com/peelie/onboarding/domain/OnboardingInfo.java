@@ -21,9 +21,7 @@ public class OnboardingInfo {
     @Getter
     @Builder
     public static class Answer{ //개별 답변 단위로 관리
-        private Long categoryId;
         private Long questionId;
-        private String value;
     }
 }
 

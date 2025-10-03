@@ -16,10 +16,11 @@ public class ProfileServiceImpl implements ProfileService {
     //TODO: 지금은 일단 값 세개 다 들어와야하는 걸로 구현, 추후 수정
     @Override
     @Transactional
-    public ProfileInfo registerProfile(String userName, String instagramId, String imageUrl) {
+    public ProfileInfo registerProfile(Long userId, String userName, String instagramId, String imageUrl) {
         // 1. 사용자가 입력값들을 입력한다. - 파라미터
         // 2. 입력값들로 Profile 엔티티 객체를 생성한다.
         Profile initProfile = Profile.builder()
+                .userId(userId)
                 .userName(userName)
                 .instagramId(instagramId)
                 .profileImageUrl(imageUrl)

@@ -47,9 +47,10 @@ public class Profile extends BaseTimeEntity {
     private Set<Long> interestCategoryIds = new HashSet<>();
 
     @Builder
-    public Profile(String userName, String profileImageUrl, String instagramId, String bio) {
+    public Profile(Long userId, String userName, String profileImageUrl, String instagramId, String bio) {
         if (userName.isEmpty()) throw new BaseException("회원 이름이 입력되지 않았습니다", ErrorCode.VALIDATION_ERROR);
 
+        this.userId = userId;
         this.userName = userName;
         this.profileImageUrl = profileImageUrl;
         this.instagramId = instagramId;

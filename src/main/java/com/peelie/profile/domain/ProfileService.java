@@ -1,7 +1,7 @@
 package com.peelie.profile.domain;
 
 public interface ProfileService {
-    ProfileInfo registerProfile(String userName, String instagramId, String imageUrl);
+    ProfileInfo registerProfile(Long userId, String userName, String instagramId, String imageUrl);
 
     ProfileInfo getProfile(Long profileId);
     Long getProfileIdByUserId(Long userId);

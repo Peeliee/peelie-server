@@ -15,9 +15,9 @@ public class ProfileController {
     private final ProfileFacade profileFacade;
 
     public record RegisterProfileRequest(Long userId, String userName, String instagramId, String imageUrl) {}
-    public record UpdateNameRequest(Long userId, String newProfileName) {}
-    public record UpdateInstagramRequest(Long userId, String newInstagramId) {}
-    public record UpdateImageUrlRequest(Long userId, String newImgUrl) {}
+    public record updateProfileNameRequest(String newName) {}
+    public record UpdateInstagramRequest(String newInstagramId) {}
+    public record UpdateImageUrlRequest(String newImgUrl) {}
 
     //Todo: 모든 API 파라미터 DTO로 수정 (완료)
 
@@ -40,28 +40,28 @@ public class ProfileController {
     // 프로필 수정
     // 프로필 이름 수정
     @PatchMapping("/{userId}/name")
-    public SuccessResponse updateProfileName(@RequestParam UpdateNameRequest info) {
-        profileFacade.updateProfileName(info.userId, info.newProfileName);
+    public SuccessResponse updateProfileName(@PathVariable Long userId, @RequestBody updateProfileNameRequest newName) {
+        profileFacade.updateProfileName(userId, newName.newName);
         return SuccessResponse.ok(null);
     }
 
     // 프로필 인스타그램 아이디 수정
     @PatchMapping("/{userId}/instagram")
-    public SuccessResponse updateInstagramId(@RequestParam UpdateInstagramRequest info) {
-        profileFacade.updateInstagramId(info.userId, info.newInstagramId);
+    public SuccessResponse updateInstagramId(@PathVariable Long userId, @RequestBody UpdateInstagramRequest info) {
+        profileFacade.updateInstagramId(userId, info.newInstagramId);
         return SuccessResponse.ok(null);
     }
 
     //프로필 사진 수정
     @PatchMapping("/{userId}/image")
-    public SuccessResponse updateImgUrl(@RequestParam UpdateImageUrlRequest info) {
-        profileFacade.updateImageUrl(info.userId, info.newImgUrl);
+    public SuccessResponse updateImgUrl(@PathVariable Long userId, @RequestBody UpdateImageUrlRequest info) {
+        profileFacade.updateImageUrl(userId, info.newImgUrl);
         return SuccessResponse.ok(null);
     }
 
     // 프로필 사진 리셋
-    @PatchMapping("/{userId}/reset")
-    public SuccessResponse resetProfileImage(@RequestParam Long userId) {
+    @PatchMapping("/{userId}/resetimage")
+    public SuccessResponse resetProfileImage(@PathVariable Long userId) {
         profileFacade.resetProfileImage(userId);
         return SuccessResponse.ok(null);
     }

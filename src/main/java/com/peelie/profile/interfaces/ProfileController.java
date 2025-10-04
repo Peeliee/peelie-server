@@ -60,7 +60,7 @@ public class ProfileController {
     }
 
     // 프로필 사진 리셋
-    @PatchMapping
+    @PatchMapping("/{userId/reset}")
     public SuccessResponse resetProfileImage(@RequestParam Long userId) {
         profileFacade.resetProfileImage(userId);
         return SuccessResponse.ok(null);

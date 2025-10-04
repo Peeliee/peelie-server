@@ -5,7 +5,6 @@ import com.peelie.profile.application.ProfileFacade;
 import com.peelie.profile.domain.ProfileInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import com.peelie.profile.domain.ProfileService;
 
 @RestController
 @RequestMapping("/api/v1/profile")
@@ -31,8 +30,8 @@ public class ProfileController {
     }
 
     // 프로필 조회
-    @GetMapping
-    public SuccessResponse getProfile(@RequestParam Long profileId) {
+    @GetMapping("/{profileId}")
+    public SuccessResponse getProfile(@PathVariable Long profileId) {
         ProfileInfo result = profileFacade.getProfile(profileId);
         return SuccessResponse.ok(result);
     }

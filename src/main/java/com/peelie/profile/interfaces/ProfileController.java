@@ -39,21 +39,21 @@ public class ProfileController {
 
     // 프로필 수정
     // 프로필 이름 수정
-    @PatchMapping
+    @PatchMapping("/{userId}/name")
     public SuccessResponse updateProfileName(@RequestParam UpdateNameRequest info) {
         profileFacade.updateProfileName(info.userId, info.newProfileName);
         return SuccessResponse.ok(null);
     }
 
     // 프로필 인스타그램 아이디 수정
-    @PatchMapping
+    @PatchMapping("/{userId}/instagram")
     public SuccessResponse updateInstagramId(@RequestParam UpdateInstagramRequest info) {
         profileFacade.updateInstagramId(info.userId, info.newInstagramId);
         return SuccessResponse.ok(null);
     }
 
     //프로필 사진 수정
-    @PatchMapping
+    @PatchMapping("/{userId}/image")
     public SuccessResponse updateImgUrl(@RequestParam UpdateImageUrlRequest info) {
         profileFacade.updateImageUrl(info.userId, info.newImgUrl);
         return SuccessResponse.ok(null);

@@ -1,5 +1,7 @@
 package com.peelie.onboarding.domain;
 
+import com.peelie.common.exception.BaseException;
+import com.peelie.common.exception.ErrorCode;
 import com.peelie.common.jpa.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -39,6 +41,21 @@ public class OnboardingProcess extends BaseTimeEntity {
     private List<OnboardingAnswer> answers = new ArrayList<>() {
     };
 
+    public void selectCategories(Set<Long> ids) {
+        //현재 단계 확인
+        if (this.status != OnboardingStatus.CATEGORIES_PENDING){
+            throw new BaseException("카테고리 선택 단계가 아닙니다.", ErrorCode.VALIDATION_ERROR);
+        }
+
+        //개수,중복 체크
+        if (ids == null || ids.size() != 3 || new java.util.HashSet<>(ids).size () != 3) {
+            throw new BaseException("카테고리는 중복 없이 정확히 3개를 선택해야 합니다.",  ErrorCode.VALIDATION_ERROR);
+        }
+
+        this.selectedCategories.clear();
+        this.selectedCategories.addAll(ids);
+        this.status = OnboardingStatus.CATEGORIES_PENDING;
+    }
 
 
 }

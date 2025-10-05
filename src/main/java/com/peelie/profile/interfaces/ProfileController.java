@@ -5,6 +5,7 @@ import com.peelie.profile.application.ProfileFacade;
 import com.peelie.profile.domain.ProfileInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import com.peelie.profile.interfaces.ProfileDto.*;
 
 @RestController
 @RequestMapping("/api/v1/profile")
@@ -13,18 +14,13 @@ public class ProfileController {
 
     private final ProfileFacade profileFacade;
 
-    public record RegisterProfileRequest(Long userId, String userName, String instagramId, String imageUrl) {}
-    public record updateProfileNameRequest(String newName) {}
-    public record UpdateInstagramRequest(String newInstagramId) {}
-    public record UpdateImageUrlRequest(String newImgUrl) {}
-
     //Todo: 모든 API 파라미터 DTO로 수정 (완료)
 
     // 프로필 생성
     @PostMapping
     public SuccessResponse registerProfile(@RequestBody RegisterProfileRequest info) {
         ProfileInfo profileInfo = profileFacade.registerProfile(
-                info.userId, info.userName, info.instagramId, info.imageUrl
+                info.userId(), info.userName(), info.instagramId(), info.imageUrl()
         );
         return SuccessResponse.created(profileInfo);
     }
@@ -38,30 +34,36 @@ public class ProfileController {
 
     // 프로필 수정
     // 프로필 이름 수정
-    @PatchMapping("/{userId}/name")
-    public SuccessResponse updateProfileName(@PathVariable Long userId, @RequestBody updateProfileNameRequest newName) {
-        profileFacade.updateProfileName(userId, newName.newName);
+    @PatchMapping("/name")
+    public SuccessResponse updateProfileName(@RequestBody UpdateProfileNameRequest info) {
+        profileFacade.updateProfileName(
+                info.userId(), info.newName()
+        );
         return SuccessResponse.ok(null);
     }
 
     // 프로필 인스타그램 아이디 수정
-    @PatchMapping("/{userId}/instagram")
-    public SuccessResponse updateInstagramId(@PathVariable Long userId, @RequestBody UpdateInstagramRequest info) {
-        profileFacade.updateInstagramId(userId, info.newInstagramId);
+    @PatchMapping("/instagram")
+    public SuccessResponse updateInstagramId(@RequestBody UpdateInstagramRequest info) {
+        profileFacade.updateInstagramId(
+                info.userId(), info.newInstagramId()
+        );
         return SuccessResponse.ok(null);
     }
 
     //프로필 사진 수정
-    @PatchMapping("/{userId}/image")
-    public SuccessResponse updateImgUrl(@PathVariable Long userId, @RequestBody UpdateImageUrlRequest info) {
-        profileFacade.updateImageUrl(userId, info.newImgUrl);
+    @PatchMapping("/image")
+    public SuccessResponse updateImgUrl(@RequestBody UpdateImageUrlRequest info) {
+        profileFacade.updateImageUrl(
+                info.userId(), info.newImgUrl()
+        );
         return SuccessResponse.ok(null);
     }
 
     // 프로필 사진 리셋
-    @PatchMapping("/{userId}/resetimage")
-    public SuccessResponse resetProfileImage(@PathVariable Long userId) {
-        profileFacade.resetProfileImage(userId);
+    @PatchMapping("/{profileId}/resetimage")
+    public SuccessResponse resetProfileImage(@PathVariable Long profileId) {
+        profileFacade.resetProfileImage(profileId);
         return SuccessResponse.ok(null);
     }
 }

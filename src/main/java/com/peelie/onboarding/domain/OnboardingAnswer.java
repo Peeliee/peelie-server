@@ -15,4 +15,7 @@ public class OnboardingAnswer {
 
     @Column(name = "question_id", nullable = false)
     private Long questionId;
+
+    @Column(name = "answer_value", nullable = false)
+    private String value;
 }

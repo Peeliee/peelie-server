@@ -52,6 +52,7 @@ public class OnboardingProcess extends BaseTimeEntity {
             throw new BaseException("카테고리는 중복 없이 정확히 3개를 선택해야 합니다.", ErrorCode.VALIDATION_ERROR);
         }
 
+        //카테고리 선택
         this.selectedCategories.clear();
         this.selectedCategories.addAll(ids);
         this.status = OnboardingStatus.QUESTIONS_PENDING;
@@ -77,6 +78,27 @@ public class OnboardingProcess extends BaseTimeEntity {
     }
 
 
+    public void validateInteractionStyle(String interactionStyle, String bio) {
+        // 현재 단계 확인
+        if (this.status != OnboardingStatus.INTERACTIONSTYLE_PENDING) {
+            throw new BaseException("교류 성향 답변 단계가 아닙니다.", ErrorCode.VALIDATION_ERROR);
+        }
+
+        // 교류 성향 값 검증
+        if (interactionStyle == null || interactionStyle.isBlank()) {
+            throw new BaseException("교류 성향이 비어 있습니다.", ErrorCode.VALIDATION_ERROR);
+        }
+
+        // 한 줄 소개 검증
+        if (bio == null || bio.isBlank()) {
+            throw new BaseException("한 줄 소개가 비어 있습니다.", ErrorCode.VALIDATION_ERROR);
+        }
+//        if (bio.length() > 100) {
+//            throw new BaseException("한 줄 소개는 100자를 초과할 수 없습니다.", ErrorCode.VALIDATION_ERROR);
+//        }
+
+        this.status = OnboardingStatus.COMPLETED;
+    }
 }
 
 

@@ -10,8 +10,6 @@ import com.peelie.questionnaire.domain.category.CategoryReader;
 import com.peelie.questionnaire.domain.QuestionnaireService;
 import com.peelie.questionnaire.domain.question.QuestionInfo;
 import com.peelie.questionnaire.domain.question.QuestionType;
-import com.peelie.profile.domain.ProfileService;
-import com.peelie.profile.domain.InteractionStyle;
 
 @Service
 @RequiredArgsConstructor
@@ -21,20 +19,21 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
 
     private final CategoryReader categoryReader;
     private final QuestionnaireService questionnaireService;
-    private final ProfileService profileService;
 
     @Override
     @Transactional
     public OnboardingInfo.Process selectCategories(OnboardingCommand.SelectCategories command) {
         // 1. 유저의 온보딩 프로세스를 조회
         OnboardingProcess onboardingProcess = onboardingReader.findOnboardingProcessByUserId(command.getUserId());
-        // 2. 도메인에서 status 검증 및 카테고리 선택(매개변수로 카테고리 reader 호출)
+        // 2. 카테고리 선택 로직 수행 (매개변수로 카테고리 reader 호출)
         onboardingProcess.validateCategories(command.getCategoryIds());
         // 3. 변경된 상태를 저장
         OnboardingProcess updated = onboardingStore.store(onboardingProcess);
         // 4. 결과 반환
         return new OnboardingInfo.Process(updated);
     }
+
+
 
     @Override
     @Transactional
@@ -68,29 +67,11 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
             }
             value = input;
         }
-        // 5. 도메인에서 status 검증 및 추가
+        // 5. 도메인에서 status 검증
         process.validateAnswers(target.getQuestionId(), value);
         // 6. 저장
         OnboardingProcess updated = onboardingStore.store(process);
         // 7. 결과 반환
-        return new OnboardingInfo.Process(updated);
-    }
-
-    @Override
-    @Transactional
-    public OnboardingInfo.Process submitInteractionStyle(OnboardingCommand.SubmitInteraction command) {
-        // 1. 온보딩 프로세스 조회
-        OnboardingProcess process = onboardingReader.findOnboardingProcessByUserId(command.getUserId());
-        // 2. 도메인 검증
-        process.validateInteractionStyle(command.getInteractionStyle(), command.getBio());
-        // 3. Profile 업데이트 (교류성향 + 한줄소개 저장)
-        profileService.updateInteractionStyleAndBio(
-                command.getUserId(),
-                InteractionStyle.valueOf(command.getInteractionStyle().trim().toUpperCase()),
-                command.getBio()
-        );
-        // 4. 온보딩 상태 저장
-        OnboardingProcess updated = onboardingStore.store(process);
         return new OnboardingInfo.Process(updated);
     }
 

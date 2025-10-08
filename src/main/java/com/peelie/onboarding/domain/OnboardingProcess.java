@@ -73,9 +73,10 @@ public class OnboardingProcess extends BaseTimeEntity {
 
         OnboardingAnswer answer = new OnboardingAnswer(questionId, answerValue);
         this.answers.add(answer);
-        this.status = OnboardingStatus.INTERACTIONTYPE_PENDING;
-
+        this.status = OnboardingStatus.INTERACTIONSTYLE_PENDING;
     }
+
+
 }
 
 

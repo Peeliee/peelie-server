@@ -41,7 +41,7 @@ public class OnboardingProcess extends BaseTimeEntity {
     private List<OnboardingAnswer> answers = new ArrayList<>() {
     };
 
-    public void selectCategories(Set<Long> ids) { //카테고리 선택 검증
+    public void validateCategories(Set<Long> ids) { //카테고리 선택 검증
         //현재 단계 확인
         if (this.status != OnboardingStatus.CATEGORIES_PENDING) {
             throw new BaseException("카테고리 선택 단계가 아닙니다.", ErrorCode.VALIDATION_ERROR);
@@ -57,7 +57,7 @@ public class OnboardingProcess extends BaseTimeEntity {
         this.status = OnboardingStatus.QUESTIONS_PENDING;
     }
 
-    public void submitAnswers(Long questionId, String answerValue) { //답변 선택 검증
+    public void validateAnswers(Long questionId, String answerValue) { //답변 선택 검증
         //현재 단계 확인
         if (this.status != OnboardingStatus.QUESTIONS_PENDING) {
             throw new BaseException("질문 답변 단계가 아닙니다.", ErrorCode.VALIDATION_ERROR);

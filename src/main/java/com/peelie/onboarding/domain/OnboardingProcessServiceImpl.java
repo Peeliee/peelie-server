@@ -26,7 +26,7 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
         // 1. 유저의 온보딩 프로세스를 조회
         OnboardingProcess onboardingProcess = onboardingReader.findOnboardingProcessByUserId(command.getUserId());
         // 2. 카테고리 선택 로직 수행 (매개변수로 카테고리 reader 호출)
-        onboardingProcess.selectCategories(command.getCategoryIds());
+        onboardingProcess.validateCategories(command.getCategoryIds());
         // 3. 변경된 상태를 저장
         OnboardingProcess updated = onboardingStore.store(onboardingProcess);
         // 4. 결과 반환
@@ -68,7 +68,7 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
             value = input;
         }
         // 5. 도메인에서 status 검증
-        process.submitAnswers(target.getQuestionId(), value);
+        process.validateAnswers(target.getQuestionId(), value);
         // 6. 저장
         OnboardingProcess updated = onboardingStore.store(process);
         // 7. 결과 반환

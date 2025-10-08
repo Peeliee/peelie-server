@@ -75,4 +75,26 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
         return new OnboardingInfo.Process(updated);
     }
 
+    @Override
+    @Transactional
+    public OnboardingInfo.Process submitInteractionStyle(OnboardingCommand.SubmitInteraction command) {
+        // 1. 온보딩 프로세스 조회
+        OnboardingProcess process = onboardingReader.findOnboardingProcessByUserId(command.getUserId());
+        // 2. 현재 상태 검증 + 교류성향/한줄소개 값 검증 및 온보딩 완료 처리
+        process.validateInteractionStyle(command.getInteractionStyle(), command.getBio());
+        // 3. ProfileService 호출 (다른 도메인)
+        profileService.updateInteractionStyle( //updateBio만 있고 updateInteractionStyle는 없기는 하던데 추가해야하나 다른 방향이 있나
+                command.getUserId(),
+                InteractionStyle.valueOf(command.getInteractionStyle().trim().toUpperCase())
+        );
+        profileService.updateBio(
+                command.getUserId(),
+                command.getBio()
+        );
+        // 4. 온보딩 상태 저장
+        onboardingStore.store(process);
+        // 5. 결과 반환
+        return new OnboardingInfo.Process(process);
+    }
+
 }

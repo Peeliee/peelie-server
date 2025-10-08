@@ -28,5 +28,13 @@ public class OnboardingCommand {
         private Long subCategoryId;
     }
 
+    @Getter
+    @Builder
+    @ToString
+    public static class SubmitInteraction {
+        private Long userId;
+        private String interactionStyle;
+        private String bio;
+    }
 
 }

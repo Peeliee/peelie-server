@@ -6,10 +6,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.peelie.questionnaire.domain.category.CategoryReader;
 import com.peelie.questionnaire.domain.QuestionnaireService;
 import com.peelie.questionnaire.domain.question.QuestionInfo;
 import com.peelie.questionnaire.domain.question.QuestionType;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -17,21 +18,24 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
     private final OnboardingReader onboardingReader;
     private final OnboardingStore onboardingStore;
 
-    private final CategoryReader categoryReader;
     private final QuestionnaireService questionnaireService;
+    private final ProfileService profileService;
 
     @Override
     @Transactional
     public OnboardingInfo.Process selectCategories(OnboardingCommand.SelectCategories command) {
         // 1. 유저의 온보딩 프로세스를 조회
         OnboardingProcess onboardingProcess = onboardingReader.findOnboardingProcessByUserId(command.getUserId());
-        // 2. 카테고리 선택 로직 수행 (매개변수로 카테고리 reader 호출)
+        // 2. 카테고리 선택 로직 수행 (매개변수로 프론트에서 선택된 카테고리 id 3개를 command로 전달받아)
         onboardingProcess.validateCategories(command.getCategoryIds());
         // 3. 변경된 상태를 저장
         OnboardingProcess updated = onboardingStore.store(onboardingProcess);
         // 4. 결과 반환
         return new OnboardingInfo.Process(updated);
     }
+    //추가 논의 사항: 1. categoryReader를 호출하여 유효성 검사를 진행해야할까
+    //            2. SubCategory 입력도 받아야 할까 ( 어떤 식으로?)
+
 
 
 
@@ -75,6 +79,8 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
         return new OnboardingInfo.Process(updated);
     }
 
+    // 2번에 대해: getQuestionsByIds 호출 시 SubCategoryId가 null인 경우에 대해 questionnaire 에서 관리해야할 경우 논의
+
     @Override
     @Transactional
     public OnboardingInfo.Process submitInteractionStyle(OnboardingCommand.SubmitInteraction command) {
@@ -83,11 +89,11 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
         // 2. 현재 상태 검증 + 교류성향/한줄소개 값 검증 및 온보딩 완료 처리
         process.validateInteractionStyle(command.getInteractionStyle(), command.getBio());
         // 3. ProfileService 호출 (다른 도메인)
-        profileService.updateInteractionStyle( //updateBio만 있고 updateInteractionStyle는 없기는 하던데 추가해야하나 다른 방향이 있나
+        profileService.updateInteractionStyle( //updateInteractionStyle service에서 구현 필요
                 command.getUserId(),
                 InteractionStyle.valueOf(command.getInteractionStyle().trim().toUpperCase())
         );
-        profileService.updateBio(
+        profileService.updateBio( // 스프링 빈이 아니라 주입 불가능해서 service에서도 구현되어야 함 (이미 도메인에 있긴 함)
                 command.getUserId(),
                 command.getBio()
         );

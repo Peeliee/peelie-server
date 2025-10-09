@@ -37,8 +37,6 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
     //            2. SubCategory 입력도 받아야 할까 ( 어떤 식으로?)
 
 
-
-
     @Override
     @Transactional
     public OnboardingInfo.Process submitAnswer(OnboardingCommand.SubmitAnswer command) {
@@ -78,7 +76,6 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
         // 7. 결과 반환
         return new OnboardingInfo.Process(updated);
     }
-
     // 2번에 대해: getQuestionsByIds 호출 시 SubCategoryId가 null인 경우에 대해 questionnaire 에서 관리해야할 경우 논의
 
     @Override

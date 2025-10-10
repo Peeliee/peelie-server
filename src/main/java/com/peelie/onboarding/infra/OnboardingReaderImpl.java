@@ -19,4 +19,9 @@ public class OnboardingReaderImpl implements OnboardingReader{
         return onboardingProcessRepository.findByUserId(userId)
                 .orElseThrow(() -> new BaseException(userId + "해당 유저 아이디가 존재하지 않습니다", ErrorCode.NOT_FOUND));
     }
+
+    @Override
+    public boolean existsByUserId(Long userId) {
+        return onboardingProcessRepository.findByUserId(userId).isPresent();
+    }
 }

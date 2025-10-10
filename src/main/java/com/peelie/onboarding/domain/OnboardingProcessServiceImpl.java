@@ -27,14 +27,15 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
         // 1. 유저의 온보딩 프로세스를 조회
         OnboardingProcess onboardingProcess = onboardingReader.findOnboardingProcessByUserId(command.getUserId());
         // 2. 카테고리 선택 로직 수행 (매개변수로 프론트에서 선택된 카테고리 id 3개를 command로 전달받아)
-        onboardingProcess.validateCategories(command.getCategoryIds());
+        onboardingProcess.setCategories(command.getCategoryIds());
         // 3. 변경된 상태를 저장
         OnboardingProcess updated = onboardingStore.store(onboardingProcess);
         // 4. 결과 반환
         return new OnboardingInfo.Process(updated);
     }
-    //추가 논의 사항: 1. categoryReader를 호출하여 유효성 검사를 진행해야할까
-    //            2. SubCategory 입력도 받아야 할까 ( 어떤 식으로?)
+    //추가 논의 사항: 1. categoryReader를 호출하여 유효성 검사를 진행해야할까 x -> 프론트에서 버튼형태로 입력받기 때문에
+    //            2. SubCategory 입력도 받아야 할까 ( 어떤 식으로?) o
+    //TODO subCategory 입력 받기
 
 
     @Override
@@ -63,20 +64,20 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
             value = input;
         } else {
             boolean optionExists = target.getOptions().stream()
-                    .anyMatch(opt -> String.valueOf(opt.getOptionId()).equals(input));
+                    .anyMatch(opt -> opt.getOptionId().equals(Long.valueOf(input)));
             if (!optionExists) {
                 throw new BaseException("선택형 질문의 옵션이 유효하지 않습니다.", ErrorCode.VALIDATION_ERROR);
             }
             value = input;
         }
         // 5. 도메인에서 status 검증
-        process.validateAnswers(target.getQuestionId(), value);
+        process.setAnswers(target.getQuestionId(), value);
         // 6. 저장
         OnboardingProcess updated = onboardingStore.store(process);
         // 7. 결과 반환
         return new OnboardingInfo.Process(updated);
     }
-    // 2번에 대해: getQuestionsByIds 호출 시 SubCategoryId가 null인 경우에 대해 questionnaire 에서 관리해야할 경우 논의
+
 
     @Override
     @Transactional
@@ -84,7 +85,7 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
         // 1. 온보딩 프로세스 조회
         OnboardingProcess process = onboardingReader.findOnboardingProcessByUserId(command.getUserId());
         // 2. 현재 상태 검증 + 교류성향/한줄소개 값 검증 및 온보딩 완료 처리
-        process.validateInteractionStyle(command.getInteractionStyle(), command.getBio());
+        process.setInteractionStyle(command.getInteractionStyle(), command.getBio());
         // 3. ProfileService 호출 (다른 도메인)
         profileService.updateInteractionStyle( //updateInteractionStyle service에서 구현 필요
                 command.getUserId(),
@@ -100,4 +101,6 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
         return new OnboardingInfo.Process(process);
     }
 
+//reader 호출로 인해서 store는 굳이 필요는 없다는 사실 인지만 하기
+//온보딩을 불러오려 초기온보딩 데이터를 입력받고 시작해야함
 }

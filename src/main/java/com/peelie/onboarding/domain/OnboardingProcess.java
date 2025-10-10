@@ -41,6 +41,13 @@ public class OnboardingProcess extends BaseTimeEntity {
     private List<OnboardingAnswer> answers = new ArrayList<>() {
     };
 
+    public static OnboardingProcess start(Long userId) {
+        OnboardingProcess process = new OnboardingProcess();
+        process.userId = userId;
+        process.status = OnboardingStatus.INITIALIZED;
+        return process;
+    }
+
     public void setCategories(Set<Long> ids) { //카테고리 선택 검증
         //현재 단계 확인
         if (this.status != OnboardingStatus.CATEGORIES_PENDING) {

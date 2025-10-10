@@ -9,7 +9,6 @@ import java.util.Set;
 public class OnboardingInfo {
 
     @Getter
-    @Builder
     public static class Process{ //온보딩 프로세스 전 조회
         private Long processId;
         private Long userId;

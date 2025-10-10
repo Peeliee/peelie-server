@@ -17,6 +17,12 @@ public class OnboardingController {
 
     private final OnboardingFacade onboardingFacade;
 
+    @PostMapping("/start")
+    public SuccessResponse<OnboardingInfo.Process> start(@RequestParam Long userId) {
+        OnboardingInfo.Process result = onboardingFacade.startOnboarding(userId);
+        return SuccessResponse.ok(result);
+    }
+
     @PostMapping("/categories")
     public SuccessResponse<OnboardingInfo.Process> selectCategories(@RequestBody OnboardingCommand.SelectCategories command) {
         OnboardingInfo.Process result = onboardingFacade.selectCategories(command);

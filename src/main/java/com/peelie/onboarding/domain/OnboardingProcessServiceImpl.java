@@ -2,6 +2,8 @@ package com.peelie.onboarding.domain;
 
 import com.peelie.common.exception.BaseException;
 import com.peelie.common.exception.ErrorCode;
+import com.peelie.profile.domain.InteractionStyle;
+import com.peelie.profile.domain.ProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +22,20 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
 
     private final QuestionnaireService questionnaireService;
     private final ProfileService profileService;
+
+    @Override
+    @Transactional
+    public OnboardingInfo.Process startOnboarding(Long userId) {
+        // 1. 이미 온보딩 프로세스가 있으면 예외 or 리턴
+        if (onboardingReader.existsByUserId(userId)) {
+            throw new BaseException("이미 온보딩이 진행 중입니다.", ErrorCode.VALIDATION_ERROR);
+        }
+        // 2. 도메인 엔티티에서 초기 상태를 정의
+        OnboardingProcess process = OnboardingProcess.start(userId);
+        // 3. 저장 후 반환
+        onboardingStore.store(process);
+        return new OnboardingInfo.Process(process);
+    }
 
     @Override
     @Transactional

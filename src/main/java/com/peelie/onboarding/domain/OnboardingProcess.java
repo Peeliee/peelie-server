@@ -41,14 +41,14 @@ public class OnboardingProcess extends BaseTimeEntity {
     private List<OnboardingAnswer> answers = new ArrayList<>() {
     };
 
-    public void validateCategories(Set<Long> ids) { //카테고리 선택 검증
+    public void setCategories(Set<Long> ids) { //카테고리 선택 검증
         //현재 단계 확인
         if (this.status != OnboardingStatus.CATEGORIES_PENDING) {
             throw new BaseException("카테고리 선택 단계가 아닙니다.", ErrorCode.VALIDATION_ERROR);
         }
 
         //개수,중복 체크
-        if (ids == null || ids.size() != 3 || new java.util.HashSet<>(ids).size() != 3) {
+        if (ids == null || ids.size() != 3) {
             throw new BaseException("카테고리는 중복 없이 정확히 3개를 선택해야 합니다.", ErrorCode.VALIDATION_ERROR);
         }
 
@@ -58,7 +58,7 @@ public class OnboardingProcess extends BaseTimeEntity {
         this.status = OnboardingStatus.QUESTIONS_PENDING;
     }
 
-    public void validateAnswers(Long questionId, String answerValue) { //답변 선택 검증
+    public void setAnswers(Long questionId, String answerValue) { //답변 선택 검증
         //현재 단계 확인
         if (this.status != OnboardingStatus.QUESTIONS_PENDING) {
             throw new BaseException("질문 답변 단계가 아닙니다.", ErrorCode.VALIDATION_ERROR);
@@ -78,7 +78,7 @@ public class OnboardingProcess extends BaseTimeEntity {
     }
 
 
-    public void validateInteractionStyle(String interactionStyle, String bio) {
+    public void setInteractionStyle(String interactionStyle, String bio) {
         // 현재 단계 확인
         if (this.status != OnboardingStatus.INTERACTIONSTYLE_PENDING) {
             throw new BaseException("교류 성향 답변 단계가 아닙니다.", ErrorCode.VALIDATION_ERROR);

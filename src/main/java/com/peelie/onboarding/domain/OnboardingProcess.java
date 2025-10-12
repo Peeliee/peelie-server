@@ -44,7 +44,7 @@ public class OnboardingProcess extends BaseTimeEntity {
     public static OnboardingProcess start(Long userId) {
         OnboardingProcess process = new OnboardingProcess();
         process.userId = userId;
-        process.status = OnboardingStatus.INITIALIZED;
+        process.status = OnboardingStatus.CATEGORIES_PENDING;
         return process;
     }
 

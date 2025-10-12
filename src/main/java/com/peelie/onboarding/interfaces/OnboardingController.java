@@ -5,7 +5,6 @@ import com.peelie.onboarding.application.OnboardingFacade;
 import com.peelie.onboarding.domain.OnboardingCommand;
 import com.peelie.onboarding.domain.OnboardingInfo;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
 
 import org.springframework.web.bind.annotation.*;
 
@@ -17,8 +16,8 @@ public class OnboardingController {
 
     private final OnboardingFacade onboardingFacade;
 
-    @PostMapping("/start")
-    public SuccessResponse<OnboardingInfo.Process> start(@RequestParam Long userId) {
+    @PostMapping("/start/{userId}")
+    public SuccessResponse<OnboardingInfo.Process> start(@PathVariable Long userId) {
         OnboardingInfo.Process result = onboardingFacade.startOnboarding(userId);
         return SuccessResponse.ok(result);
     }

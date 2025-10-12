@@ -19,6 +19,6 @@ public class ErrorResponse {
     }
 
     public static ErrorResponse of(ErrorCode code, String reason) {
-        return new ErrorResponse(code.getStatus(), false, code.getErrorMsg(), code, null);
+        return new ErrorResponse(code.getStatus(), false, code.getErrorMsg(), code, reason);
     }
 }

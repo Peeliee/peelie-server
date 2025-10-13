@@ -11,7 +11,12 @@ public enum ErrorCode {
     UNAUTHORIZED(401, "인증이 필요합니다."),
     FORBIDDEN(403, "권한이 없습니다."),
     NOT_FOUND(404, "리소스를 찾을 수 없습니다."),
-    INTERNAL_SERVER_ERROR(500, "서버 오류가 발생했습니다.");
+    INTERNAL_SERVER_ERROR(500, "서버 오류가 발생했습니다."),
+
+    // 인증 관련 에러 코드 추가
+    TOKEN_NOT_FOUND(401, "요청 헤더에 토큰이 존재하지 않습니다."),
+    TOKEN_INVALID(401, "유효하지 않은 토큰입니다."),
+    TOKEN_EXPIRED(401, "만료된 토큰입니다.");
 
     private final int status;
     private final String errorMsg;

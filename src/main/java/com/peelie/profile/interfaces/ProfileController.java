@@ -2,6 +2,7 @@ package com.peelie.profile.interfaces;
 
 import com.peelie.common.response.SuccessResponse;
 import com.peelie.profile.application.ProfileFacade;
+import com.peelie.profile.domain.ProfileCommand;
 import com.peelie.profile.domain.ProfileInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -14,14 +15,11 @@ public class ProfileController {
 
     private final ProfileFacade profileFacade;
 
-    //Todo: 모든 API 파라미터 DTO로 수정 (완료)
-
     // 프로필 생성
     @PostMapping
     public SuccessResponse registerProfile(@RequestBody RegisterProfileRequest info) {
-        ProfileInfo profileInfo = profileFacade.registerProfile(
-                info.userId(), info.userName(), info.instagramId(), info.imageUrl()
-        );
+        ProfileCommand command = info.toCommand();
+        ProfileInfo profileInfo = profileFacade.registerProfile(command);
         return SuccessResponse.created(profileInfo);
     }
 

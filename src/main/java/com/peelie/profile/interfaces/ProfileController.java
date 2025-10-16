@@ -1,5 +1,6 @@
 package com.peelie.profile.interfaces;
 
+import com.peelie.common.context.UserContextHolder;
 import com.peelie.common.response.SuccessResponse;
 import com.peelie.profile.application.ProfileFacade;
 import com.peelie.profile.domain.ProfileCommand;
@@ -18,7 +19,8 @@ public class ProfileController {
     // 프로필 생성
     @PostMapping
     public SuccessResponse registerProfile(@RequestBody RegisterProfileRequest info) {
-        ProfileCommand command = info.toCommand();
+        Long userId = UserContextHolder.getUserId();
+        ProfileCommand command = info.toCommand(userId);
         ProfileInfo profileInfo = profileFacade.registerProfile(command);
         return SuccessResponse.created(profileInfo);
     }
@@ -34,27 +36,24 @@ public class ProfileController {
     // 프로필 이름 수정
     @PatchMapping("/name")
     public SuccessResponse updateProfileName(@RequestBody UpdateProfileNameRequest info) {
-        profileFacade.updateProfileName(
-                info.userId(), info.newName()
-        );
+        Long userId = UserContextHolder.getUserId();
+        profileFacade.updateProfileName(userId, info.newName());
         return SuccessResponse.ok(null);
     }
 
     // 프로필 인스타그램 아이디 수정
     @PatchMapping("/instagram")
     public SuccessResponse updateInstagramId(@RequestBody UpdateInstagramRequest info) {
-        profileFacade.updateInstagramId(
-                info.userId(), info.newInstagramId()
-        );
+        Long userId = UserContextHolder.getUserId();
+        profileFacade.updateInstagramId(userId, info.newInstagramId());
         return SuccessResponse.ok(null);
     }
 
     //프로필 사진 수정
     @PatchMapping("/image")
     public SuccessResponse updateImgUrl(@RequestBody UpdateImageUrlRequest info) {
-        profileFacade.updateImageUrl(
-                info.userId(), info.newImgUrl()
-        );
+        Long userId = UserContextHolder.getUserId();
+        profileFacade.updateImageUrl(userId, info.newImgUrl());
         return SuccessResponse.ok(null);
     }
 

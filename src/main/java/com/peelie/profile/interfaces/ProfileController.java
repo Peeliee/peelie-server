@@ -26,9 +26,10 @@ public class ProfileController {
     }
 
     // 프로필 조회
-    @GetMapping("/{profileId}")
-    public SuccessResponse getProfile(@PathVariable Long profileId) {
-        ProfileInfo result = profileFacade.getProfile(profileId);
+    @GetMapping
+    public SuccessResponse getProfile() {
+        Long userId = UserContextHolder.getUserId();
+        ProfileInfo result = profileFacade.getProfile(userId);
         return SuccessResponse.ok(result);
     }
 

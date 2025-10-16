@@ -18,8 +18,9 @@ public class ProfileFacade {
     }
 
     // 프로필 조회
-    public ProfileInfo getProfile(Long profileId) {
-        return profileService.getProfile(profileId);
+    public ProfileInfo getProfile(Long userId) {
+        Long profileIdByUserId = profileService.getProfileIdByUserId(userId);
+        return profileService.getProfile(profileIdByUserId);
     }
 
     // 프로필 수정

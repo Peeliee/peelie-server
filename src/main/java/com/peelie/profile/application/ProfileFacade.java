@@ -1,5 +1,6 @@
 package com.peelie.profile.application;
 
+import com.peelie.profile.domain.ProfileCommand;
 import com.peelie.profile.domain.ProfileInfo;
 import com.peelie.profile.domain.ProfileService;
 import lombok.RequiredArgsConstructor;
@@ -12,14 +13,14 @@ public class ProfileFacade {
     private final ProfileService profileService;
 
     // 프로필 생성
-    // TODO userId 받도록 수정 (완료)
-    public ProfileInfo registerProfile(Long userId, String userName, String instagramId, String imageUrl) {
-        return profileService.registerProfile(userId, userName, instagramId, imageUrl);
+    public ProfileInfo registerProfile(ProfileCommand command) {
+        return profileService.registerProfile(command);
     }
 
     // 프로필 조회
-    public ProfileInfo getProfile(Long profileId) {
-        return profileService.getProfile(profileId);
+    public ProfileInfo getProfile(Long userId) {
+        Long profileIdByUserId = profileService.getProfileIdByUserId(userId);
+        return profileService.getProfile(profileIdByUserId);
     }
 
     // 프로필 수정

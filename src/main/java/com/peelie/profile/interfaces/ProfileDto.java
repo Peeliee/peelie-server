@@ -1,30 +1,42 @@
 package com.peelie.profile.interfaces;
 
+import com.peelie.profile.domain.ProfileCommand;
+import lombok.Getter;
+import lombok.Setter;
+
 public class ProfileDto {
-    public record RegisterProfileRequest(
-            Long userId,
-            String userName,
-            String instagramId,
-            String imageUrl
-    ) {}
+
+    @Getter
+    @Setter
+    public static class RegisterProfileRequest {
+
+        private String userName;
+        private String instagramId;
+        private String imageUrl;
+
+        public ProfileCommand toCommand(Long userId) {
+            return ProfileCommand.builder()
+                    .userId(userId)
+                    .userName(userName)
+                    .instagramId(instagramId)
+                    .imageUrl(imageUrl)
+                    .build();
+        }
+    }
 
     public record UpdateProfileNameRequest(
-            Long userId,
             String newName
     ) {}
 
     public record UpdateInstagramRequest(
-            Long userId,
             String newInstagramId
     ) {}
 
     public record UpdateImageUrlRequest(
-            Long userId,
             String newImgUrl
     ) {}
 
     public record resetProfileImageRequest(
-            Long userId,
             String newImgUrl
     ) {}
 }

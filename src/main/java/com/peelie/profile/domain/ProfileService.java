@@ -10,4 +10,6 @@ public interface ProfileService {
     void updateInstagramId(Long userId, String newInstagramId);
     void resetProfileImage(Long userId);
     void updateProfileImage(Long userId, String newProfileImageUrl);
+    void updateInteractionStyle(Long userId, String newInteractionStyle);
+    void updateBio(Long userId, String newBio);
 }

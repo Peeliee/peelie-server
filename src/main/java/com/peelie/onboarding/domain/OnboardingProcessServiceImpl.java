@@ -105,7 +105,7 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
         // 3. ProfileService 호출 (다른 도메인)
         profileService.updateInteractionStyle( //updateInteractionStyle service에서 구현 필요
                 command.getUserId(),
-                InteractionStyle.valueOf(command.getInteractionStyle().trim().toUpperCase())
+                command.getInteractionStyle()
         );
         profileService.updateBio( // 스프링 빈이 아니라 주입 불가능해서 service에서도 구현되어야 함 (이미 도메인에 있긴 함)
                 command.getUserId(),

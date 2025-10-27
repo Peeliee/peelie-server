@@ -37,6 +37,9 @@ public class OnboardingProcess extends BaseTimeEntity {
     private List<OnboardingAnswer> answers = new ArrayList<>();
 
     public static OnboardingProcess start(Long userId) {
+        if (userId == null) {
+            throw new BaseException("유효하지 않은 사용자입니다.", ErrorCode.VALIDATION_ERROR);
+        }
         OnboardingProcess process = new OnboardingProcess();
         process.userId = userId;
         return process;

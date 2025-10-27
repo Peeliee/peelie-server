@@ -1,5 +1,6 @@
 package com.peelie.onboarding.domain;
 
+// 안씀
 public enum OnboardingStatus {
     CATEGORIES_PENDING, // 카테고리 선택 대기
     QUESTIONS_PENDING,  // 질문 답변 대기

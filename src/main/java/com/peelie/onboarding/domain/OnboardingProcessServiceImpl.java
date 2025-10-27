@@ -103,11 +103,11 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
         // 2. 현재 상태 검증 + 교류성향/한줄소개 값 검증 및 온보딩 완료 처리
         process.setInteractionStyle(command.getInteractionStyle(), command.getBio());
         // 3. ProfileService 호출 (다른 도메인)
-        profileService.updateInteractionStyle( //updateInteractionStyle service에서 구현 필요
+        profileService.updateInteractionStyle(
                 command.getUserId(),
-                InteractionStyle.valueOf(command.getInteractionStyle().trim().toUpperCase())
+                command.getInteractionStyle()
         );
-        profileService.updateBio( // 스프링 빈이 아니라 주입 불가능해서 service에서도 구현되어야 함 (이미 도메인에 있긴 함)
+        profileService.updateBio(
                 command.getUserId(),
                 command.getBio()
         );
@@ -116,7 +116,4 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
         // 5. 결과 반환
         return new OnboardingInfo.Process(process);
     }
-
-//reader 호출로 인해서 store는 굳이 필요는 없다는 사실 인지만 하기
-//온보딩을 불러오려 초기온보딩 데이터를 입력받고 시작해야함
 }

@@ -8,10 +8,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Getter
@@ -36,6 +33,10 @@ public class OnboardingProcess extends BaseTimeEntity {
             joinColumns = @JoinColumn(name = "onboarding_process_id"))
     private List<OnboardingAnswer> answers = new ArrayList<>();
 
+
+
+
+
     public static OnboardingProcess start(Long userId) {
         if (userId == null) {
             throw new BaseException("유효하지 않은 사용자입니다.", ErrorCode.VALIDATION_ERROR);
@@ -45,15 +46,28 @@ public class OnboardingProcess extends BaseTimeEntity {
         return process;
     }
 
-    public void setCategories(Set<Long> ids) { //카테고리 선택 검증
-        //개수,중복 체크
-        if (ids == null || ids.size() != 3) {
+    public void setCategories(Collection<Long> ids) { //카테고리 선택 검증
+        //요청 바디가 아예 비어있지 않은지 검증
+        if (ids == null || ids.isEmpty()) {
+            throw new BaseException("카테고리 목록이 비어 있습니다.", ErrorCode.VALIDATION_ERROR);
+        }
+
+        //중복 검증을 위해 Set으로 변환
+        Set<Long> unique = new HashSet<>(ids);
+
+        //개수 체크
+        if ( unique.size() != 3) {
             throw new BaseException("카테고리는 중복 없이 정확히 3개를 선택해야 합니다.", ErrorCode.VALIDATION_ERROR);
+        }
+
+        //ids에 null이 포함되어있지 않은지 검증
+        if (unique.stream().anyMatch(Objects::isNull)) {
+            throw new BaseException("카테고리 ID가 유효하지 않습니다.", ErrorCode.VALIDATION_ERROR);
         }
 
         //카테고리 선택
         this.selectedCategories.clear();
-        this.selectedCategories.addAll(ids);
+        this.selectedCategories.addAll(unique);
     }
 
     public void setAnswers(Long questionId, String answerValue) { //답변 선택 검증

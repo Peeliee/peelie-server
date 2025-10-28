@@ -38,7 +38,7 @@ public class OnboardingCommand {
     @Getter
     @Builder
     @ToString
-    public static class SubmitInteraction {
+    public static class SubmitInteractionBio {
         private Long userId;
         private String interactionStyle;
         private String bio;

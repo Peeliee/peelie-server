@@ -35,8 +35,8 @@ public class OnboardingController {
     }
 
     @PostMapping("/interaction")
-    public SuccessResponse<OnboardingInfo.Process> submitInteractionStyle(@RequestBody OnboardingCommand.SubmitInteraction command) {
-        OnboardingInfo.Process result = onboardingFacade.submitInteractionStyle(command);
+    public SuccessResponse<OnboardingInfo.Process> submitInteractionStyleBio(@RequestBody OnboardingCommand.SubmitInteractionBio command) {
+        OnboardingInfo.Process result = onboardingFacade.submitInteractionStyleBio(command);
         return SuccessResponse.ok(result);
     }
 

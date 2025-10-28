@@ -46,6 +46,7 @@ public class OnboardingProcess extends BaseTimeEntity {
         return process;
     }
 
+
     public void setCategories(Collection<Long> ids) { //카테고리 선택 검증
         //요청 바디가 아예 비어있지 않은지 검증
         if (ids == null || ids.isEmpty()) {
@@ -70,6 +71,7 @@ public class OnboardingProcess extends BaseTimeEntity {
         this.selectedCategories.addAll(unique);
     }
 
+
     public void setSubCategoryAnswers(Long subCategoryId, List<OnboardingSubCategoryAnswers> answers) {
         if (subCategoryId == null || answers == null ||  answers.isEmpty()) {
             throw new BaseException("subCategoryId 또는 answers가 유효하지 않습니다.", ErrorCode.VALIDATION_ERROR);
@@ -80,6 +82,7 @@ public class OnboardingProcess extends BaseTimeEntity {
         // 새 답변 추가
         subCategoryAnswers.addAll(answers);
     }
+
 
     public void setInteractionStyle(String interactionStyle, String bio) {
         // 교류 성향 값 검증

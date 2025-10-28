@@ -70,7 +70,7 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
 
     @Override
     @Transactional
-    public OnboardingInfo.Process submitInteractionStyle(OnboardingCommand.SubmitInteraction command) {
+    public OnboardingInfo.Process submitInteractionStyleBio(OnboardingCommand.SubmitInteractionBio command) {
         // 1. 온보딩 프로세스 조회
         OnboardingProcess process = onboardingReader.findOnboardingProcessByUserId(command.getUserId());
         // 2. 현재 상태 검증 + 교류성향/한줄소개 값 검증 및 온보딩 완료 처리

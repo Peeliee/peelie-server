@@ -19,8 +19,8 @@ public class OnboardingFacade {
         return onboardingProcessService.selectCategories(command);
     }
 
-    public OnboardingInfo.Process submitAnswer(OnboardingCommand.SubmitAnswer command){
-        return onboardingProcessService.submitAnswer(command);
+    public OnboardingInfo.Process submitSubCategoryAnswers(OnboardingCommand.SubmitSubCategoryAnswers command){
+        return onboardingProcessService.submitSubCategoryAnswers(command);
     }
 
     public OnboardingInfo.Process submitInteractionStyle(OnboardingCommand.SubmitInteraction command){

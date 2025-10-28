@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.util.List;
 import java.util.Set;
 
 public class OnboardingCommand {
@@ -19,13 +20,19 @@ public class OnboardingCommand {
     @Getter
     @Builder
     @ToString
-    public static class SubmitAnswer {
-        private Long userId; //도메인 엔티티에는 포함되지 않지만 특정 사용자의 온보딩 프로세스를 식별하기 위해 요청 DTO 에서만 사용
-        private Long questionId;
-        private String value;
+    public static class SubmitSubCategoryAnswers {
+        private Long userId;
+        private Long subcategoryId;
+        private List<LevelAnswerCommand> answers;
 
-        private Long categoryId; //getQuestionsByIds의 매개변수로 필요함
-        private Long subCategoryId;
+        @Getter
+        @Builder
+        @ToString
+        public static class LevelAnswerCommand{
+            private String level;
+            private Long optionId;
+            private String textAnswer;
+        }
     }
 
     @Getter

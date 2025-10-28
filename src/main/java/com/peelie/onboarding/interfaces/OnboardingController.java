@@ -29,8 +29,8 @@ public class OnboardingController {
     }
 
     @PostMapping("/answers")
-    public SuccessResponse<OnboardingInfo.Process> submitAnswer(@RequestBody OnboardingCommand.SubmitAnswer command) {
-        OnboardingInfo.Process result = onboardingFacade.submitAnswer(command);
+    public SuccessResponse<OnboardingInfo.Process> SubmitSubCategoryAnswers(@RequestBody OnboardingCommand.SubmitSubCategoryAnswers command) {
+        OnboardingInfo.Process result = onboardingFacade.submitSubCategoryAnswers(command);
         return SuccessResponse.ok(result);
     }
 

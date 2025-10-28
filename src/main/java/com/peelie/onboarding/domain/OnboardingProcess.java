@@ -29,9 +29,9 @@ public class OnboardingProcess extends BaseTimeEntity {
 
 
     @ElementCollection
-    @CollectionTable(name = "onboarding_answers",
+    @CollectionTable(name = "onboarding_subCategory_answers",
             joinColumns = @JoinColumn(name = "onboarding_process_id"))
-    private List<OnboardingAnswer> answers = new ArrayList<>();
+    private Set<OnboardingSubCategoryAnswers> subCategoryAnswers = new HashSet<>();
 
 
 
@@ -79,8 +79,8 @@ public class OnboardingProcess extends BaseTimeEntity {
             throw new BaseException("답변이 비어 있습니다.", ErrorCode.VALIDATION_ERROR);
         }
 
-        OnboardingAnswer answer = new OnboardingAnswer(questionId, answerValue);
-        this.answers.add(answer);
+//        OnboardingSubCategoryAnswers answer = new OnboardingSubCategoryAnswers(questionId, answerValue);
+//        this.subCategoryAnswers.add(answer);
     }
 
     public void setInteractionStyle(String interactionStyle, String bio) {

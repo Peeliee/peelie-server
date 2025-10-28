@@ -5,7 +5,6 @@ import com.peelie.common.exception.ErrorCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -34,7 +33,7 @@ public class OnboardingSubCategoryAnswers {
         this.level = Objects.requireNonNull(level);
         this.optionId = optionId;
         this.textAnswer = textAnswer;
-        validateByLevel();
+        validateByLevel(); //생성자 내부에서 자동 검증
     }
 
     // Set 중복 방지 - subCategoryId 와 level 이 같으면 같은 객체로 취급

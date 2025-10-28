@@ -29,7 +29,7 @@ public class OnboardingProcess extends BaseTimeEntity {
 
 
     @ElementCollection
-    @CollectionTable(name = "onboarding_subCategory_answers",
+    @CollectionTable(name = "onboarding_subcategory_answers",
             joinColumns = @JoinColumn(name = "onboarding_process_id"))
     private Set<OnboardingSubCategoryAnswers> subCategoryAnswers = new HashSet<>();
 
@@ -70,17 +70,15 @@ public class OnboardingProcess extends BaseTimeEntity {
         this.selectedCategories.addAll(unique);
     }
 
-    public void setAnswers(Long questionId, String answerValue) { //답변 선택 검증
-        //입력값 검증
-        if (questionId == null) {
-            throw new BaseException("질문 ID가 유효하지 않습니다.", ErrorCode.VALIDATION_ERROR);
+    public void setSubCategoryAnswers(Long subCategoryId, List<OnboardingSubCategoryAnswers> answers) {
+        if (subCategoryId == null || answers == null ||  answers.isEmpty()) {
+            throw new BaseException("subCategoryId 또는 answers가 유효하지 않습니다.", ErrorCode.VALIDATION_ERROR);
         }
-        if (answerValue == null || answerValue.isBlank()) {
-            throw new BaseException("답변이 비어 있습니다.", ErrorCode.VALIDATION_ERROR);
-        }
+        // 기존에 있던 동일 subCategoryId의 답변들 제거
+        subCategoryAnswers.removeIf(existing -> Objects.equals(existing.getSubCategoryId(), subCategoryId));
 
-//        OnboardingSubCategoryAnswers answer = new OnboardingSubCategoryAnswers(questionId, answerValue);
-//        this.subCategoryAnswers.add(answer);
+        // 새 답변 추가
+        subCategoryAnswers.addAll(answers);
     }
 
     public void setInteractionStyle(String interactionStyle, String bio) {

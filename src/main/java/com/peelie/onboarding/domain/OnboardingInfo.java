@@ -9,7 +9,7 @@ import java.util.Set;
 public class OnboardingInfo {
 
     @Getter
-    public static class Process{ //온보딩 프로세스 전 조회
+    public static class Process { // 온보딩 프로세스 전 조회
         private Long processId;
         private Long userId;
         private OnboardingStatus status;
@@ -29,7 +29,7 @@ public class OnboardingInfo {
 
     @Getter
     @Builder
-    public static class Answer{ //개별 답변 단위로 관리
+    public static class Answer { // 개별 답변 단위로 관리
         private Long questionId;
         private String value;
 
@@ -38,5 +38,34 @@ public class OnboardingInfo {
             this.value = value;
         }
     }
-}
 
+    @Getter
+    @Builder
+    public static class CardGeneration {
+        private String generationStatus; // "DONE", "FAILED", "GENERATING"
+        private String title;
+        private String subtitle;
+        private String content;
+
+        public static CardGeneration generating() {
+            return CardGeneration.builder()
+                    .generationStatus("GENERATING")
+                    .build();
+        }
+
+        public static CardGeneration done(String title, String subtitle, String content) {
+            return CardGeneration.builder()
+                    .generationStatus("DONE")
+                    .title(title)
+                    .subtitle(subtitle)
+                    .content(content)
+                    .build();
+        }
+
+        public static CardGeneration failed() {
+            return CardGeneration.builder()
+                    .generationStatus("FAILED")
+                    .build();
+        }
+    }
+}

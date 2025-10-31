@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.util.List;
 import java.util.Set;
 
 public class OnboardingCommand {
@@ -35,6 +36,27 @@ public class OnboardingCommand {
         private Long userId;
         private String interactionStyle;
         private String bio;
+    }
+
+    @Getter
+    @Builder
+    @ToString
+    public static class InitializeCard {
+        private Long userId;
+        private List<Long> categoryIds;
+        private Long subCategoryId;
+        private List<AnswerData> answers;
+    }
+
+    @Getter
+    @Builder
+    @ToString
+    public static class AnswerData {
+        private String level; // "L1", "L2", "L3", "L4"
+        private Long L1AnswerId;
+        private Long L2AnswerId;
+        private Long L3AnswerId;
+        private String L4Answer;
     }
 
 }

@@ -119,4 +119,35 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
 
 //reader 호출로 인해서 store는 굳이 필요는 없다는 사실 인지만 하기
 //온보딩을 불러오려 초기온보딩 데이터를 입력받고 시작해야함
+
+    @Override
+    @Transactional
+    public OnboardingInfo.CardGeneration initializeCard(OnboardingCommand.InitializeCard command) {
+        try {
+            // 1. 유저의 온보딩 프로세스 조회
+            OnboardingProcess process = onboardingReader.findOnboardingProcessByUserId(command.getUserId());
+
+            // 2. 상태를 GENERATING으로 변경
+            // TODO: OnboardingProcess에 상태 변경 메서드 추가 필요 시 구현
+            // process.setStatus(OnboardingStatus.GENERATING);
+            // onboardingStore.store(process);
+
+            // 3. GPT 비동기 작업 시작
+            // TODO: 실제 GPT 호출 로직 구현 필요
+            // 현재는 임시로 비동기 작업을 시작하고 즉시 응답 반환
+            // 실제로는 비동기 작업을 시작하고, 완료 후 콜백으로 상태 업데이트
+            
+            // 4. 임시로 GENERATING 상태 반환
+            // 실제 구현 시: GPT 서비스를 호출하여 비동기 작업 시작
+            // return OnboardingInfo.CardGeneration.generating();
+            
+            // 테스트를 위해 임시로 DONE 반환 (실제로는 비동기 작업 시작 후 즉시 GENERATING 반환)
+            // TODO: GPT 서비스 연동 후 실제 구현
+            return OnboardingInfo.CardGeneration.generating();
+            
+        } catch (Exception e) {
+            // GPT 호출 중 오류 발생 시 FAILED 상태 반환
+            return OnboardingInfo.CardGeneration.failed();
+        }
+    }
 }

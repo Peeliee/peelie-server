@@ -76,5 +76,23 @@ public class ProfileServiceImpl implements ProfileService {
         // 2. 찾은 프로필의 프사를 바꾼다.
         profile.changeProfileImage(newProfileImageUrl);
     }
+
+    @Override
+    @Transactional
+    public void updateInteractionStyle(Long userId, InteractionStyle interactionStyle) {
+        // 1. 해당 userId를 가진 프로필을 조회한다.
+        Profile profile = profileReader.getProfileByUserId(userId);
+        // 2. 찾은 프로필의 교류 성향을 업데이트한다.
+        profile.updateInteractionStyle(interactionStyle);
+    }
+
+    @Override
+    @Transactional
+    public void updateBio(Long userId, String bio) {
+        // 1. 해당 userId를 가진 프로필을 조회한다.
+        Profile profile = profileReader.getProfileByUserId(userId);
+        // 2. 찾은 프로필의 한줄소개를 업데이트한다.
+        profile.updateBio(bio);
+    }
 }
 

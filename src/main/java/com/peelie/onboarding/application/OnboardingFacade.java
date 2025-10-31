@@ -11,21 +11,24 @@ import org.springframework.stereotype.Service;
 public class OnboardingFacade {
     private final OnboardingProcessService onboardingProcessService;
 
-    public OnboardingInfo.Process startOnboarding(Long userId){
+    public OnboardingInfo.Process startOnboarding(Long userId) {
         return onboardingProcessService.startOnboarding(userId);
     }
 
-    public OnboardingInfo.Process selectCategories(OnboardingCommand.SelectCategories command){
+    public OnboardingInfo.Process selectCategories(OnboardingCommand.SelectCategories command) {
         return onboardingProcessService.selectCategories(command);
     }
 
-    public OnboardingInfo.Process submitAnswer(OnboardingCommand.SubmitAnswer command){
+    public OnboardingInfo.Process submitAnswer(OnboardingCommand.SubmitAnswer command) {
         return onboardingProcessService.submitAnswer(command);
     }
 
-    public OnboardingInfo.Process submitInteractionStyle(OnboardingCommand.SubmitInteraction command){
+    public OnboardingInfo.Process submitInteractionStyle(OnboardingCommand.SubmitInteraction command) {
         return onboardingProcessService.submitInteractionStyle(command);
     }
 
+    public OnboardingInfo.CardGeneration initializeCard(OnboardingCommand.InitializeCard command) {
+        return onboardingProcessService.initializeCard(command);
+    }
 
 }

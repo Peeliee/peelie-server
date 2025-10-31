@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.web.bind.annotation.*;
 
-
 @RestController
 @RequestMapping("/api/v1/onboarding")
 @RequiredArgsConstructor
@@ -23,7 +22,8 @@ public class OnboardingController {
     }
 
     @PostMapping("/categories")
-    public SuccessResponse<OnboardingInfo.Process> selectCategories(@RequestBody OnboardingCommand.SelectCategories command) {
+    public SuccessResponse<OnboardingInfo.Process> selectCategories(
+            @RequestBody OnboardingCommand.SelectCategories command) {
         OnboardingInfo.Process result = onboardingFacade.selectCategories(command);
         return SuccessResponse.ok(result);
     }
@@ -35,8 +35,22 @@ public class OnboardingController {
     }
 
     @PostMapping("/interaction")
-    public SuccessResponse<OnboardingInfo.Process> submitInteractionStyle(@RequestBody OnboardingCommand.SubmitInteraction command) {
+    public SuccessResponse<OnboardingInfo.Process> submitInteractionStyle(
+            @RequestBody OnboardingCommand.SubmitInteraction command) {
         OnboardingInfo.Process result = onboardingFacade.submitInteractionStyle(command);
+        return SuccessResponse.ok(result);
+    }
+
+    @PostMapping("/card/initialize")
+    public SuccessResponse<OnboardingInfo.CardGeneration> initializeCard(
+            @RequestBody OnboardingCommand.InitializeCard command) {
+        OnboardingInfo.CardGeneration result = onboardingFacade.initializeCard(command);
+
+        // GPT 작업 실패 시 success: false로 반환 (HTTP 200 유지)
+        if ("FAILED".equals(result.getGenerationStatus())) {
+            return new SuccessResponse<>(200, false, "GPT 호출 중 오류가 발생했습니다.", result);
+        }
+
         return SuccessResponse.ok(result);
     }
 

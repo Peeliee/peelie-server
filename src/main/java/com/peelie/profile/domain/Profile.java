@@ -70,6 +70,13 @@ public class Profile extends BaseTimeEntity {
         this.bio = newBio;
     }
 
+    public void updateInteractionStyle(InteractionStyle newInteractionStyle) {
+        if (newInteractionStyle == null) {
+            throw new BaseException("교류 성향이 입력되지 않았습니다", ErrorCode.VALIDATION_ERROR);
+        }
+        this.interactionStyle = newInteractionStyle;
+    }
+
     public void changeProfileImage(String newImageUrl) {
         if (newImageUrl == null || newImageUrl.isEmpty()) {
             this.profileImageUrl = null;

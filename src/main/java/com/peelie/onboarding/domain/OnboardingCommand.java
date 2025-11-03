@@ -1,9 +1,6 @@
 package com.peelie.onboarding.domain;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.List;
 import java.util.Set;
@@ -28,9 +25,9 @@ public class OnboardingCommand {
         private List<LevelAnswerCommand> answers;
 
         @Getter
-        @Builder
         @ToString
         @NoArgsConstructor
+        @AllArgsConstructor
         public static class LevelAnswerCommand{
             private String level;
             private Long optionId;

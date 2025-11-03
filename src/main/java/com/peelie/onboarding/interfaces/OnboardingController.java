@@ -1,5 +1,6 @@
 package com.peelie.onboarding.interfaces;
 
+import com.peelie.common.context.UserContextHolder;
 import com.peelie.common.response.SuccessResponse;
 import com.peelie.onboarding.application.OnboardingFacade;
 import com.peelie.onboarding.domain.OnboardingCommand;
@@ -17,21 +18,27 @@ public class OnboardingController {
     private final OnboardingFacade onboardingFacade;
 
 
-    @PostMapping("/categories")
+    @PutMapping ("/categories")
     public SuccessResponse<OnboardingInfo.Process> selectCategories(@RequestBody OnboardingCommand.SelectCategories command) {
-        OnboardingInfo.Process result = onboardingFacade.selectCategories(command);
+        Long userId = UserContextHolder.getUserId();
+        var cmd = command.withUserId(userId);
+        var result = onboardingFacade.selectCategories(cmd);
         return SuccessResponse.ok(result);
     }
 
-    @PostMapping("/answers")
+    @PutMapping("/answers")
     public SuccessResponse<OnboardingInfo.Process> SubmitSubCategoryAnswers(@RequestBody OnboardingCommand.SubmitSubCategoryAnswers command) {
-        OnboardingInfo.Process result = onboardingFacade.submitSubCategoryAnswers(command);
+        Long userId = UserContextHolder.getUserId();
+        var cmd = command.withUserId(userId);
+        var result = onboardingFacade.submitSubCategoryAnswers(cmd);
         return SuccessResponse.ok(result);
     }
 
-    @PostMapping("/interaction")
+    @PutMapping("/interaction")
     public SuccessResponse<OnboardingInfo.Process> submitInteractionStyle(@RequestBody OnboardingCommand.SubmitInteraction command) {
-        OnboardingInfo.Process result = onboardingFacade.submitInteractionStyle(command);
+        Long userId = UserContextHolder.getUserId();
+        var cmd = command.withUserId(userId);
+        var result = onboardingFacade.submitInteractionStyle(cmd);
         return SuccessResponse.ok(result);
     }
 

@@ -1,6 +1,9 @@
 package com.peelie.onboarding.domain;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import java.util.List;
@@ -45,7 +48,11 @@ public class OnboardingCommand {
         @AllArgsConstructor
         public static class LevelAnswerCommand{
             private String level;
+
+            @JsonAlias({"L1AnswerId", "L2AnswerId", "L3AnswerId"})
             private Long optionId;
+
+            @JsonProperty("L4Answer")
             private String textAnswer;
         }
     }

@@ -4,6 +4,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -53,11 +58,17 @@ public class OnboardingInfo {
 
     @Getter
     @AllArgsConstructor
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonAutoDetect(fieldVisibility = ANY, getterVisibility = NONE, isGetterVisibility = NONE)
     public static class LevelAnswerOut {
-        private final String level;      // "L1" ~ "L4"
-        private final Long L1AnswerId;   // L1일 때만 값, 그 외 null
-        private final Long L2AnswerId;   // L2일 때만 값
-        private final Long L3AnswerId;   // L3일 때만 값
-        private final String L4Answer;   // L4(TEXT)일 때만 값
+        private final String level;
+        @JsonProperty("L1AnswerId")
+        private final Long L1AnswerId;
+        @JsonProperty("L2AnswerId")
+        private final Long L2AnswerId;
+        @JsonProperty("L3AnswerId")
+        private final Long L3AnswerId;
+        @JsonProperty("L4Answer")
+        private final String L4Answer;
     }
 }

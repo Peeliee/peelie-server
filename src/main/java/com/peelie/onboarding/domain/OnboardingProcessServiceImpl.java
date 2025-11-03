@@ -27,32 +27,27 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
     private final SubCategoryReader subCategoryReader;
     private final ProfileService profileService;
 
-    @Override
-    @Transactional
-    public OnboardingInfo.Process startOnboarding(Long userId) {
-        // 1. 이미 온보딩 프로세스가 있으면 예외 or 리턴
-        if (onboardingReader.existsByUserId(userId)) {
-            throw new BaseException("이미 온보딩이 진행 중입니다.", ErrorCode.VALIDATION_ERROR);
-        }
-        // 2. 도메인 엔티티에서 초기 상태를 정의
-        OnboardingProcess process = OnboardingProcess.start(userId);
-        // 3. 저장 후 반환
-        onboardingStore.store(process);
-        return new OnboardingInfo.Process(process);
-    }
 
     @Override
     @Transactional
     public OnboardingInfo.Process selectCategories(OnboardingCommand.SelectCategories command) {
-        // 1. 유저의 온보딩 프로세스를 조회
-        OnboardingProcess onboardingProcess = onboardingReader.findOnboardingProcessByUserId(command.getUserId());
-        // 2. 카테고리 선택 로직 수행 (매개변수로 프론트에서 선택된 카테고리 id 3개를 command로 전달받아)
+
+        // 1. 유저의 온보딩 프로세스를 조회하여 있으면 찾기, 없으면 도메인 메서드 start 호출
+        OnboardingProcess onboardingProcess;
+        if (onboardingReader.existsByUserId(command.getUserId())) {
+            onboardingProcess = onboardingReader.findOnboardingProcessByUserId(command.getUserId());
+        } else {
+            onboardingProcess = OnboardingProcess.start(command.getUserId());
+            onboardingStore.store(onboardingProcess);
+        }
+        // 2. 카테고리 선택 로직 수행
         onboardingProcess.setCategories(command.getCategoryIds());
         // 3. 변경된 상태를 저장
         OnboardingProcess updated = onboardingStore.store(onboardingProcess);
         // 4. 결과 반환
         return new OnboardingInfo.Process(updated);
     }
+
 
 
     @Override

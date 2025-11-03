@@ -20,8 +20,8 @@ public class OnboardingFacade {
         return onboardingProcessService.submitSubCategoryAnswers(command);
     }
 
-    public OnboardingInfo.Process submitInteractionStyleBio(OnboardingCommand.SubmitInteractionBio command){
-        return onboardingProcessService.submitInteractionStyleBio(command);
+    public OnboardingInfo.Process submitInteractionStyle(OnboardingCommand.SubmitInteraction command){
+        return onboardingProcessService.submitInteractionStyle(command);
     }
 
 

@@ -4,5 +4,5 @@ public interface OnboardingProcessService {
 //    OnboardingInfo.Process startOnboarding(Long userId);
     OnboardingInfo.Process selectCategories(OnboardingCommand.SelectCategories command);
     OnboardingInfo.Process submitSubCategoryAnswers(OnboardingCommand.SubmitSubCategoryAnswers command);
-    OnboardingInfo.Process submitInteractionStyleBio(OnboardingCommand.SubmitInteractionBio command);
+    OnboardingInfo.Process submitInteractionStyle(OnboardingCommand.SubmitInteraction command);
 }

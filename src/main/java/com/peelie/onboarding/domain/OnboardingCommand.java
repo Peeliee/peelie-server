@@ -41,10 +41,9 @@ public class OnboardingCommand {
     @Getter
     @Builder
     @ToString
-    public static class SubmitInteractionBio {
+    public static class SubmitInteraction {
         private Long userId;
         private String interactionStyle;
-        private String bio;
     }
 
 }

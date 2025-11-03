@@ -84,16 +84,12 @@ public class OnboardingProcess extends BaseTimeEntity {
     }
 
 
-    public void setInteractionStyle(String interactionStyle, String bio) {
+    public void setInteractionStyle(String interactionStyle) {
         // 교류 성향 값 검증
         if (interactionStyle == null || interactionStyle.isBlank()) {
             throw new BaseException("교류 성향이 비어 있습니다.", ErrorCode.VALIDATION_ERROR);
         }
 
-        // 한 줄 소개 검증
-        if (bio == null || bio.isBlank()) {
-            throw new BaseException("한 줄 소개가 비어 있습니다.", ErrorCode.VALIDATION_ERROR);
-        }
     }
 }
 

@@ -16,11 +16,6 @@ public class OnboardingController {
 
     private final OnboardingFacade onboardingFacade;
 
-    @PostMapping("/start/{userId}")
-    public SuccessResponse<OnboardingInfo.Process> start(@PathVariable Long userId) {
-        OnboardingInfo.Process result = onboardingFacade.startOnboarding(userId);
-        return SuccessResponse.ok(result);
-    }
 
     @PostMapping("/categories")
     public SuccessResponse<OnboardingInfo.Process> selectCategories(@RequestBody OnboardingCommand.SelectCategories command) {
@@ -35,8 +30,8 @@ public class OnboardingController {
     }
 
     @PostMapping("/interaction")
-    public SuccessResponse<OnboardingInfo.Process> submitInteractionStyleBio(@RequestBody OnboardingCommand.SubmitInteractionBio command) {
-        OnboardingInfo.Process result = onboardingFacade.submitInteractionStyleBio(command);
+    public SuccessResponse<OnboardingInfo.Process> submitInteractionStyle(@RequestBody OnboardingCommand.SubmitInteraction command) {
+        OnboardingInfo.Process result = onboardingFacade.submitInteractionStyle(command);
         return SuccessResponse.ok(result);
     }
 

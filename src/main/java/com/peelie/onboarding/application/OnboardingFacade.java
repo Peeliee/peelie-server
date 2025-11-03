@@ -11,9 +11,6 @@ import org.springframework.stereotype.Service;
 public class OnboardingFacade {
     private final OnboardingProcessService onboardingProcessService;
 
-    public OnboardingInfo.Process startOnboarding(Long userId){
-        return onboardingProcessService.startOnboarding(userId);
-    }
 
     public OnboardingInfo.Process selectCategories(OnboardingCommand.SelectCategories command){
         return onboardingProcessService.selectCategories(command);

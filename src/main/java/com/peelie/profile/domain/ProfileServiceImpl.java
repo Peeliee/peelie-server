@@ -93,3 +93,20 @@ public class ProfileServiceImpl implements ProfileService {
         profile.updateBio(newBio);
     }
 }
+
+    @Override
+    @Transactional
+    public void updateInteractionStyle(Long userId, String newInteractionStyle) {
+        Profile  profile = profileReader.getProfileByUserId(userId);
+
+        profile.updateInteractionStyle(InteractionStyle.valueOf(newInteractionStyle));
+    }
+
+    @Override
+    @Transactional
+    public void updateBio(Long userId, String newBio) {
+        Profile profile = profileReader.getProfileByUserId(userId);
+
+        profile.updateBio(newBio);
+    }
+}

@@ -139,10 +139,6 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
                 command.getUserId(),
                 command.getInteractionStyle()
         );
-        profileService.updateBio( // 스프링 빈이 아니라 주입 불가능해서 service에서도 구현되어야 함 (이미 도메인에 있긴 함)
-                command.getUserId(),
-                command.getBio()
-        );
         // 4. 온보딩 상태 저장
         onboardingStore.store(process);
         // 5. 결과 반환

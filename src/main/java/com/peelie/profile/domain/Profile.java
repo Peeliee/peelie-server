@@ -48,7 +48,9 @@ public class Profile extends BaseTimeEntity {
 
     @Builder
     public Profile(Long userId, String userName, String profileImageUrl, String instagramId, String bio) {
-        if (userName.isEmpty()) throw new BaseException("회원 이름이 입력되지 않았습니다", ErrorCode.VALIDATION_ERROR);
+        if (userName == null || userName.isBlank()) {
+            throw new BaseException("회원 이름이 입력되지 않았습니다", ErrorCode.VALIDATION_ERROR);
+        }
 
         this.userId = userId;
         this.userName = userName;
@@ -60,7 +62,7 @@ public class Profile extends BaseTimeEntity {
 
     //도메인 메서드
     public void updateName(String newUserName) {
-        if (newUserName.isBlank() || newUserName.isEmpty() || newUserName==null) {
+        if (newUserName == null || newUserName.isBlank()) {
             throw new BaseException("회원 이름이 입력되지 않았습니다", ErrorCode.VALIDATION_ERROR);
         }
         this.userName = newUserName;
@@ -68,13 +70,6 @@ public class Profile extends BaseTimeEntity {
 
     public void updateBio(String newBio) {
         this.bio = newBio;
-    }
-
-    public void updateInteractionStyle(InteractionStyle newInteractionStyle) {
-        if (newInteractionStyle == null) {
-            throw new BaseException("교류 성향이 입력되지 않았습니다", ErrorCode.VALIDATION_ERROR);
-        }
-        this.interactionStyle = newInteractionStyle;
     }
 
     public void changeProfileImage(String newImageUrl) {
@@ -93,12 +88,16 @@ public class Profile extends BaseTimeEntity {
         this.instagramId = newInstagramId;
     }
 
-    public void applyOnboarding(Set<Long> categoryIds, InteractionStyle style, String bio) {
-        this.interestCategoryIds.clear();
-        if (categoryIds != null) {
-            this.interestCategoryIds.addAll(categoryIds);
-        }
-        this.interactionStyle = (style == null) ? InteractionStyle.UNKNOWN : style;
-        updateBio(bio);
+    public void updateInteractionStyle(InteractionStyle newInteractionStyle) {
+        this.interactionStyle = Objects.requireNonNull(newInteractionStyle);
     }
+
+//    public void applyOnboarding(Set<Long> categoryIds, InteractionStyle style, String bio) {
+//        this.interestCategoryIds.clear();
+//        if (categoryIds != null) {
+//            this.interestCategoryIds.addAll(categoryIds);
+//        }
+//        this.interactionStyle = (style == null) ? InteractionStyle.UNKNOWN : style;
+//        updateBio(bio);
+//    }
 }

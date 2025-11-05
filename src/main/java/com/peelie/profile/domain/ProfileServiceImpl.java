@@ -45,7 +45,7 @@ public class ProfileServiceImpl implements ProfileService {
     @Transactional
     public void updateProfileName(Long userId, String newUserName) {
         // 1. 해당 userId를 가진 프로필을 조회한다.
-        Profile profile = profileReader.getProfile(userId);
+        Profile profile = profileReader.getProfileByUserId(userId);
         // 2. 찾은 프로필의 이름을 새로운 newUserName으로 바꾼다.
         profile.updateName(newUserName);
     }
@@ -79,20 +79,17 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     @Transactional
-    public void updateInteractionStyle(Long userId, InteractionStyle interactionStyle) {
-        // 1. 해당 userId를 가진 프로필을 조회한다.
-        Profile profile = profileReader.getProfileByUserId(userId);
-        // 2. 찾은 프로필의 교류 성향을 업데이트한다.
-        profile.updateInteractionStyle(interactionStyle);
+    public void updateInteractionStyle(Long userId, String newInteractionStyle) {
+        Profile  profile = profileReader.getProfileByUserId(userId);
+
+        profile.updateInteractionStyle(InteractionStyle.valueOf(newInteractionStyle));
     }
 
     @Override
     @Transactional
-    public void updateBio(Long userId, String bio) {
-        // 1. 해당 userId를 가진 프로필을 조회한다.
+    public void updateBio(Long userId, String newBio) {
         Profile profile = profileReader.getProfileByUserId(userId);
-        // 2. 찾은 프로필의 한줄소개를 업데이트한다.
-        profile.updateBio(bio);
+
+        profile.updateBio(newBio);
     }
 }
-

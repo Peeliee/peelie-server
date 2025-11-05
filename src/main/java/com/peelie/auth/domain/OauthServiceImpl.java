@@ -2,7 +2,6 @@ package com.peelie.auth.domain;
 
 import com.peelie.common.exception.BaseException;
 import com.peelie.common.exception.ErrorCode;
-import com.peelie.user.domain.User;
 import com.peelie.user.domain.UserReader;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,7 +55,7 @@ public class OauthServiceImpl implements OauthService {
 
         OauthAccount oauthAccount = oauthReader.getOauthAccount(oauthAccountId);
 
-        if (oauthAccount.isLinked()) {
+        if (oauthAccount.getUserId() != null) {
             throw new BaseException("이미 등록된 사용자입니다.", ErrorCode.VALIDATION_ERROR);
         }
 

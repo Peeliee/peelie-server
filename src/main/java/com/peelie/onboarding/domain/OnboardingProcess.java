@@ -8,10 +8,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Getter
@@ -24,10 +21,6 @@ public class OnboardingProcess extends BaseTimeEntity {
 
     private Long userId;
 
-    @Enumerated(EnumType.STRING)
-    private OnboardingStatus status;
-
-
     @ElementCollection
     @CollectionTable(name = "onboarding_selected_categories",
             joinColumns = @JoinColumn(name = "onboarding_process_id"))
@@ -36,75 +29,67 @@ public class OnboardingProcess extends BaseTimeEntity {
 
 
     @ElementCollection
-    @CollectionTable(name = "onboarding_answers",
+    @CollectionTable(name = "onboarding_subcategory_answers",
             joinColumns = @JoinColumn(name = "onboarding_process_id"))
-    private List<OnboardingAnswer> answers = new ArrayList<>() {
-    };
+    private Set<OnboardingSubCategoryAnswers> subCategoryAnswers = new HashSet<>();
+
+
+
+
 
     public static OnboardingProcess start(Long userId) {
+        if (userId == null) {
+            throw new BaseException("유효하지 않은 사용자입니다.", ErrorCode.VALIDATION_ERROR);
+        }
         OnboardingProcess process = new OnboardingProcess();
         process.userId = userId;
-        process.status = OnboardingStatus.CATEGORIES_PENDING;
         return process;
     }
 
-    public void setCategories(Set<Long> ids) { //카테고리 선택 검증
-        //현재 단계 확인
-        if (this.status != OnboardingStatus.CATEGORIES_PENDING) {
-            throw new BaseException("카테고리 선택 단계가 아닙니다.", ErrorCode.VALIDATION_ERROR);
+
+    public void setCategories(Collection<Long> ids) { //카테고리 선택 검증
+        //요청 바디가 아예 비어있지 않은지 검증
+        if (ids == null || ids.isEmpty()) {
+            throw new BaseException("카테고리 목록이 비어 있습니다.", ErrorCode.VALIDATION_ERROR);
         }
 
-        //개수,중복 체크
-        if (ids == null || ids.size() != 3) {
+        //중복 검증을 위해 Set으로 변환
+        Set<Long> unique = new HashSet<>(ids);
+
+        //개수 체크
+        if ( unique.size() != 3) {
             throw new BaseException("카테고리는 중복 없이 정확히 3개를 선택해야 합니다.", ErrorCode.VALIDATION_ERROR);
+        }
+
+        //ids에 null이 포함되어있지 않은지 검증
+        if (unique.stream().anyMatch(Objects::isNull)) {
+            throw new BaseException("카테고리 ID가 유효하지 않습니다.", ErrorCode.VALIDATION_ERROR);
         }
 
         //카테고리 선택
         this.selectedCategories.clear();
-        this.selectedCategories.addAll(ids);
-        this.status = OnboardingStatus.QUESTIONS_PENDING;
-    }
-
-    public void setAnswers(Long questionId, String answerValue) { //답변 선택 검증
-        //현재 단계 확인
-        if (this.status != OnboardingStatus.QUESTIONS_PENDING) {
-            throw new BaseException("질문 답변 단계가 아닙니다.", ErrorCode.VALIDATION_ERROR);
-        }
-
-        //입력값 검증
-        if (questionId == null) {
-            throw new BaseException("질문 ID가 유효하지 않습니다.", ErrorCode.VALIDATION_ERROR);
-        }
-        if (answerValue == null || answerValue.isBlank()) {
-            throw new BaseException("답변이 비어 있습니다.", ErrorCode.VALIDATION_ERROR);
-        }
-
-        OnboardingAnswer answer = new OnboardingAnswer(questionId, answerValue);
-        this.answers.add(answer);
-        this.status = OnboardingStatus.INTERACTIONSTYLE_PENDING;
+        this.selectedCategories.addAll(unique);
     }
 
 
-    public void setInteractionStyle(String interactionStyle, String bio) {
-        // 현재 단계 확인
-        if (this.status != OnboardingStatus.INTERACTIONSTYLE_PENDING) {
-            throw new BaseException("교류 성향 답변 단계가 아닙니다.", ErrorCode.VALIDATION_ERROR);
+    public void setSubCategoryAnswers(Long subCategoryId, List<OnboardingSubCategoryAnswers> answers) {
+        if (subCategoryId == null || answers == null ||  answers.isEmpty()) {
+            throw new BaseException("subCategoryId 또는 answers가 유효하지 않습니다.", ErrorCode.VALIDATION_ERROR);
         }
+        // 기존에 있던 동일 subCategoryId의 답변들 제거
+        subCategoryAnswers.removeIf(existing -> Objects.equals(existing.getSubCategoryId(), subCategoryId));
 
+        // 새 답변 추가
+        subCategoryAnswers.addAll(answers);
+    }
+
+
+    public void setInteractionStyle(String interactionStyle) {
         // 교류 성향 값 검증
         if (interactionStyle == null || interactionStyle.isBlank()) {
             throw new BaseException("교류 성향이 비어 있습니다.", ErrorCode.VALIDATION_ERROR);
         }
 
-        // 한 줄 소개 검증
-        if (bio == null || bio.isBlank()) {
-            throw new BaseException("한 줄 소개가 비어 있습니다.", ErrorCode.VALIDATION_ERROR);
-        }
-//        if (bio.length() > 100) {
-//            throw new BaseException("한 줄 소개는 100자를 초과할 수 없습니다.", ErrorCode.VALIDATION_ERROR);
-//        }
-
-        this.status = OnboardingStatus.COMPLETED;
     }
 }
 

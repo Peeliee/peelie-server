@@ -42,17 +42,4 @@ public class OnboardingController {
         return SuccessResponse.ok(result);
     }
 
-    @PostMapping("/card/initialize")
-    public SuccessResponse<OnboardingInfo.CardGeneration> initializeCard(
-            @RequestBody OnboardingCommand.InitializeCard command) {
-        OnboardingInfo.CardGeneration result = onboardingFacade.initializeCard(command);
-
-        // GPT 작업 실패 시 success: false로 반환 (HTTP 200 유지)
-        if ("FAILED".equals(result.getGenerationStatus())) {
-            return new SuccessResponse<>(200, false, "GPT 호출 중 오류가 발생했습니다.", result);
-        }
-
-        return SuccessResponse.ok(result);
-    }
-
 }

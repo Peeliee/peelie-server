@@ -27,20 +27,14 @@ public class OauthAccount extends BaseTimeEntity {
 
     private Long userId;
 
-    // User 연결 여부
-    @Column(nullable = false)
-    private boolean linked;
-
     @Builder
     public OauthAccount(OauthProvider provider, String oid, String email) {
         this.provider = provider;
         this.oid = oid;
         this.email = email;
-        this.linked = false; //생성시점엔 User 연결되지 않음
     }
 
     public void linkUser(Long userId) {
         this.userId = userId;
-        this.linked = true;
     }
 }

@@ -3,7 +3,6 @@ package com.peelie.profile.domain;
 import com.peelie.common.exception.BaseException;
 import com.peelie.common.exception.ErrorCode;
 import com.peelie.common.jpa.BaseTimeEntity;
-import com.peelie.user.domain.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -11,8 +10,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.HashSet;
-import java.util.Set;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -30,7 +29,16 @@ public class Profile extends BaseTimeEntity {
     private String instagramId;
 
     @Lob
-    private String bio;
+    private String stage0Bio;
+
+    @Lob
+    private String stage1Bio;
+
+    @Lob
+    private String stage2Bio;
+
+    @Lob
+    private String stage3Bio;
 
     @Column(unique = true)
     private Long userId;
@@ -47,7 +55,7 @@ public class Profile extends BaseTimeEntity {
     private Set<Long> interestCategoryIds = new HashSet<>();
 
     @Builder
-    public Profile(Long userId, String userName, String profileImageUrl, String instagramId, String bio) {
+    public Profile(Long userId, String userName, String profileImageUrl, String instagramId) {
         if (userName == null || userName.isBlank()) {
             throw new BaseException("회원 이름이 입력되지 않았습니다", ErrorCode.VALIDATION_ERROR);
         }
@@ -56,7 +64,6 @@ public class Profile extends BaseTimeEntity {
         this.userName = userName;
         this.profileImageUrl = profileImageUrl;
         this.instagramId = instagramId;
-        this.bio = bio;
         this.interactionStyle = InteractionStyle.UNKNOWN;
     }
 
@@ -66,10 +73,6 @@ public class Profile extends BaseTimeEntity {
             throw new BaseException("회원 이름이 입력되지 않았습니다", ErrorCode.VALIDATION_ERROR);
         }
         this.userName = newUserName;
-    }
-
-    public void updateBio(String newBio) {
-        this.bio = newBio;
     }
 
     public void changeProfileImage(String newImageUrl) {

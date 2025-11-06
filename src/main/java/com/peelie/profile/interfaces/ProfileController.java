@@ -13,6 +13,7 @@ import com.peelie.profile.interfaces.ProfileDto.*;
 @RequestMapping("/api/v1/profile")
 @RequiredArgsConstructor
 public class ProfileController {
+    //TODO: profileInfo 직접 반환 말고 적절한 DTO 생성해서 반환하기
 
     private final ProfileFacade profileFacade;
 
@@ -20,7 +21,7 @@ public class ProfileController {
     @PostMapping
     public SuccessResponse registerProfile(@RequestBody RegisterProfileRequest info) {
         Long userId = UserContextHolder.getUserId();
-        ProfileCommand command = info.toCommand(userId);
+        ProfileCommand.RegisterCommand command = info.toCommand(userId);
         ProfileInfo profileInfo = profileFacade.registerProfile(command);
         return SuccessResponse.created(profileInfo);
     }
@@ -35,27 +36,12 @@ public class ProfileController {
 
     // 프로필 수정
     // 프로필 이름 수정
-    @PatchMapping("/name")
-    public SuccessResponse updateProfileName(@RequestBody UpdateProfileNameRequest info) {
+    @PatchMapping
+    public SuccessResponse updateProfileName(@RequestBody UpdateProfileRequest request) {
         Long userId = UserContextHolder.getUserId();
-        profileFacade.updateProfileName(userId, info.newName());
-        return SuccessResponse.ok(null);
-    }
-
-    // 프로필 인스타그램 아이디 수정
-    @PatchMapping("/instagram")
-    public SuccessResponse updateInstagramId(@RequestBody UpdateInstagramRequest info) {
-        Long userId = UserContextHolder.getUserId();
-        profileFacade.updateInstagramId(userId, info.newInstagramId());
-        return SuccessResponse.ok(null);
-    }
-
-    //프로필 사진 수정
-    @PatchMapping("/image")
-    public SuccessResponse updateImgUrl(@RequestBody UpdateImageUrlRequest info) {
-        Long userId = UserContextHolder.getUserId();
-        profileFacade.updateImageUrl(userId, info.newImgUrl());
-        return SuccessResponse.ok(null);
+        ProfileCommand.UpdateCommand command = request.toCommand();
+        ProfileInfo profileInfo = profileFacade.updateProfile(userId, command);
+        return SuccessResponse.ok(profileInfo);
     }
 
     // 프로필 사진 리셋

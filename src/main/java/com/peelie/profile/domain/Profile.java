@@ -18,6 +18,8 @@ import java.util.Set;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "profiles")
 public class Profile extends BaseTimeEntity {
+    //TODO: 추후 S3에 저장된 기본 이미지 주소로 변경
+    private static final String DEFAULT_IMAGE_URL = "DEFAULT_IMAGE_URL";
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,9 +29,6 @@ public class Profile extends BaseTimeEntity {
     private String profileImageUrl; //nullable
 
     private String instagramId;
-
-    @Lob
-    private String stage0Bio;
 
     @Lob
     private String stage1Bio;
@@ -68,7 +67,7 @@ public class Profile extends BaseTimeEntity {
     }
 
     //도메인 메서드
-    public void updateName(String newUserName) {
+    public void changeName(String newUserName) {
         if (newUserName == null || newUserName.isBlank()) {
             throw new BaseException("회원 이름이 입력되지 않았습니다", ErrorCode.VALIDATION_ERROR);
         }
@@ -84,15 +83,27 @@ public class Profile extends BaseTimeEntity {
     }
 
     public void resetProfileImage() {
-        this.profileImageUrl = null;
+        this.profileImageUrl = DEFAULT_IMAGE_URL;
     }
 
-    public void updateInstagramId(String newInstagramId) {
+    public void changeInstagramId(String newInstagramId) {
         this.instagramId = newInstagramId;
     }
 
-    public void updateInteractionStyle(InteractionStyle newInteractionStyle) {
+    public void changeInteractionStyle(InteractionStyle newInteractionStyle) {
         this.interactionStyle = Objects.requireNonNull(newInteractionStyle);
+    }
+
+    public void changeStage1Bio(String newStage1Bio) {
+        this.stage1Bio = newStage1Bio;
+    }
+
+    public void changeStage2Bio(String newStage2Bio) {
+        this.stage2Bio = newStage2Bio;
+    }
+
+    public void changeStage3Bio(String newStage3Bio) {
+        this.stage3Bio = newStage3Bio;
     }
 
 //    public void applyOnboarding(Set<Long> categoryIds, InteractionStyle style, String bio) {

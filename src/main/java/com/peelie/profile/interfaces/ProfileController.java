@@ -29,7 +29,7 @@ public class ProfileController {
     @GetMapping
     public SuccessResponse getProfile() {
         Long userId = UserContextHolder.getUserId();
-        ProfileInfo result = profileFacade.getProfile(userId);
+        ProfileInfo result = profileFacade.getMyProfile(userId);
         return SuccessResponse.ok(result);
     }
 

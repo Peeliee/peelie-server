@@ -18,7 +18,7 @@ public class ProfileFacade {
     }
 
     // 프로필 조회
-    public ProfileInfo getProfile(Long userId) {
+    public ProfileInfo getMyProfile(Long userId) {
         Long profileIdByUserId = profileService.getProfileIdByUserId(userId);
         return profileService.getProfile(profileIdByUserId);
     }

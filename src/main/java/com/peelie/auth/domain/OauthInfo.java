@@ -11,7 +11,6 @@ public class OauthInfo {
     private final String oid;
     private final Long userId;
     private final String email;
-    private final boolean linked;
 
     @Builder
     public OauthInfo(OauthAccount oauthAccount) {
@@ -20,6 +19,5 @@ public class OauthInfo {
         this.oid = oauthAccount.getOid();
         this.userId = oauthAccount.getUserId();
         this.email = oauthAccount.getEmail();
-        this.linked = oauthAccount.isLinked();
     }
 }

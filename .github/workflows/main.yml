@@ -85,6 +85,6 @@ jobs:
               fi
 
               echo "> 새 애플리케이션 배포 시작 (prod 프로필)"
-              nohup java -jar app.jar --spring.profiles.active=prod > nohup.out 2>&1 &
+              nohup /usr/bin/java -jar app.jar --spring.profiles.active=prod > nohup.out 2>&1 &
               echo "> 배포 완료."
             '

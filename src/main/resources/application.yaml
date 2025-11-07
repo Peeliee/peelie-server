@@ -1,0 +1,4 @@
+spring:
+  profiles:
+    active: local   # 로컬에서 실행할 때는 'local' 프로필을 사용
+    include: common

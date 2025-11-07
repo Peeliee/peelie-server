@@ -50,5 +50,3 @@ Desktop.ini
 .env
 application-local.yaml
 application-prod.yaml
-application-kakao.yaml
-application-jwt.yaml

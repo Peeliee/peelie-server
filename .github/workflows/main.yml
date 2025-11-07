@@ -44,7 +44,7 @@ jobs:
       - name: Make application-prod.yml
         run: echo "${{ secrets.PROD_YML }}" > ./application-prod.yml
 
-      # 배포 스크립트를 EC2에 올리기 위해 deploy.sh 생성
+      # ✅ 배포 스크립트를 EC2에 올리기 위해 deploy.sh 생성
       - name: Create deploy.sh
         run: |
           cat << 'EOF' > deploy.sh
@@ -61,7 +61,7 @@ else
   echo "> Kill old app (PID: $CURRENT_PID)"
   kill -15 $CURRENT_PID
 
-  # graceful shutdown 최대 20초 기다리기
+  # ✅ graceful shutdown 최대 20초 기다리기
   for i in {1..20}
   do
     if pgrep -f app.jar > /dev/null; then
@@ -79,7 +79,7 @@ EOF
 
           chmod +x deploy.sh
 
-      # EC2로 파일 업로드
+      # ✅ EC2로 파일 업로드
       - name: Upload files to EC2
         run: |
           APP_DIR="/home/${{ secrets.EC2_USERNAME }}/app"
@@ -99,7 +99,7 @@ EOF
             ./deploy.sh \
             ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:$APP_DIR/deploy.sh
 
-      # 마지막으로 배포 스크립트 실행 (출력 최소화)
+      # ✅ 마지막으로 배포 스크립트 실행 (출력 최소화)
       - name: Run deploy script
         run: |
           ssh -i private_key.pem -o StrictHostKeyChecking=no \

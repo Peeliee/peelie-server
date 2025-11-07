@@ -28,16 +28,12 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build -x test
 
-      # ==========================================================
-      # [수정됨 1] - 실행 가능한 JAR 파일을 찾아서 app.jar로 이름 변경
-      # ==========================================================
+      # (4-1) 실행 가능한 JAR 파일 찾아서 app.jar로 이름 변경
       - name: Find and Rename Executable JAR
         run: |
-          # *-plain.jar을 제외한 .jar 파일을 찾습니다.
           JAR_FILE=$(find build/libs -name "*.jar" ! -name "*-plain.jar")
           echo "Found executable JAR: $JAR_FILE"
           
-          # 해당 파일이 존재하면 app.jar로 이름을 변경합니다.
           if [ -f "$JAR_FILE" ]; then
             mv $JAR_FILE build/libs/app.jar
           else
@@ -62,11 +58,9 @@ jobs:
             ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} \
             "mkdir -p $APP_DIR"
 
-          # ==========================================================
-          # [수정됨 2] - 와일드카드(*) 대신 정확한 파일(app.jar)을 복사
-          # ==========================================================
+          # 1. Spring Boot JAR 파일 복사
           scp -i private_key.pem -o StrictHostKeyChecking=no \
-            build/libs/app.jar \ # (build/libs/*.jar 에서 수정됨)
+            build/libs/app.jar \
             ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:$APP_DIR/app.jar
 
           # 2. application-prod.yml 파일 복사

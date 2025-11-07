@@ -1,19 +1,13 @@
-# .github/workflows/main.yml
-
-# 워크플로우의 이름
 name: CI/CD with GitHub Actions
 
-# 1. 워크플로우가 언제 실행될지 정의
 on:
   push:
-    branches: [ "main" ] # "main" 브랜치에 push가 발생했을 때 실행
+    branches: [ "main" ]
 
-# 2. 실행될 작업(Job) 정의
 jobs:
   build-and-deploy:
-    runs-on: ubuntu-latest # 작업은 Ubuntu 최신 버전에서 실행
+    runs-on: ubuntu-latest
     
-    # 3. 작업 순서 (Steps)
     steps:
       # (1) 레포지토리 코드 체크아웃
       - name: Checkout
@@ -24,7 +18,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: '21'
-          distribution: 'corretto' # Amazon Corretto JDK 사용
+          distribution: 'corretto'
 
       # (3) (Gradle 사용 시) gradlew에 실행 권한 부여
       - name: Grant execute permission for gradlew
@@ -33,9 +27,23 @@ jobs:
       # (4) (Gradle 사용 시) 프로젝트 빌드 (JAR 파일 생성) / -x test: 테스트 스킵
       - name: Build with Gradle
         run: ./gradlew build -x test
-      # (참고: Maven 사용 시)
-      # - name: Build with Maven
-      #   run: mvn package
+
+      # ==========================================================
+      # [수정됨 1] - 실행 가능한 JAR 파일을 찾아서 app.jar로 이름 변경
+      # ==========================================================
+      - name: Find and Rename Executable JAR
+        run: |
+          # *-plain.jar을 제외한 .jar 파일을 찾습니다.
+          JAR_FILE=$(find build/libs -name "*.jar" ! -name "*-plain.jar")
+          echo "Found executable JAR: $JAR_FILE"
+          
+          # 해당 파일이 존재하면 app.jar로 이름을 변경합니다.
+          if [ -f "$JAR_FILE" ]; then
+            mv $JAR_FILE build/libs/app.jar
+          else
+            echo "ERROR: Executable JAR file not found."
+            exit 1
+          fi
 
       # (5) GitHub Secrets를 파일로 생성 (SSH 키, application-prod.yml)
       - name: Make SSH key file
@@ -48,38 +56,30 @@ jobs:
       # (6) EC2에 배포
       - name: Deploy to EC2
         run: |
-          # 배포 스크립트를 실행할 EC2의 홈 디렉토리
           APP_DIR="/home/${{ secrets.EC2_USERNAME }}/app"
           
-          # EC2에 app 디렉토리 생성
           ssh -i private_key.pem -o StrictHostKeyChecking=no \
             ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} \
             "mkdir -p $APP_DIR"
 
-          # 1. Spring Boot JAR 파일 복사
-          # (Gradle) build/libs/에 생성된 JAR 파일을 app.jar로 이름을 바꿔서 복사
+          # ==========================================================
+          # [수정됨 2] - 와일드카드(*) 대신 정확한 파일(app.jar)을 복사
+          # ==========================================================
           scp -i private_key.pem -o StrictHostKeyChecking=no \
-            build/libs/*.jar \
+            build/libs/app.jar \ # (build/libs/*.jar 에서 수정됨)
             ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:$APP_DIR/app.jar
-          
-          # (Maven 사용 시)
-          # scp -i private_key.pem -o StrictHostKeyChecking=no \
-          #   target/*.jar \
-          #   ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:$APP_DIR/app.jar
 
           # 2. application-prod.yml 파일 복사
           scp -i private_key.pem -o StrictHostKeyChecking=no \
             ./application-prod.yml \
             ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:$APP_DIR/application-prod.yml
 
-          # 3. EC2 접속 및 배포 스크립트 실행 (기존 앱 종료 및 새 앱 실행)
+          # 3. EC2 접속 및 배포 스크립트 실행
           ssh -i private_key.pem -o StrictHostKeyChecking=no \
             ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} \
             '
-              # 배포 디렉토리로 이동
               cd /home/${{ secrets.EC2_USERNAME }}/app
 
-              # 1. 기존에 실행 중인 Spring Boot 앱 PID 찾기
               CURRENT_PID=$(pgrep -f app.jar)
 
               if [ -z "$CURRENT_PID" ]; then
@@ -87,14 +87,10 @@ jobs:
               else
                 echo "> 기존 애플리케이션 종료 (PID: $CURRENT_PID)"
                 kill -15 $CURRENT_PID
-                sleep 5 # 종료 대기
+                sleep 5
               fi
 
-              # 2. 새 애플리케이션 실행
               echo "> 새 애플리케이션 배포 시작 (prod 프로필)"
-              
-              # nohup: 백그라운드 실행 / & : 즉시 터미널 반환
               nohup java -jar app.jar --spring.profiles.active=prod > nohup.out 2>&1 &
-              
               echo "> 배포 완료."
             '

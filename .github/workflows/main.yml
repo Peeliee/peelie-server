@@ -1,3 +1,5 @@
+# .github/workflows/main.yml (최종 CI/CD 수정본)
+
 name: CI/CD with GitHub Actions
 
 on:
@@ -85,6 +87,12 @@ jobs:
               fi
 
               echo "> 새 애플리케이션 배포 시작 (prod 프로필)"
-              nohup /usr/bin/java -jar app.jar --spring.profiles.active=prod > nohup.out 2>&1 &
+              
+              # [수정됨] stdin, stdout, stderr를 명시적으로 분리
+              nohup /usr/bin/java -jar app.jar --spring.profiles.active=prod \
+                > /home/${{ secrets.EC2_USERNAME }}/app/nohup.out \
+                2> /home/${{ secrets.EC2_USERNAME }}/app/nohup.err \
+                < /dev/null &
+                
               echo "> 배포 완료."
             '

@@ -1,0 +1,5 @@
+spring:
+  config:
+    activate:
+      on-profile: common
+    import: classpath:/application-kakao.yaml, classpath:/application-jwt.yaml

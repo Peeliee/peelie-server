@@ -48,4 +48,7 @@ Desktop.ini
 
 ### env ###
 .env
-application.yaml
+application-local.yaml
+application-prod.yaml
+application-kakao.yaml
+application-jwt.yaml

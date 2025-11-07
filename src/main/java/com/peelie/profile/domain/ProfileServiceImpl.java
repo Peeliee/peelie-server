@@ -15,7 +15,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     @Transactional
-    public ProfileInfo registerProfile(ProfileCommand command) {
+    public ProfileInfo registerProfile(ProfileCommand.RegisterCommand command) {
         // 1. 사용자가 입력값들을 입력한다. - 파라미터
         // 2. 입력값들로 Profile 엔티티 객체를 생성한다.
         Profile initProfile = command.toEntity();
@@ -43,24 +43,6 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     @Transactional
-    public void updateProfileName(Long userId, String newUserName) {
-        // 1. 해당 userId를 가진 프로필을 조회한다.
-        Profile profile = profileReader.getProfileByUserId(userId);
-        // 2. 찾은 프로필의 이름을 새로운 newUserName으로 바꾼다.
-        profile.updateName(newUserName);
-    }
-
-    @Override
-    @Transactional
-    public void updateInstagramId(Long userId, String newInstagramId) {
-        // 1. 해당 userId를 가진 프로필을 조회한다.
-        Profile profile = profileReader.getProfileByUserId(userId);
-        // 2. 찾은 프로필의 인스타 id를 바꾼다.
-        profile.updateInstagramId(newInstagramId);
-    }
-
-    @Override
-    @Transactional
     public void resetProfileImage(Long userId) {
         // 1. 해당 userId를 가진 프로필을 조회한다.
         Profile profile = profileReader.getProfileByUserId(userId);
@@ -70,27 +52,27 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     @Transactional
-    public void updateProfileImage(Long userId, String newProfileImageUrl) {
-        // 1. 해당 userId를 가진 프로필을 조회한다.
-        Profile profile = profileReader.getProfileByUserId(userId);
-        // 2. 찾은 프로필의 프사를 바꾼다.
-        profile.changeProfileImage(newProfileImageUrl);
-    }
-
-    @Override
-    @Transactional
     public void updateInteractionStyle(Long userId, String newInteractionStyle) {
         Profile  profile = profileReader.getProfileByUserId(userId);
 
-        profile.updateInteractionStyle(InteractionStyle.valueOf(newInteractionStyle));
+        profile.changeInteractionStyle(InteractionStyle.valueOf(newInteractionStyle));
     }
 
     @Override
     @Transactional
-    public void updateBio(Long userId, String newBio) {
+    public ProfileInfo updateMyProfile(Long userId, ProfileCommand.UpdateCommand command) {
+        // 1. 해당 userId를 가진 프로필을 조회한다.
         Profile profile = profileReader.getProfileByUserId(userId);
+        // 2. 찾은 프로필의 이름을 새로운 newUserName으로 바꾼다.
+        profile.changeName(command.getUserName());
+        profile.changeInstagramId(command.getInstagramId());
+        profile.changeProfileImage(command.getImageUrl());
+        profile.changeInteractionStyle(command.getInteractionStyle());
+        profile.changeStage1Bio(command.getStage1Bio());
+        profile.changeStage2Bio(command.getStage2Bio());
+        profile.changeStage3Bio(command.getStage3Bio());
 
-        profile.updateBio(newBio);
+        return new ProfileInfo(profile);
     }
 }
 

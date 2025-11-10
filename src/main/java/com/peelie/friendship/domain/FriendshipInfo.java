@@ -40,7 +40,6 @@ public class FriendshipInfo {
     }
 
     @Getter
-    @Builder
     public static class FriendSummary {
         private final Long userId;
         private final String userName;
@@ -48,7 +47,7 @@ public class FriendshipInfo {
         private final String stage1Bio;
         private final String stage2Bio;
         private final String stage3Bio;
-        private final Long stage;
+//        private final Long stage;
         private final String profileImageUrl;
 
         public FriendSummary(Profile profile) {
@@ -61,6 +60,19 @@ public class FriendshipInfo {
 //            this.stage = profile.getStage();
             this.profileImageUrl = profile.getProfileImageUrl();
         }
+    }
+    // 친구 리스트 조회 응답 래퍼
+    @Getter
+    @Builder
+    public static class FriendListResponse {
+        private final List<FriendSummary> items;
+    }
+
+    // 랜덤 추천 5명 조회 응답 래퍼
+    @Getter
+    @Builder
+    public static class RandomFriendResponse {
+        private final List<FriendSummary> items;
     }
 
     @Getter

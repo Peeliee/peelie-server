@@ -46,10 +46,10 @@ public class OnboardingCommand {
         @ToString
         @NoArgsConstructor
         @AllArgsConstructor
-        public static class LevelAnswerCommand{
+        public static class LevelAnswerCommand {
             private String level;
 
-            @JsonAlias({"L1AnswerId", "L2AnswerId", "L3AnswerId"})
+            @JsonAlias({ "L1AnswerId", "L2AnswerId", "L3AnswerId" })
             private Long optionId;
 
             @JsonProperty("L4Answer")
@@ -71,7 +71,7 @@ public class OnboardingCommand {
             return this;
         }
     }
-    
+
     @Getter
     @Builder
     @ToString
@@ -81,12 +81,10 @@ public class OnboardingCommand {
         private List<Long> categoryIds;
         private String data;
 
-
         public InitializeCard withUserId(Long userId) {
             this.userId = userId;
             return this; // ✅ 기존 객체(this) 반환
         }
     }
-
 
 }

@@ -48,5 +48,7 @@ Desktop.ini
 
 ### env ###
 .env
+application.yaml
+applicaiton-local.yml
 application-local.yaml
 application-prod.yaml

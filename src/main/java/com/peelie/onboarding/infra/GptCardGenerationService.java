@@ -349,6 +349,7 @@ public class GptCardGenerationService {
                 // 서브카테고리명 및 옵션 매핑
                 Set<String> l2Options = new HashSet<>();
                 Set<String> l3Options = new HashSet<>();
+                // TODO : subcatgoryName, selectedOption 추후 제거 예정
                 String subCategoryName = null;
                 String selectedOption = null;
                 String textAnswer = null;

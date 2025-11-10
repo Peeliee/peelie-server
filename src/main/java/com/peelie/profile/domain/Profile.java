@@ -3,7 +3,6 @@ package com.peelie.profile.domain;
 import com.peelie.common.exception.BaseException;
 import com.peelie.common.exception.ErrorCode;
 import com.peelie.common.jpa.BaseTimeEntity;
-import com.peelie.user.domain.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -11,14 +10,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.HashSet;
-import java.util.Set;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "profiles")
 public class Profile extends BaseTimeEntity {
+    //TODO: 추후 S3에 저장된 기본 이미지 주소로 변경
+    private static final String DEFAULT_IMAGE_URL = "DEFAULT_IMAGE_URL";
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -30,7 +31,13 @@ public class Profile extends BaseTimeEntity {
     private String instagramId;
 
     @Lob
-    private String bio;
+    private String stage1Bio;
+
+    @Lob
+    private String stage2Bio;
+
+    @Lob
+    private String stage3Bio;
 
     @Column(unique = true)
     private Long userId;
@@ -47,7 +54,7 @@ public class Profile extends BaseTimeEntity {
     private Set<Long> interestCategoryIds = new HashSet<>();
 
     @Builder
-    public Profile(Long userId, String userName, String profileImageUrl, String instagramId, String bio) {
+    public Profile(Long userId, String userName, String profileImageUrl, String instagramId) {
         if (userName == null || userName.isBlank()) {
             throw new BaseException("회원 이름이 입력되지 않았습니다", ErrorCode.VALIDATION_ERROR);
         }
@@ -56,20 +63,15 @@ public class Profile extends BaseTimeEntity {
         this.userName = userName;
         this.profileImageUrl = profileImageUrl;
         this.instagramId = instagramId;
-        this.bio = bio;
         this.interactionStyle = InteractionStyle.UNKNOWN;
     }
 
     //도메인 메서드
-    public void updateName(String newUserName) {
+    public void changeName(String newUserName) {
         if (newUserName == null || newUserName.isBlank()) {
             throw new BaseException("회원 이름이 입력되지 않았습니다", ErrorCode.VALIDATION_ERROR);
         }
         this.userName = newUserName;
-    }
-
-    public void updateBio(String newBio) {
-        this.bio = newBio;
     }
 
     public void changeProfileImage(String newImageUrl) {
@@ -81,15 +83,27 @@ public class Profile extends BaseTimeEntity {
     }
 
     public void resetProfileImage() {
-        this.profileImageUrl = null;
+        this.profileImageUrl = DEFAULT_IMAGE_URL;
     }
 
-    public void updateInstagramId(String newInstagramId) {
+    public void changeInstagramId(String newInstagramId) {
         this.instagramId = newInstagramId;
     }
 
-    public void updateInteractionStyle(InteractionStyle newInteractionStyle) {
+    public void changeInteractionStyle(InteractionStyle newInteractionStyle) {
         this.interactionStyle = Objects.requireNonNull(newInteractionStyle);
+    }
+
+    public void changeStage1Bio(String newStage1Bio) {
+        this.stage1Bio = newStage1Bio;
+    }
+
+    public void changeStage2Bio(String newStage2Bio) {
+        this.stage2Bio = newStage2Bio;
+    }
+
+    public void changeStage3Bio(String newStage3Bio) {
+        this.stage3Bio = newStage3Bio;
     }
 
 //    public void applyOnboarding(Set<Long> categoryIds, InteractionStyle style, String bio) {

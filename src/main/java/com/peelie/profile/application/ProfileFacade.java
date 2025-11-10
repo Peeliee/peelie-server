@@ -13,28 +13,20 @@ public class ProfileFacade {
     private final ProfileService profileService;
 
     // 프로필 생성
-    public ProfileInfo registerProfile(ProfileCommand command) {
+    public ProfileInfo registerProfile(ProfileCommand.RegisterCommand command) {
         return profileService.registerProfile(command);
     }
 
     // 프로필 조회
-    public ProfileInfo getProfile(Long userId) {
+    public ProfileInfo getMyProfile(Long userId) {
         Long profileIdByUserId = profileService.getProfileIdByUserId(userId);
         return profileService.getProfile(profileIdByUserId);
     }
 
     // 프로필 수정
     // 프로필 이름 수정
-    public void updateProfileName(Long userId, String newProfileName) {
-        profileService.updateProfileName(userId, newProfileName);
-    }
-    // 프로필 인스타 ID 수정
-    public void updateInstagramId(Long userId, String newInstagramId) {
-        profileService.updateInstagramId(userId, newInstagramId);
-    }
-    // 프로필 이미지 수정
-    public void updateImageUrl(Long userId, String newImageUrl) {
-        profileService.updateProfileImage(userId, newImageUrl);
+    public ProfileInfo updateProfile(Long userId, ProfileCommand.UpdateCommand command) {
+        return profileService.updateMyProfile(userId, command);
     }
 
     // 프로필 사진 리셋

@@ -71,6 +71,22 @@ public class OnboardingCommand {
             return this;
         }
     }
+    @Getter
+    @Builder
+    @ToString
+    public static class InitializeCard {
+        @JsonIgnore
+        private Long userId;
+        private List<Long> categoryIds;
+        private String data;
+
+
+        public InitializeCard withUserId(Long userId) {
+            this.userId = userId;
+            return this; // ✅ 기존 객체(this) 반환
+        }
+    }
 
 
 }
+

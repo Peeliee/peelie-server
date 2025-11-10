@@ -2,6 +2,7 @@ package com.peelie.onboarding.domain;
 
 import com.peelie.common.exception.BaseException;
 import com.peelie.common.exception.ErrorCode;
+import com.peelie.onboarding.infra.GptCardGenerationService;
 import com.peelie.profile.domain.ProfileService;
 import com.peelie.questionnaire.domain.category.SubCategory;
 import com.peelie.questionnaire.domain.category.SubCategoryReader;
@@ -14,8 +15,11 @@ import com.peelie.questionnaire.domain.QuestionnaireService;
 import com.peelie.questionnaire.domain.question.QuestionInfo;
 import com.peelie.questionnaire.domain.question.QuestionType;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +30,10 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
     private final QuestionnaireService questionnaireService;
     private final SubCategoryReader subCategoryReader;
     private final ProfileService profileService;
+    private final GptCardGenerationService gptCardGenerationService;
+
+    private static final Duration GENERATION_TIMEOUT = Duration.ofSeconds(12);
+
 
 
     @Override
@@ -139,13 +147,35 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
                 command.getUserId(),
                 command.getInteractionStyle()
         );
-        profileService.updateBio( // 스프링 빈이 아니라 주입 불가능해서 service에서도 구현되어야 함 (이미 도메인에 있긴 함)
-                command.getUserId(),
-                command.getBio()
-        );
         // 4. 온보딩 상태 저장
         onboardingStore.store(process);
         // 5. 결과 반환
         return new OnboardingInfo.Process(process);
+    }
+
+    @Override
+    @Transactional
+    public OnboardingInfo.CardGeneration initializeCard(OnboardingCommand.InitializeCard command) {
+        // TODO: 추후 OnboardingProcess 엔티티 상태 변경 로직과 통합 검토
+        if (command.getUserId() == null) {
+            System.err.println("❌ userId is null — JWT 주입 안 됨");
+            return OnboardingInfo.CardGeneration.failed();
+        }
+        OnboardingInfo.CardGeneration generating = OnboardingInfo.CardGeneration.generating();
+
+        try {
+            CompletableFuture<OnboardingInfo.CardGeneration> future =
+                    CompletableFuture.supplyAsync(() ->
+                            gptCardGenerationService.generateCard(
+                                    command.getUserId(),  // ✅ 실제 인증된 사용자 ID
+                                    command.getCategoryIds())
+                    );
+
+            return future.get(GENERATION_TIMEOUT.toSeconds(), TimeUnit.SECONDS);
+        } catch (Exception e) {
+            // TODO: 예외 로깅 및 추적 시스템 연동
+            System.err.println("❌ GPT 호출 실패: " + e.getMessage());
+            return OnboardingInfo.CardGeneration.failed();
+        }
     }
 }

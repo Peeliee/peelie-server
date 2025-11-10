@@ -49,3 +49,4 @@ Desktop.ini
 ### env ###
 .env
 application.yaml
+applicaiton-local.yml

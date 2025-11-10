@@ -1,4 +1,5 @@
 package com.peelie.friendship.domain;
 
-public class FriendshipStore {
+public interface FriendshipStore {
+    Friendship store(Friendship friendship);
 }

@@ -103,7 +103,7 @@ public class FriendshipInfo {
                     new ProfileInfo.Card.StageInfo("임시 Stage3 Title", "Stage3 Subtitle", "Stage3 Content")
             );
         }
-
+    }
 
 
 

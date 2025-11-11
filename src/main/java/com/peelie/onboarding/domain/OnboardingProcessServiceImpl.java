@@ -8,6 +8,7 @@ import com.peelie.questionnaire.domain.category.SubCategory;
 import com.peelie.questionnaire.domain.category.SubCategoryReader;
 import com.peelie.questionnaire.domain.question.QuestionOptionInfo;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OnboardingProcessServiceImpl implements OnboardingProcessService {
@@ -158,7 +160,7 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
     public OnboardingInfo.CardGeneration initializeCard(OnboardingCommand.InitializeCard command) {
         // TODO: 추후 OnboardingProcess 엔티티 상태 변경 로직과 통합 검토
         if (command.getUserId() == null) {
-            System.err.println("❌ userId is null — JWT 주입 안 됨");
+            log.error("❌ userId is null — JWT 주입 안 됨");
             return OnboardingInfo.CardGeneration.failed();
         }
         OnboardingInfo.CardGeneration generating = OnboardingInfo.CardGeneration.generating();
@@ -174,7 +176,7 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
             return future.get(GENERATION_TIMEOUT.toSeconds(), TimeUnit.SECONDS);
         } catch (Exception e) {
             // TODO: 예외 로깅 및 추적 시스템 연동
-            System.err.println("❌ GPT 호출 실패: " + e.getMessage());
+            log.error("❌  GPT 호출 실패: ", e.getMessage());
             return OnboardingInfo.CardGeneration.failed();
         }
     }

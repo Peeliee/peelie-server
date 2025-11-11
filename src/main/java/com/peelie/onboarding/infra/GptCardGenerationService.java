@@ -8,10 +8,10 @@ import com.peelie.onboarding.domain.OnboardingProcess;
 import com.peelie.onboarding.domain.OnboardingSubCategoryAnswers;
 import com.peelie.questionnaire.domain.QuestionnaireService;
 import com.peelie.questionnaire.domain.category.Category;
-import com.peelie.questionnaire.domain.category.CategoryId;
+//import com.peelie.questionnaire.domain.category.CategoryId;
 import com.peelie.questionnaire.domain.category.CategoryReader;
 import com.peelie.questionnaire.domain.category.SubCategory;
-import com.peelie.questionnaire.domain.category.SubCategoryReader;
+//import com.peelie.questionnaire.domain.category.SubCategoryReader;
 import com.peelie.questionnaire.domain.question.QuestionInfo;
 import com.peelie.questionnaire.domain.question.QuestionLevel;
 import com.peelie.questionnaire.domain.question.QuestionOptionInfo;
@@ -44,7 +44,7 @@ public class GptCardGenerationService {
 
         // TODO: 모델명, temperature, 타임아웃 등을 설정값으로 분리
         private static final String OPENAI_URL = "https://api.openai.com/v1/chat/completions";
-        private static final String GPT_MODEL = "gpt-3.5-turbo";
+        private static final String GPT_MODEL = "gpt-3.5-turbo-1106";
         private static final double TEMPERATURE = 0.7;
         private static final Duration CONNECT_TIMEOUT = Duration.ofSeconds(10);
         private static final Duration READ_TIMEOUT = Duration.ofSeconds(15);
@@ -169,66 +169,65 @@ public class GptCardGenerationService {
                                 }
                         }
 
-                        // ✅ 4. 프롬프트 구성
-                        // TODO: 프롬프트 템플릿을 별도 파일이나 상수 클래스로 분리하여 관리
-                        String prompt = """
-                                                            당신은 사용자의 온보딩 설문 답변을 기반으로 3단계 카드를 생성하는 AI입니다.
-                                                            각 단계별 카드는 {title, subtitle, content} 형식으로 생성해야 합니다.
-
-                                                            ## 1단계 카드 (Stage 1)
-                                                            - L0 질문(카테고리 질문)과 L1 답변을 기반으로 생성합니다.
-                                                            - 카테고리명(categoryName)과 서브카테고리명(subCategoryName)을 반드시 실제 값으로 사용하세요.
-                                                            - 카테고리 질문과 사용자가 선택한 L1 옵션 내용(selectedOption)을 반영하여 카드를 작성하세요.
-                                                            - 절대 [카테고리명], [서브카테고리명] 같은 플레이스홀더를 사용하지 마세요. 반드시 실제 카테고리명과 서브카테고리명을 사용하세요.
-
-                                                            ## 2단계 카드 (Stage 2)
-                                                            - L2와 L3 답변을 기반으로 생성합니다.
-                                                            - 사용자가 선택한 L2, L3 옵션 내용(selectedOption)을 반영하여 카드를 작성하세요.
-                                                            - 절대 [L2 옵션], [L3 옵션] 같은 플레이스홀더를 사용하지 마세요. 반드시 실제 옵션 내용을 사용하세요.
-
-                                                            ## 3단계 카드 (Stage 3)
-                                                            - L4 답변(서술형 답변)을 기반으로 생성합니다.
-                                                            - 사용자가 직접 입력한 텍스트 답변(textAnswer)을 반영하여 카드를 작성하세요.
-
-                                                            ### 1단계 데이터 (L0 + L1):
-                                                            %s
-
-                                                            ### 2단계 데이터 (L2 + L3):
-                                                            %s
-
-                                                            ### 3단계 데이터 (L4):
-                                                            %s
-
-                                                            각 카드는 사용자의 답변을 자연스럽고 개인화된 방식으로 반영해야 합니다.
-                                                            title은 간결하고 매력적이어야 하며, subtitle은 부제목 역할을 하고, content는 상세한 설명을 포함해야 합니다.
-                                                            **중요: 데이터에 포함된 categoryName, subCategoryName, selectedOption, textAnswer 등의 실제 값을 그대로 사용하세요. 플레이스홀더를 사용하지 마세요.**
-
-                                                            반드시 다음 JSON 형식으로만 응답하세요:
-                                        {
-                                          "stage1": {"title": "...", "subtitle": "...", "content": "..."},
-                                          "stage2": {"title": "...", "subtitle": "...", "content": "..."},
-                                          "stage3": {"title": "...", "subtitle": "...", "content": "..."}
-                                        }
-                                                            """
-                                        .formatted(
-                                                        objectMapper.writeValueAsString(stage1Data),
-                                                        objectMapper.writeValueAsString(stage2Data),
-                                                        objectMapper.writeValueAsString(stage3Data));
-
-                        // ✅ 5. 요청 본문 생성
-                        String requestJson = """
-                                        {
-                                                              "model": "%s",
-                                          "messages": [
-                                                                {"role":"system","content":"You are a helpful assistant that returns card information based on users questionairre answers."},
-                                            {"role":"user","content": %s}
-                                          ],
-                                                              "temperature": %s
-                                        }
-                                                            """
-                                        .formatted(GPT_MODEL, objectMapper.writeValueAsString(prompt), TEMPERATURE);
-
-                        // ✅ 6. HTTP 헤더 및 요청
+                        // ✅ 6. HTTP
+                    //                        // ✅ 4. 프롬프트 구성
+                    //                        // TODO: 프롬프트 템플릿을 별도 파일이나 상수 클래스로 분리하여 관리
+                    //                        String prompt = """
+                    //                                                            당신은 사용자의 온보딩 설문 답변을 기반으로 3단계 카드를 생성하는 AI입니다.
+                    //                                                            각 단계별 카드는 {title, subtitle, content} 형식으로 생성해야 합니다.
+                    //
+                    //                                                            ## 1단계 카드 (Stage 1)
+                    //                                                            - L0 질문(카테고리 질문)과 L1 답변을 기반으로 생성합니다.
+                    //                                                            - 카테고리명(categoryName)과 서브카테고리명(subCategoryName)을 반드시 실제 값으로 사용하세요.
+                    //                                                            - 카테고리 질문과 사용자가 선택한 L1 옵션 내용(selectedOption)을 반영하여 카드를 작성하세요.
+                    //                                                            - 절대 [카테고리명], [서브카테고리명] 같은 플레이스홀더를 사용하지 마세요. 반드시 실제 카테고리명과 서브카테고리명을 사용하세요.
+                    //
+                    //                                                            ## 2단계 카드 (Stage 2)
+                    //                                                            - L2와 L3 답변을 기반으로 생성합니다.
+                    //                                                            - 사용자가 선택한 L2, L3 옵션 내용(selectedOption)을 반영하여 카드를 작성하세요.
+                    //                                                            - 절대 [L2 옵션], [L3 옵션] 같은 플레이스홀더를 사용하지 마세요. 반드시 실제 옵션 내용을 사용하세요.
+                    //
+                    //                                                            ## 3단계 카드 (Stage 3)
+                    //                                                            - L4 답변(서술형 답변)을 기반으로 생성합니다.
+                    //                                                            - 사용자가 직접 입력한 텍스트 답변(textAnswer)을 반영하여 카드를 작성하세요.
+                    //
+                    //                                                            ### 1단계 데이터 (L0 + L1):
+                    //                                                            %s
+                    //
+                    //                                                            ### 2단계 데이터 (L2 + L3):
+                    //                                                            %s
+                    //
+                    //                                                            ### 3단계 데이터 (L4):
+                    //                                                            %s
+                    //
+                    //                                                            각 카드는 사용자의 답변을 자연스럽고 개인화된 방식으로 반영해야 합니다.
+                    //                                                            title은 간결하고 매력적이어야 하며, subtitle은 부제목 역할을 하고, content는 상세한 설명을 포함해야 합니다.
+                    //                                                            **중요: 데이터에 포함된 categoryName, subCategoryName, selectedOption, textAnswer 등의 실제 값을 그대로 사용하세요. 플레이스홀더를 사용하지 마세요.**
+                    //
+                    //                                                            반드시 다음 JSON 형식으로만 응답하세요:
+                    //                                        {
+                    //                                          "stage1": {"title": "...", "subtitle": "...", "content": "..."},
+                    //                                          "stage2": {"title": "...", "subtitle": "...", "content": "..."},
+                    //                                          "stage3": {"title": "...", "subtitle": "...", "content": "..."}
+                    //                                        }
+                    //                                                            """
+                    //                                        .formatted(
+                    //                                                        objectMapper.writeValueAsString(stage1Data),
+                    //                                                        objectMapper.writeValueAsString(stage2Data),
+                    //                                                        objectMapper.writeValueAsString(stage3Data));
+                    //
+                    //                        // ✅ 5. 요청 본문 생성
+                    //                        String requestJson = """
+                    //                                        {
+                    //                                                              "model": "%s",
+                    //                                          "messages": [
+                    //                                                                {"role":"system","content":"You are a helpful assistant that returns card information based on users questionairre answers."},
+                    //                                            {"role":"user","content": %s}
+                    //                                          ],
+                    //                                                              "temperature": %s
+                    //                                        }
+                    //                                                            """
+                    //                                        .formatted(GPT_MODEL, objectMapper.writeValueAsString(prompt), TEMPERATURE);헤더 및 요청
                         HttpHeaders headers = new HttpHeaders();
                         headers.setContentType(MediaType.APPLICATION_JSON);
                         headers.setBearerAuth(openAiApiKey);
@@ -246,7 +245,6 @@ public class GptCardGenerationService {
                                         String.class);
 
                         log.info("📡 GPT 응답 코드: {}", response.getStatusCode());
-                        // TODO: 응답 바디 로깅 시 민감한 정보가 포함될 수 있으므로 제거하거나 마스킹 처리
                         log.info("📡 GPT 응답 바디: {}", response.getBody());
 
                         if (response.getStatusCode() != HttpStatus.OK) {
@@ -261,47 +259,26 @@ public class GptCardGenerationService {
                         String content = root.path("choices").get(0).path("message").path("content").asText();
                         JsonNode cardJson = objectMapper.readTree(content);
 
-                        // ✅ 8. 플레이스홀더 치환을 위한 카테고리/서브카테고리/옵션 매핑 생성
-                        Map<String, String> replacementMap = buildReplacementMap(
-                                        process, categoryMap, subCategoryMap, questionsBySubCategory);
+                        // (refactor) 8. 플레이스홀더 치환을 위한 카테고리/서브카테고리/옵션 매핑 생성 제거
 
-                        // TODO: StageCard 빌더 반복 코드를 별도 메서드로 분리 (buildStageCard(JsonNode, String
-                        // stageName))
                         StageCard s1 = StageCard.builder()
-                                        .title(replacePlaceholders(
-                                                        cardJson.path("stage1").path("title").asText(""),
-                                                        replacementMap))
-                                        .subtitle(replacePlaceholders(
-                                                        cardJson.path("stage1").path("subtitle").asText(""),
-                                                        replacementMap))
-                                        .content(replacePlaceholders(
-                                                        cardJson.path("stage1").path("content").asText(""),
-                                                        replacementMap))
-                                        .build();
+                                .title(cardJson.path("stage1").path("title").asText(""))
+                                .subtitle(cardJson.path("stage1").path("subtitle").asText(""))
+                                .content(cardJson.path("stage1").path("content").asText(""))
+                                .build();
+
 
                         StageCard s2 = StageCard.builder()
-                                        .title(replacePlaceholders(
-                                                        cardJson.path("stage2").path("title").asText(""),
-                                                        replacementMap))
-                                        .subtitle(replacePlaceholders(
-                                                        cardJson.path("stage2").path("subtitle").asText(""),
-                                                        replacementMap))
-                                        .content(replacePlaceholders(
-                                                        cardJson.path("stage2").path("content").asText(""),
-                                                        replacementMap))
-                                        .build();
+                                .title(cardJson.path("stage2").path("title").asText(""))
+                                .subtitle(cardJson.path("stage2").path("subtitle").asText(""))
+                                .content(cardJson.path("stage2").path("content").asText(""))
+                                .build();
 
                         StageCard s3 = StageCard.builder()
-                                        .title(replacePlaceholders(
-                                                        cardJson.path("stage3").path("title").asText(""),
-                                                        replacementMap))
-                                        .subtitle(replacePlaceholders(
-                                                        cardJson.path("stage3").path("subtitle").asText(""),
-                                                        replacementMap))
-                                        .content(replacePlaceholders(
-                                                        cardJson.path("stage3").path("content").asText(""),
-                                                        replacementMap))
-                                        .build();
+                                .title(cardJson.path("stage3").path("title").asText(""))
+                                .subtitle(cardJson.path("stage3").path("subtitle").asText(""))
+                                .content(cardJson.path("stage3").path("content").asText())
+                                .build();
 
                         return OnboardingInfo.CardGeneration.done(s1, s2, s3);
 
@@ -312,131 +289,7 @@ public class GptCardGenerationService {
                 }
         }
 
-        /**
-         * 플레이스홀더 치환을 위한 매핑 생성
-         */
-        private Map<String, String> buildReplacementMap(
-                        OnboardingProcess process,
-                        Map<Long, Category> categoryMap,
-                        Map<Long, SubCategory> subCategoryMap,
-                        Map<Long, Map<QuestionLevel, QuestionInfo>> questionsBySubCategory) {
-                Map<String, String> replacementMap = new HashMap<>();
 
-                // 카테고리명 매핑 - CategoryId enum에서 읽어오기
-                String categoryName = null;
-                for (Long categoryId : categoryMap.keySet()) {
-                        categoryName = CategoryId.getNameById(categoryId);
-                        if (categoryName != null) {
-                                // 한글 플레이스홀더
-                                replacementMap.put("[카테고리명]", categoryName);
-                                replacementMap.put("[" + categoryName + "]", categoryName);
-                                // 영어 플레이스홀더
-                                replacementMap.put("[categoryName]", categoryName);
-                                replacementMap.put("**[categoryName]**", categoryName);
-                        } else {
-                                // enum에 없는 경우 DB에서 가져온 값 사용
-                                Category category = categoryMap.get(categoryId);
-                                if (category != null) {
-                                        categoryName = category.getName();
-                                        replacementMap.put("[카테고리명]", categoryName);
-                                        replacementMap.put("[" + categoryName + "]", categoryName);
-                                        replacementMap.put("[categoryName]", categoryName);
-                                        replacementMap.put("**[categoryName]**", categoryName);
-                                }
-                        }
-                }
 
-                // 서브카테고리명 및 옵션 매핑
-                Set<String> l2Options = new HashSet<>();
-                Set<String> l3Options = new HashSet<>();
-                // TODO : subcatgoryName, selectedOption 추후 제거 예정
-                String subCategoryName = null;
-                String selectedOption = null;
-                String textAnswer = null;
 
-                for (OnboardingSubCategoryAnswers answer : process.getSubCategoryAnswers()) {
-                        Long subCategoryId = answer.getSubCategoryId();
-                        String level = answer.getLevel();
-                        SubCategory subCategory = subCategoryMap.get(subCategoryId);
-
-                        if (subCategory != null) {
-                                subCategoryName = subCategory.getName();
-                                // 한글 플레이스홀더
-                                replacementMap.put("[서브카테고리명]", subCategoryName);
-                                // 영어 플레이스홀더
-                                replacementMap.put("[subCategoryName]", subCategoryName);
-                                replacementMap.put("**[subCategoryName]**", subCategoryName);
-                        }
-
-                        Map<QuestionLevel, QuestionInfo> questionMap = questionsBySubCategory.get(subCategoryId);
-                        if (questionMap != null) {
-                                QuestionInfo questionInfo = questionMap.get(QuestionLevel.valueOf(level));
-                                if (questionInfo != null) {
-                                        if (answer.getOptionId() != null) {
-                                                String optionContent = questionInfo.getOptions().stream()
-                                                                .filter(opt -> opt.getOptionId()
-                                                                                .equals(answer.getOptionId()))
-                                                                .map(QuestionOptionInfo::getContent)
-                                                                .findFirst()
-                                                                .orElse("");
-
-                                                if (!optionContent.isEmpty()) {
-                                                        selectedOption = optionContent;
-                                                        // 영어 플레이스홀더
-                                                        replacementMap.put("[selectedOption]", selectedOption);
-                                                        replacementMap.put("**[selectedOption]**", selectedOption);
-
-                                                        if (LEVEL_L2.equals(level)) {
-                                                                l2Options.add(optionContent);
-                                                        } else if (LEVEL_L3.equals(level)) {
-                                                                l3Options.add(optionContent);
-                                                        }
-                                                }
-                                        } else if (LEVEL_L4.equals(level) && answer.getTextAnswer() != null) {
-                                                textAnswer = answer.getTextAnswer();
-                                                // 영어 플레이스홀더
-                                                replacementMap.put("[textAnswer]", textAnswer);
-                                                replacementMap.put("**[textAnswer]**", textAnswer);
-                                        }
-                                }
-                        }
-                }
-
-                // L2, L3 옵션을 쉼표로 구분하여 추가
-                if (!l2Options.isEmpty()) {
-                        String l2OptionsStr = String.join(", ", l2Options);
-                        replacementMap.put("[L2 옵션]", l2OptionsStr);
-                        replacementMap.put("**[L2 옵션]**", l2OptionsStr);
-                }
-                if (!l3Options.isEmpty()) {
-                        String l3OptionsStr = String.join(", ", l3Options);
-                        replacementMap.put("[L3 옵션]", l3OptionsStr);
-                        replacementMap.put("**[L3 옵션]**", l3OptionsStr);
-                }
-
-                log.info("🔧 플레이스홀더 치환 맵: {}", replacementMap);
-                return replacementMap;
-        }
-
-        /**
-         * 플레이스홀더를 실제 값으로 치환
-         */
-        private String replacePlaceholders(String text, Map<String, String> replacementMap) {
-                if (text == null || text.isEmpty()) {
-                        return text;
-                }
-
-                String result = text;
-                // 모든 플레이스홀더를 치환 (여러 번 나타날 수 있으므로 replaceAll 사용)
-                for (Map.Entry<String, String> entry : replacementMap.entrySet()) {
-                        String placeholder = entry.getKey();
-                        String value = entry.getValue();
-                        if (value != null) {
-                                result = result.replace(placeholder, value);
-                        }
-                }
-
-                log.info("🔧 치환 전: {}, 치환 후: {}", text, result);
-                return result;
-        }
 }

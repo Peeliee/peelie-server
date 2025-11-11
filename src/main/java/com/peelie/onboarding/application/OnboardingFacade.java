@@ -12,7 +12,7 @@ public class OnboardingFacade {
     private final OnboardingProcessService onboardingProcessService;
 
 
-    public OnboardingInfo.Process selectCategories(OnboardingCommand.SelectCategories command){
+    public OnboardingInfo.Process selectCategories(OnboardingCommand.SelectCategories command) {
         return onboardingProcessService.selectCategories(command);
     }
 
@@ -20,9 +20,12 @@ public class OnboardingFacade {
         return onboardingProcessService.submitSubCategoryAnswers(command);
     }
 
-    public OnboardingInfo.Process submitInteractionStyle(OnboardingCommand.SubmitInteraction command){
+    public OnboardingInfo.Process submitInteractionStyle(OnboardingCommand.SubmitInteraction command) {
         return onboardingProcessService.submitInteractionStyle(command);
     }
 
+    public OnboardingInfo.CardGeneration initializeCard(OnboardingCommand.InitializeCard command) {
+        return onboardingProcessService.initializeCard(command);
+    }
 
 }

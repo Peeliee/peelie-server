@@ -92,19 +92,3 @@ public class OnboardingProcess extends BaseTimeEntity {
 
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

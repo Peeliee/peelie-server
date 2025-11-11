@@ -75,4 +75,3 @@ public class ProfileServiceImpl implements ProfileService {
         return new ProfileInfo(profile);
     }
 }
-

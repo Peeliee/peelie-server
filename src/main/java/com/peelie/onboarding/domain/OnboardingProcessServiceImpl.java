@@ -240,15 +240,15 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
         // 3. 작업이 완료된 경우
         try {
             // 3-a. 작업이 예외(실패)로 완료된 경우
-            if (future.isCompletedExceptionally()) {
-                // 비동기 스레드에서 예외 발생 시 (GPT 호출 실패, 타임아웃 등)
-                log.warn("Polling user {}: Task is FAILED due to exception in async thread", userId);
-                return OnboardingInfo.CardGeneration.failed();
-            }
+//            if (future.isCompletedExceptionally()) {
+//                // 비동기 스레드에서 예외 발생 시 (GPT 호출 실패, 타임아웃 등)
+//                log.warn("Polling user {}: Task is FAILED due to exception in async thread", userId);
+//                return OnboardingInfo.CardGeneration.failed();
+//            }
 
             // 3-b. 작업이 성공적으로 완료 (DONE 또는 내부 FAILED DTO 반환)
             // .getNow(null)은 예외 없이 즉시 결과를 반환합니다.
-            OnboardingInfo.CardGeneration result = future.getNow(null);
+            OnboardingInfo.CardGeneration result = future.join();
 
             if (result != null) {
                 log.debug("Polling user {}: Task is DONE (Result Status: {})", userId, result.getGenerationStatus());

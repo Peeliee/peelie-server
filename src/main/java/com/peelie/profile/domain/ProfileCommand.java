@@ -34,6 +34,15 @@ public class ProfileCommand {
         private final String stage1Bio;
         private final String stage2Bio;
         private final String stage3Bio;
-
+        // 카드 정보 필드 추가
+        private final String stage1CardTitle;
+        private final String stage1CardSubtitle;
+        private final String stage1CardContent;
+        private final String stage2CardTitle;
+        private final String stage2CardSubtitle;
+        private final String stage2CardContent;
+        private final String stage3CardTitle;
+        private final String stage3CardSubtitle;
+        private final String stage3CardContent;
     }
 }

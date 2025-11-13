@@ -6,6 +6,10 @@ import com.peelie.onboarding.domain.OnboardingInfo;
 import com.peelie.onboarding.domain.OnboardingInfo.StageCard;
 import com.peelie.onboarding.domain.OnboardingProcess;
 import com.peelie.onboarding.domain.OnboardingSubCategoryAnswers;
+import com.peelie.profile.domain.Profile;
+import com.peelie.profile.domain.ProfileReader;
+import com.peelie.profile.domain.ProfileService;
+import com.peelie.profile.domain.ProfileStore;
 import com.peelie.questionnaire.domain.QuestionnaireService;
 import com.peelie.questionnaire.domain.category.Category;
 import com.peelie.questionnaire.domain.category.CategoryReader;
@@ -38,7 +42,9 @@ public class GptCardGenerationService {
         private final QuestionnaireService questionnaireService;
         private final CategoryReader categoryReader;
         private final SubCategoryReader subCategoryReader;
+        private final ProfileReader profileReader;
 
+        private final ProfileStore profileStore; // db 저장 위해 생성자 주입
         @Value("${OPENAI_API_KEY:${openai.api.key:}}")
         private String openAiApiKey;
 
@@ -55,7 +61,7 @@ public class GptCardGenerationService {
         private static final String LEVEL_L3 = "L3";
         private static final String LEVEL_L4 = "L4";
 
-        @Transactional(readOnly = true)
+        @Transactional
         public CompletableFuture<OnboardingInfo.CardGeneration> generateCard(Long userId, List<Long> categoryIds) {
                 try {
                         // ✅ 1. 유저의 온보딩 프로세스 조회
@@ -145,54 +151,34 @@ public class GptCardGenerationService {
                                 }
                         }
 
-                        // ✅ 4. 프롬프트 구성 (출력 JSON 형식 명시)
+                        // ✅ 4. 프롬프트 구성
                         String prompt = """
-                                                            당신은 사용자의 온보딩 설문 답변을 기반으로 3단계 카드를 생성하는 AI입니다.
-                                                            각 단계별 카드는 {title, subtitle, content} 형식으로 생성해야 합니다.
+당신은 사용자의 온보딩 설문 답변을 기반으로 3단계 카드를 생성하는 AI입니다.
+제공된 1, 2, 3단계 데이터를 기반으로 각 카드를 생성해주세요.
 
-                                                            ## 1단계 카드 (Stage 1)
-                                                            - L0 질문(카테고리 질문)과 L1 답변을 기반으로 생성합니다.
-                                                            - 카테고리명(categoryName)과 서브카테고리명(subCategoryName)을 반드시 실제 값으로 사용하세요.
-                                                            - 카테고리 질문과 사용자가 선택한 L1 옵션 내용(selectedOption)을 반영하여 카드를 작성하세요.
-                                                            - 절대 [카테고리명], [서브카테고리명] 같은 플레이스홀더를 사용하지 마세요. 반드시 실제 카테고리명과 서브카테고리명을 사용하세요.
+**반드시 아래 형식의 JSON으로 응답하세요:**
+{
+  "stage1": {"title": "...", "subtitle": "...", "content": "..."},
+  "stage2": {"title": "...", "subtitle": "...", "content": "..."},
+  "stage3": {"title": "...", "subtitle": "...", "content": "..."}
+}
 
-                                                            ## 2단계 카드 (Stage 2)
-                                                            - L2와 L3 답변을 기반으로 생성합니다.
-                                                            - 사용자가 선택한 L2, L3 옵션 내용(selectedOption)을 반영하여 카드를 작성하세요.
-                                                            - 절대 [L2 옵션], [L3 옵션] 같은 플레이스홀더를 사용하지 마세요. 반드시 실제 옵션 내용을 사용하세요.
+### 1단계 데이터 (L0 + L1):
+%s
 
-                                                            ## 3단계 카드 (Stage 3)
-                                                            - L4 답변(서술형 답변)을 기반으로 생성합니다.
-                                                            - 사용자가 직접 입력한 텍스트 답변(textAnswer)을 반영하여 카드를 작성하세요.
+### 2단계 데이터 (L2 + L3):
+%s
 
-                                                            ### 1단계 데이터 (L0 + L1):
-                                                            %s
-
-                                                            ### 2단계 데이터 (L2 + L3):
-                                                            %s
-
-                                                            ### 3단계 데이터 (L4):
-                                                            %s
-
-                                                            각 카드는 사용자의 답변을 자연스럽고 개인화된 방식으로 반영해야 합니다.
-                                                            title은 간결하고 매력적이어야 하며, subtitle은 부제목 역할을 하고, content는 상세한 설명을 포함해야 합니다.
-                                                            **중요: 데이터에 포함된 categoryName, subCategoryName, selectedOption, textAnswer 등의 실제 값을 그대로 사용하세요. 플레이스홀더를 사용하지 마세요.**
-
-                                                            반드시 다음 JSON 형식으로만 응답하세요:
-                                        {
-                                          "stage1": {"title": "...", "subtitle": "...", "content": "..."},
-                                          "stage2": {"title": "...", "subtitle": "...", "content": "..."},
-                                          "stage3": {"title": "...", "subtitle": "...", "content": "..."}
-                                        }
-                                                            """
-                                .formatted(
-                                        objectMapper.writeValueAsString(stage1Data),
-                                        objectMapper.writeValueAsString(stage2Data),
-                                        objectMapper.writeValueAsString(stage3Data));
-
+### 3단계 데이터 (L4):
+%s
+""".formatted(
+                objectMapper.writeValueAsString(stage1Data),
+                objectMapper.writeValueAsString(stage2Data),
+                objectMapper.writeValueAsString(stage3Data)
+                );
 
                         // ✅ 5. OpenAI 요청 JSON 생성
-                        String requestJson = """
+String requestJson = """
                 {
                   "model": "%s",
                   "messages": [
@@ -227,19 +213,9 @@ public class GptCardGenerationService {
                         String raw = response.getBody();
                         JsonNode root = objectMapper.readTree(raw);
                         String content = root.path("choices").get(0).path("message").path("content").asText();
-                        String cleaned = content == null ? "" : content.trim();
-                        if (cleaned.startsWith("```")) {
-                                int firstBrace = cleaned.indexOf('{');
-                                int lastBrace = cleaned.lastIndexOf('}');
-                                if (firstBrace >= 0 && lastBrace > firstBrace) {
-                                        cleaned = cleaned.substring(firstBrace, lastBrace + 1);
-                                }
-                        }
-                        if (cleaned.isEmpty() || "{}".equals(cleaned)) {
-                                log.warn("⚠️ GPT content is empty or {}. Raw: {}", content, raw);
-                        }
-                        JsonNode cardJson = objectMapper.readTree(cleaned.isEmpty() ? "{}" : cleaned);
-
+                        JsonNode cardJson = objectMapper.readTree(content);
+                        log.info("✅ GPT 원본 응답: {}", content);
+                        log.info("✅ cardJson: {}", cardJson);
                         StageCard s1 = StageCard.builder()
                                 .title(cardJson.path("stage1").path("title").asText(""))
                                 .subtitle(cardJson.path("stage1").path("subtitle").asText(""))
@@ -258,6 +234,21 @@ public class GptCardGenerationService {
                                 .content(cardJson.path("stage3").path("content").asText(""))
                                 .build();
                         OnboardingInfo.CardGeneration result = OnboardingInfo.CardGeneration.done(s1, s2, s3);
+                        // 카드 정보를 JSON으로 변환
+                        Map<String, Object> cardData = Map.of(
+                                "stage1", Map.of("title", s1.getTitle(), "subtitle", s1.getSubtitle(), "content", s1.getContent()),
+                                "stage2", Map.of("title", s2.getTitle(), "subtitle", s2.getSubtitle(), "content", s2.getContent()),
+                                "stage3", Map.of("title", s3.getTitle(), "subtitle", s3.getSubtitle(), "content", s3.getContent())
+                        );
+
+                        String cardInfo  = objectMapper.writeValueAsString(cardData);
+
+                        log.info("✅ Profile 카드 정보 저장 완료 - userId={}, cardInfo={}", userId, cardInfo);
+
+                        Profile profile =  profileReader.getProfileByUserId(userId);
+//                        log.info("✅ 저장 후 재조회 - cardInfoJson={}", saved.getCardInfoJson());
+                        profile.updateCardInfoJson(cardInfo);
+                        profileStore.store(profile); // 이 줄 추가
 
                         // [핵심 수정]: 최종 결과를 CompletableFuture로 감싸서 반환
                         return CompletableFuture.completedFuture(result);

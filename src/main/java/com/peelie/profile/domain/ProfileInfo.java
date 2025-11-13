@@ -1,9 +1,11 @@
 package com.peelie.profile.domain;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.List;
+import java.util.Map;
 
 @Getter
 public class ProfileInfo {
@@ -15,7 +17,7 @@ public class ProfileInfo {
     private final InteractionStyle interactionStyle;
     private final Card card;
 
-    public ProfileInfo(Profile profile) {
+    public ProfileInfo(Profile profile,ObjectMapper objectMapper) {
         this.userId = profile.getUserId();
         this.userName = profile.getUserName();
         this.profileImageUrl = profile.getProfileImageUrl();
@@ -32,10 +34,51 @@ public class ProfileInfo {
         this.interactionStyle = profile.getInteractionStyle();
 
         //TODO: 재현님 카드 기능 완성 후 실제 데이터 반영
-        this.card = new Card(
+
+        this.card = createCardFromProfile(profile,objectMapper);
+
+    }
+    private Card createCardFromProfile(Profile profile,ObjectMapper objectMapper) {
+        if (profile.getCardInfoJson() != null && !profile.getCardInfoJson().isEmpty()) {
+            try {
+                // JSON 파싱하여 실제 데이터 사용
+                Map<String, Object> cardData = objectMapper.readValue(profile.getCardInfoJson(), Map.class);
+
+                Map<String, Object> stage1 = (Map<String, Object>) cardData.get("stage1");
+                Map<String, Object> stage2 = (Map<String, Object>) cardData.get("stage2");
+                Map<String, Object> stage3 = (Map<String, Object>) cardData.get("stage3");
+
+                return new Card(
+                        new Card.StageInfo(
+                                (String) stage1.get("title"),
+                                (String) stage1.get("subtitle"),
+                                (String) stage1.get("content")
+                        ),
+                        new Card.StageInfo(
+                                (String) stage2.get("title"),
+                                (String) stage2.get("subtitle"),
+                                (String) stage2.get("content")
+                        ),
+                        new Card.StageInfo(
+                                (String) stage3.get("title"),
+                                (String) stage3.get("subtitle"),
+                                (String) stage3.get("content")
+                        )
+                );
+            } catch (Exception e) {
+                // JSON 파싱 실패시 기본값 사용
+                return getDefaultCard();
+            }
+        }
+
+        return getDefaultCard();
+    }
+
+    private Card getDefaultCard() {
+        return new Card(
                 new Card.StageInfo("임시 Stage1 Title", "Stage1 Subtitle", "Stage1 Content"),
-                new Card.StageInfo("임시 Stage2 Title", "Stage2 Subtitle", "Stage1 Content"),
-                new Card.StageInfo("임시 Stage3 Title", "Stage3 Subtitle", "Stage1 Content")
+                new Card.StageInfo("임시 Stage2 Title", "Stage2 Subtitle", "Stage2 Content"),
+                new Card.StageInfo("임시 Stage3 Title", "Stage3 Subtitle", "Stage3 Content")
         );
     }
 

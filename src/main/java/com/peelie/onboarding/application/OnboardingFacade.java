@@ -33,4 +33,9 @@ public class OnboardingFacade {
         // ServiceImpl이 현재 상태(GENERATING, DONE, FAILED)를 반환할 것입니다.
         return onboardingProcessService.getCardGenerationStatus(userId);
     }
+
+    public OnboardingInfo.CardGeneration getCardGenerationStatus(OnboardingCommand.GetCardStatus command) {
+        return onboardingProcessService.getCardGenerationStatus(command.getUserId());
+    }
+
 }

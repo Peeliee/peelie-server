@@ -54,31 +54,41 @@ public class OnboardingController {
         var cmd = command.withUserId(userId);
         OnboardingInfo.CardGeneration result = onboardingFacade.initializeCard(cmd);
 
-        // 정상 완료: GPT 응답 성공 → CREATED(201)
-        if ("DONE".equals(result.getGenerationStatus())) {
-            return ResponseEntity
-                    .status(HttpStatus.CREATED)
-                    .body(SuccessResponse.created(result));
-        }
-
-        // TODO: 향후 실패 응답 포맷(ErrorResponse → CustomResponse로 통합) 리팩터링 예정
-        String reasonJson = """
-                {"generationStatus":"FAILED"}
-                """;
-        return ResponseEntity.ok(
-                ErrorResponse.of(HttpStatus.OK.value(),
-                        "GPT 호출 중 오류가 발생했습니다.",
-                        null,
-                        reasonJson));
+        // // 정상 완료: GPT 응답 성공 → CREATED(201)
+        // if ("DONE".equals(result.getGenerationStatus())) {
+        // return ResponseEntity
+        // .status(HttpStatus.CREATED)
+        // .body(SuccessResponse.created(result));
+        // }
+        //
+        // // TODO: 향후 실패 응답 포맷(ErrorResponse → CustomResponse로 통합) 리팩터링 예정
+        // String reasonJson = """
+        // {"generationStatus":"FAILED"}
+        // """;
+        // return ResponseEntity.ok(
+        // ErrorResponse.of(HttpStatus.OK.value(),
+        // "GPT 호출 중 오류가 발생했습니다.",
+        // null,
+        // reasonJson));
+        return ResponseEntity
+                .status(HttpStatus.ACCEPTED)
+                .body(SuccessResponse.of(202, "Generation started", result));
     }
+
+
 
     @GetMapping("/card/status")
     public ResponseEntity<?> getCardGenerationStatus() {
-        // (UserContextHolder가 없으면 인증 토큰에서 직접 userId를 추출해야 합니다)
-        Long userId = UserContextHolder.getUserId(); // [임시]
+        Long userId = UserContextHolder.getUserId();
+        var cmd = OnboardingCommand.GetCardStatus.builder().build().withUserId(userId);
+        OnboardingInfo.CardGeneration statusResult = onboardingFacade.getCardGenerationStatus(cmd);
 
-        OnboardingInfo.CardGeneration statusResult = onboardingFacade.getCardGenerationStatus(userId);
-
+        // if (statusResult == null) {
+        // return ResponseEntity
+        // .status(HttpStatus.NOT_FOUND)
+        // .body(ErrorResponse.of(HttpStatus.401, "No task found for user.",
+        // "NO_TASK"));
+        // }
         String status = statusResult.getGenerationStatus();
 
         switch (status) {
@@ -87,7 +97,7 @@ public class OnboardingController {
                 return ResponseEntity
                         .status(HttpStatus.OK)
                         .body(
-            SuccessResponse.ok(statusResult));
+                                SuccessResponse.ok(statusResult));
             case "GENERATING":
                 // [진행 중] 202 ACCEPTED
                 return ResponseEntity

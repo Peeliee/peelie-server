@@ -87,4 +87,17 @@ public class OnboardingCommand {
         }
     }
 
+    @Getter
+    @Builder
+    @ToString
+    public static class GetCardStatus {
+        @JsonIgnore
+        private Long userId;
+
+        public GetCardStatus withUserId(Long userId) {
+            this.userId = userId;
+            return this;
+        }
+    }
+
 }

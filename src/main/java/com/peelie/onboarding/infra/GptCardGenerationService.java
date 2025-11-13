@@ -145,11 +145,19 @@ public class GptCardGenerationService {
                                 }
                         }
 
-                        // ✅ 4. 프롬프트 구성
+                        // ✅ 4. 프롬프트 구성 (출력 JSON 형식 명시)
                         String prompt = """
                 당신은 사용자의 온보딩 설문 답변을 기반으로 3단계 카드를 생성하는 AI입니다.
                 제공된 1, 2, 3단계 데이터를 기반으로 각 카드를 생성해주세요.
                 title은 간결하고 매력적이어야 하며, subtitle은 부제목, content는 상세 설명을 포함해야 합니다.
+
+                출력은 반드시 순수 JSON(코드 블록이나 설명 없이)으로만 반환하세요.
+                다음 스키마를 정확히 준수하세요:
+                {
+                  "stage1": {"title": "string", "subtitle": "string", "content": "string"},
+                  "stage2": {"title": "string", "subtitle": "string", "content": "string"},
+                  "stage3": {"title": "string", "subtitle": "string", "content": "string"}
+                }
 
                 ### 1단계 데이터 (L0 + L1):
                 %s
@@ -158,7 +166,9 @@ public class GptCardGenerationService {
                 %s
 
                 ### 3단계 데이터 (L4):
-                %s
+
+                
+                
                 """.formatted(
                                 objectMapper.writeValueAsString(stage1Data),
                                 objectMapper.writeValueAsString(stage2Data),
@@ -201,7 +211,18 @@ public class GptCardGenerationService {
                         String raw = response.getBody();
                         JsonNode root = objectMapper.readTree(raw);
                         String content = root.path("choices").get(0).path("message").path("content").asText();
-                        JsonNode cardJson = objectMapper.readTree(content);
+                        String cleaned = content == null ? "" : content.trim();
+                        if (cleaned.startsWith("```")) {
+                                int firstBrace = cleaned.indexOf('{');
+                                int lastBrace = cleaned.lastIndexOf('}');
+                                if (firstBrace >= 0 && lastBrace > firstBrace) {
+                                        cleaned = cleaned.substring(firstBrace, lastBrace + 1);
+                                }
+                        }
+                        if (cleaned.isEmpty() || "{}".equals(cleaned)) {
+                                log.warn("⚠️ GPT content is empty or {}. Raw: {}", content, raw);
+                        }
+                        JsonNode cardJson = objectMapper.readTree(cleaned.isEmpty() ? "{}" : cleaned);
 
                         StageCard s1 = StageCard.builder()
                                 .title(cardJson.path("stage1").path("title").asText(""))

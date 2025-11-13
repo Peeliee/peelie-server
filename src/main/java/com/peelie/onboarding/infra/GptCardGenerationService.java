@@ -147,33 +147,49 @@ public class GptCardGenerationService {
 
                         // ✅ 4. 프롬프트 구성 (출력 JSON 형식 명시)
                         String prompt = """
-                당신은 사용자의 온보딩 설문 답변을 기반으로 3단계 카드를 생성하는 AI입니다.
-                제공된 1, 2, 3단계 데이터를 기반으로 각 카드를 생성해주세요.
-                title은 간결하고 매력적이어야 하며, subtitle은 부제목, content는 상세 설명을 포함해야 합니다.
+                                                            당신은 사용자의 온보딩 설문 답변을 기반으로 3단계 카드를 생성하는 AI입니다.
+                                                            각 단계별 카드는 {title, subtitle, content} 형식으로 생성해야 합니다.
 
-                출력은 반드시 순수 JSON(코드 블록이나 설명 없이)으로만 반환하세요.
-                다음 스키마를 정확히 준수하세요:
-                {
-                  "stage1": {"title": "string", "subtitle": "string", "content": "string"},
-                  "stage2": {"title": "string", "subtitle": "string", "content": "string"},
-                  "stage3": {"title": "string", "subtitle": "string", "content": "string"}
-                }
+                                                            ## 1단계 카드 (Stage 1)
+                                                            - L0 질문(카테고리 질문)과 L1 답변을 기반으로 생성합니다.
+                                                            - 카테고리명(categoryName)과 서브카테고리명(subCategoryName)을 반드시 실제 값으로 사용하세요.
+                                                            - 카테고리 질문과 사용자가 선택한 L1 옵션 내용(selectedOption)을 반영하여 카드를 작성하세요.
+                                                            - 절대 [카테고리명], [서브카테고리명] 같은 플레이스홀더를 사용하지 마세요. 반드시 실제 카테고리명과 서브카테고리명을 사용하세요.
 
-                ### 1단계 데이터 (L0 + L1):
-                %s
+                                                            ## 2단계 카드 (Stage 2)
+                                                            - L2와 L3 답변을 기반으로 생성합니다.
+                                                            - 사용자가 선택한 L2, L3 옵션 내용(selectedOption)을 반영하여 카드를 작성하세요.
+                                                            - 절대 [L2 옵션], [L3 옵션] 같은 플레이스홀더를 사용하지 마세요. 반드시 실제 옵션 내용을 사용하세요.
 
-                ### 2단계 데이터 (L2 + L3):
-                %s
+                                                            ## 3단계 카드 (Stage 3)
+                                                            - L4 답변(서술형 답변)을 기반으로 생성합니다.
+                                                            - 사용자가 직접 입력한 텍스트 답변(textAnswer)을 반영하여 카드를 작성하세요.
 
-                ### 3단계 데이터 (L4):
+                                                            ### 1단계 데이터 (L0 + L1):
+                                                            %s
 
-                
-                
-                """.formatted(
-                                objectMapper.writeValueAsString(stage1Data),
-                                objectMapper.writeValueAsString(stage2Data),
-                                objectMapper.writeValueAsString(stage3Data)
-                        );
+                                                            ### 2단계 데이터 (L2 + L3):
+                                                            %s
+
+                                                            ### 3단계 데이터 (L4):
+                                                            %s
+
+                                                            각 카드는 사용자의 답변을 자연스럽고 개인화된 방식으로 반영해야 합니다.
+                                                            title은 간결하고 매력적이어야 하며, subtitle은 부제목 역할을 하고, content는 상세한 설명을 포함해야 합니다.
+                                                            **중요: 데이터에 포함된 categoryName, subCategoryName, selectedOption, textAnswer 등의 실제 값을 그대로 사용하세요. 플레이스홀더를 사용하지 마세요.**
+
+                                                            반드시 다음 JSON 형식으로만 응답하세요:
+                                        {
+                                          "stage1": {"title": "...", "subtitle": "...", "content": "..."},
+                                          "stage2": {"title": "...", "subtitle": "...", "content": "..."},
+                                          "stage3": {"title": "...", "subtitle": "...", "content": "..."}
+                                        }
+                                                            """
+                                .formatted(
+                                        objectMapper.writeValueAsString(stage1Data),
+                                        objectMapper.writeValueAsString(stage2Data),
+                                        objectMapper.writeValueAsString(stage3Data));
+
 
                         // ✅ 5. OpenAI 요청 JSON 생성
                         String requestJson = """

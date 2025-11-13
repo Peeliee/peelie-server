@@ -25,6 +25,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -55,14 +56,15 @@ public class GptCardGenerationService {
         private static final String LEVEL_L4 = "L4";
 
         @Transactional(readOnly = true)
-        public OnboardingInfo.CardGeneration generateCard(Long userId, List<Long> categoryIds) {
+        public CompletableFuture<OnboardingInfo.CardGeneration> generateCard(Long userId, List<Long> categoryIds) {
                 try {
                         // ✅ 1. 유저의 온보딩 프로세스 조회
                         OnboardingProcess process = onboardingProcessReader.findOnboardingProcessByUserId(userId);
 
                         if (process == null) {
                                 log.error("❌ Onboarding process not found for userId={}", userId);
-                                return OnboardingInfo.CardGeneration.failed();
+                                OnboardingInfo.CardGeneration result = OnboardingInfo.CardGeneration.failed();
+                                return CompletableFuture.completedFuture(result);
                         }
 
                         // ✅ 2. 카테고리 정보 및 질문 정보 수집
@@ -218,12 +220,15 @@ public class GptCardGenerationService {
                                 .subtitle(cardJson.path("stage3").path("subtitle").asText(""))
                                 .content(cardJson.path("stage3").path("content").asText(""))
                                 .build();
+                        OnboardingInfo.CardGeneration result = OnboardingInfo.CardGeneration.done(s1, s2, s3);
 
-                        return OnboardingInfo.CardGeneration.done(s1, s2, s3);
+                        // [핵심 수정]: 최종 결과를 CompletableFuture로 감싸서 반환
+                        return CompletableFuture.completedFuture(result);
 
                 } catch (Exception e) {
                         log.error("❌ GPT API 호출 실패", e);
-                        return OnboardingInfo.CardGeneration.failed();
+                        OnboardingInfo.CardGeneration result = OnboardingInfo.CardGeneration.failed();
+                        return CompletableFuture.completedFuture(result);
                 }
         }
 }

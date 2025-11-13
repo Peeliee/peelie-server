@@ -5,6 +5,7 @@ import com.peelie.onboarding.domain.OnboardingInfo;
 import com.peelie.onboarding.domain.OnboardingProcessService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,4 +29,8 @@ public class OnboardingFacade {
         return onboardingProcessService.initializeCard(command);
     }
 
+    public OnboardingInfo.CardGeneration getCardGenerationStatus(Long userId) {
+        // ServiceImpl이 현재 상태(GENERATING, DONE, FAILED)를 반환할 것입니다.
+        return onboardingProcessService.getCardGenerationStatus(userId);
+    }
 }

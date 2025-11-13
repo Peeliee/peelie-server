@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/onboarding")
@@ -20,9 +21,9 @@ public class OnboardingController {
 
     private final OnboardingFacade onboardingFacade;
 
-
-    @PutMapping ("/categories")
-    public SuccessResponse<OnboardingInfo.Process> selectCategories(@RequestBody OnboardingCommand.SelectCategories command) {
+    @PutMapping("/categories")
+    public SuccessResponse<OnboardingInfo.Process> selectCategories(
+            @RequestBody OnboardingCommand.SelectCategories command) {
         Long userId = UserContextHolder.getUserId();
         var cmd = command.withUserId(userId);
         var result = onboardingFacade.selectCategories(cmd);
@@ -30,7 +31,8 @@ public class OnboardingController {
     }
 
     @PutMapping("/answers")
-    public SuccessResponse<OnboardingInfo.Process> SubmitSubCategoryAnswers(@RequestBody OnboardingCommand.SubmitSubCategoryAnswers command) {
+    public SuccessResponse<OnboardingInfo.Process> SubmitSubCategoryAnswers(
+            @RequestBody OnboardingCommand.SubmitSubCategoryAnswers command) {
         Long userId = UserContextHolder.getUserId();
         var cmd = command.withUserId(userId);
         var result = onboardingFacade.submitSubCategoryAnswers(cmd);
@@ -38,7 +40,8 @@ public class OnboardingController {
     }
 
     @PutMapping("/interaction")
-    public SuccessResponse<OnboardingInfo.Process> submitInteractionStyle(@RequestBody OnboardingCommand.SubmitInteraction command) {
+    public SuccessResponse<OnboardingInfo.Process> submitInteractionStyle(
+            @RequestBody OnboardingCommand.SubmitInteraction command) {
         Long userId = UserContextHolder.getUserId();
         var cmd = command.withUserId(userId);
         var result = onboardingFacade.submitInteractionStyle(cmd);
@@ -66,7 +69,41 @@ public class OnboardingController {
                 ErrorResponse.of(HttpStatus.OK.value(),
                         "GPT 호출 중 오류가 발생했습니다.",
                         null,
-                        reasonJson)
-        );
+                        reasonJson));
+    }
+
+    @GetMapping("/card/status")
+    public ResponseEntity<?> getCardGenerationStatus() {
+        // (UserContextHolder가 없으면 인증 토큰에서 직접 userId를 추출해야 합니다)
+        Long userId = UserContextHolder.getUserId(); // [임시]
+
+        OnboardingInfo.CardGeneration statusResult = onboardingFacade.getCardGenerationStatus(userId);
+
+        String status = statusResult.getGenerationStatus();
+
+        switch (status) {
+            case "DONE":
+                // [성공] 200 OK
+                return ResponseEntity
+                        .status(HttpStatus.OK)
+                        .body(
+            SuccessResponse.ok(statusResult));
+            case "GENERATING":
+                // [진행 중] 202 ACCEPTED
+                return ResponseEntity
+                        .status(HttpStatus.ACCEPTED)
+                        .body(SuccessResponse.ok(statusResult));
+
+            case "FAILED":
+            default:
+                // [실패] 500 Internal Server Error
+                return ResponseEntity
+                        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(ErrorResponse.of(
+                                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                                "Generation failed.",
+                                null,
+                                "카드가 아직 생성되지 않았습니다."));
+        }
     }
 }

@@ -13,33 +13,6 @@ import java.util.List;
 public class FriendshipInfo {
 
     @Getter
-    public static class CreateFriendship {
-        private final String userName;
-        private final String profileImageUrl;
-        private final String instagramId;
-        private final String stage1Bio;
-        private final String stage2Bio;
-        private final String stage3Bio;
-        private final InteractionStyle interactionStyle;
-        private final String levelOneInfo;
-        private final String levelTwoInfo;
-        private final String levelThreeInfo;
-
-        public CreateFriendship(Profile profile) {
-            this.userName = profile.getUserName();
-            this.profileImageUrl = profile.getProfileImageUrl();
-            this.instagramId = profile.getInstagramId();
-            this.stage1Bio = profile.getStage1Bio();
-            this.stage2Bio = profile.getStage2Bio();
-            this.stage3Bio = profile.getStage3Bio();
-            this.interactionStyle = profile.getInteractionStyle();
-            this.levelOneInfo = profile.getStage1Bio();
-            this.levelTwoInfo = profile.getStage2Bio();
-            this.levelThreeInfo = profile.getStage3Bio();
-        }
-    }
-
-    @Getter
     public static class FriendSummary {
         private final Long userId;
         private final String userName;
@@ -76,7 +49,7 @@ public class FriendshipInfo {
     }
 
     @Getter
-    public static class GetFriendDetail {
+    public static class FriendDetail {
         private final Long userId;
         private final String userName;
         private final String profileImageUrl;
@@ -85,7 +58,7 @@ public class FriendshipInfo {
         private final InteractionStyle interactionStyle;
         private final ProfileInfo.Card card;
 
-        public GetFriendDetail(Profile profile) {
+        public FriendDetail(Profile profile) {
             this.userId = profile.getUserId();
             this.userName = profile.getUserName();
             this.profileImageUrl = profile.getProfileImageUrl();

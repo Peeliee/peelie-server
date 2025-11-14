@@ -1,8 +1,13 @@
 package com.peelie.onboarding.domain;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.peelie.common.exception.BaseException;
 import com.peelie.common.exception.ErrorCode;
 import com.peelie.onboarding.infra.GptCardGenerationService;
+import com.peelie.profile.domain.Profile;
+import com.peelie.profile.domain.ProfileReader;
 import com.peelie.profile.domain.ProfileService;
 import com.peelie.questionnaire.domain.category.SubCategory;
 import com.peelie.questionnaire.domain.category.SubCategoryReader;
@@ -33,6 +38,11 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
     private final SubCategoryReader subCategoryReader;
     private final ProfileService profileService;
     private final GptCardGenerationService gptCardGenerationService;
+
+    // ✅ 추가
+    private final ProfileReader profileReader;
+    private final ObjectMapper objectMapper;
+
 
     private static final Duration GENERATION_TIMEOUT = Duration.ofSeconds(12);
     private final Map<Long, CompletableFuture<OnboardingInfo.CardGeneration>> taskStorage = new ConcurrentHashMap<>();
@@ -205,4 +215,5 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
             return OnboardingInfo.CardGeneration.failed();
         }
     }
+
 }

@@ -29,7 +29,7 @@ public class Friendship extends BaseTimeEntity {
     public Friendship(Long senderId, Long receiverId) {
         this.senderId = senderId;
         this.receiverId = receiverId;
-        this.friendStage = FriendStage.DEFAULT;
+        this.friendStage = FriendStage.STAGE_0;
     }
 
     public void changeFriendStage(FriendStage newfriendStage) {

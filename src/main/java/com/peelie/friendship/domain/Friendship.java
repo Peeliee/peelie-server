@@ -23,17 +23,22 @@ public class Friendship extends BaseTimeEntity {
 
     // 스테이지 이넘값
     @Enumerated(EnumType.STRING)
-    private FriendStage friendStage;
+
+    private FriendStage UserAfriendStage;
+    private FriendStage UserBfriendStage;
+
+
 
     @Builder
     public Friendship(Long senderId, Long receiverId) {
         this.senderId = senderId;
         this.receiverId = receiverId;
-        this.friendStage = FriendStage.STAGE_0;
+        this.UserAfriendStage = FriendStage.STAGE_0;
+        this.UserBfriendStage = FriendStage.STAGE_0;
     }
 
-    public void changeFriendStage(FriendStage newfriendStage) {
-        this.friendStage = Objects.requireNonNull(newfriendStage);
-    }
+//    public void changeFriendStage(FriendStage newfriendStage) {
+//        this.friendStage = Objects.requireNonNull(newfriendStage);
+//    }
 }
 

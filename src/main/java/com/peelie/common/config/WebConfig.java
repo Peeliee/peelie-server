@@ -17,7 +17,6 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(loginCheckInterceptor)
                 .order(1)
                 .addPathPatterns("/**")
-
                 .excludePathPatterns("/api/v1/oauth/login/**", "/api/v1/questionnaire/**"); // 테스트용 - 나중에 제거 필요
     }
 }

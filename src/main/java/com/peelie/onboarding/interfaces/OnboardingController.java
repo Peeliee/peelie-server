@@ -49,18 +49,12 @@ public class OnboardingController {
     }
 
     @PostMapping("/card/initialize")
-    public ResponseEntity<?> initializeCard(@RequestBody OnboardingCommand.InitializeCard command) {
+    public SuccessResponse<OnboardingInfo.CardGeneration> initializeCard(@RequestBody OnboardingCommand.InitializeCard command) {
         Long userId = UserContextHolder.getUserId();
         var cmd = command.withUserId(userId);
         OnboardingInfo.CardGeneration result = onboardingFacade.initializeCard(cmd);
-
-
-        return ResponseEntity
-                .status(HttpStatus.ACCEPTED)
-                .body(SuccessResponse.of(202, "Generation started", result));
+        return SuccessResponse.of(HttpStatus.CREATED, "Generation started", result);
     }
-
-
 
     @GetMapping("/card/status")
     public ResponseEntity<?> getCardGenerationStatus() {

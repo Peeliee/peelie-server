@@ -1,6 +1,5 @@
 package com.peelie.profile.domain;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.peelie.user.domain.UserReader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,7 +12,6 @@ public class ProfileServiceImpl implements ProfileService {
     private final ProfileReader profileReader;
     private final ProfileStore profileStore;
     private final UserReader userReader;
-    private final ObjectMapper objectMapper; // 추가
 
     @Override
     @Transactional
@@ -24,7 +22,7 @@ public class ProfileServiceImpl implements ProfileService {
         // 3. 생성된 profile 객체를 DB에 저장한다.
         Profile profile = profileStore.store(initProfile);
         // 4. 생성된 Profile 객체정보를 바탕으로 ProfileInfo 객체를 반환한다.
-        return new ProfileInfo(profile,objectMapper);
+        return new ProfileInfo(profile);
     }
 
     @Override
@@ -32,7 +30,7 @@ public class ProfileServiceImpl implements ProfileService {
         // 1. DB에서 해당 Id값을 가진 프로필을 찾는다
         Profile profile = profileReader.getProfile(profileId);
         // 2. profileInfo로 변환해서 리턴
-        return new ProfileInfo(profile,objectMapper);
+        return new ProfileInfo(profile);
     }
 
     @Override
@@ -55,7 +53,7 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     @Transactional
     public void updateInteractionStyle(Long userId, String newInteractionStyle) {
-        Profile  profile = profileReader.getProfileByUserId(userId);
+        Profile profile = profileReader.getProfileByUserId(userId);
 
         profile.changeInteractionStyle(InteractionStyle.valueOf(newInteractionStyle));
     }
@@ -74,6 +72,6 @@ public class ProfileServiceImpl implements ProfileService {
         profile.changeStage2Bio(command.getStage2Bio());
         profile.changeStage3Bio(command.getStage3Bio());
 
-        return new ProfileInfo(profile,objectMapper);
+        return new ProfileInfo(profile);
     }
 }

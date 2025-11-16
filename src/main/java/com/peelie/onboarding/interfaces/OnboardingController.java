@@ -56,6 +56,8 @@ public class OnboardingController {
         return SuccessResponse.of(HttpStatus.CREATED, "Generation started", result);
     }
 
+
+
     @GetMapping("/card/status")
     public ResponseEntity<?> getCardGenerationStatus() {
         Long userId = UserContextHolder.getUserId();

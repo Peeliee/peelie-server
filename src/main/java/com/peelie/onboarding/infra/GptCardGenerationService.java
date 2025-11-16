@@ -65,22 +65,6 @@ public class GptCardGenerationService {
     private static final Duration CONNECT_TIMEOUT = Duration.ofSeconds(10);
     private static final Duration READ_TIMEOUT = Duration.ofSeconds(15);
 
-    @Getter
-    @NoArgsConstructor
-    public static class StageCardPayload {
-        @JsonPropertyDescription("카드의 메인 제목 (간결하고 매력적으로)")
-        @JsonProperty(required = true)
-        private String title;
-
-        @JsonPropertyDescription("카드의 부제목 (요약)")
-        @JsonProperty(required = true)
-        private String subtitle;
-
-        @JsonPropertyDescription("카드의 상세 설명 내용")
-        @JsonProperty(required = true)
-        private String content;
-    }
-
     @Transactional
     public CompletableFuture<OnboardingInfo.CardGeneration> generateCard(Long userId, List<Long> categoryIds) {
         try {
@@ -109,7 +93,8 @@ public class GptCardGenerationService {
                     subCategoryMap.put(subCategory.getId(), subCategory);
                 }
             }
-
+//            SubCategoryReader subCategoryReader = this.subCategoryReader;
+//            subCategoryReader.getSubCategoryByIds(new ArrayList<>(subCategoryMap.keySet()));
             // 서브카테고리별 질문 정보 수집
             Map<Long, Map<QuestionLevel, QuestionInfo>> questionsBySubCategory = new HashMap<>();
             for (OnboardingSubCategoryAnswers answer : process.getSubCategoryAnswers()) {
@@ -122,6 +107,8 @@ public class GptCardGenerationService {
                         Map<QuestionLevel, QuestionInfo> questionMap = questions.stream()
                                 .collect(Collectors.toMap(QuestionInfo::getLevel, q -> q));
                         questionsBySubCategory.put(subCategoryId, questionMap);
+
+
                     }
                 }
             }
@@ -184,11 +171,11 @@ public class GptCardGenerationService {
                       "stage2": {"title": "...", "subtitle": "...", "content": "..."},
                       "stage3": {"title": "...", "subtitle": "...", "content": "..."}
                     }
-
-                    ### 1단계 데이터 (L0 + L1):
+                    stage1Data는 1단계 데이터 L0 + L1 정보 합쳐서 만듦 , stage2Data는 2단계 데이터 L2 + L3 정보 합쳐서 만듦 , stage3Data는  L4 정보로 만듦
+                    ### 1단계 데이터 (L0 + L1): 선택한 여러 카테고리 및 서브카테고리의 L0, L1 레벨 질문과 답변:
                     %s
 
-                    ### 2단계 데이터 (L2 + L3):
+                    ### 2단계 데이터 (L2 + L3): 선택한 여러 카테고리 및 서브카테고리의 L1, L2 레벨 질문과 답 섞어 categoryID가 큰 값을 더 활용해
                     %s
 
                     ### 3단계 데이터 (L4):
@@ -352,7 +339,7 @@ public class GptCardGenerationService {
                 {
                   "model": "%s",
                   "messages": [
-                    {"role": "system", "content": "You are a helpful assistant that returns valid JSON."},
+                    {"role": "system", "content": "카드 3개 L0 + L1 정보 합쳐서 1단계 카드 , 2단계 카드는 L2 + L3 정보 합쳐서 만들어줘"},
                     {"role": "user", "content": %s}
                   ],
                   "temperature": %s,

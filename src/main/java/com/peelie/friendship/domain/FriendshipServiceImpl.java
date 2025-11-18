@@ -9,8 +9,11 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -89,8 +92,9 @@ public class FriendshipServiceImpl implements FriendshipService {
             return new FriendshipInfo.RandomFriendResponse(List.of());
         }
 
-        // 친구 아이디를 셔플
-        Collections.shuffle(friendIds);
+        // 24시간 타이머
+        long seed = Objects.hash(userId, LocalDate.now());
+        Collections.shuffle(friendIds, new Random(seed));
 
         // 최대 5명만 추출
         List<Long> randomFiveIds = friendIds.stream()

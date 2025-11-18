@@ -48,7 +48,7 @@ public class FriendshipServiceImpl implements FriendshipService {
     public FriendshipInfo.FriendListResponse getFriendList(Long userId) {
         // 내 아이디 유저 컨텍스트 핸들러로
         // 리스트로 친구 목록과 정보 반환 --> n+1 방지해야함
-        List<Long> friendship = friendshipReader.getFriendsByUserId(userId);
+        List<Long> friendship = friendshipReader.findFriendsByUserId(userId);
 
         // 바로 프로필에서 조회
         List<Profile> profile = profileReader.getProfilesByUserIds(friendship);
@@ -71,7 +71,7 @@ public class FriendshipServiceImpl implements FriendshipService {
     @Override
     public FriendshipInfo.RandomFriendResponse getRandomFriend(Long userId) {
         // 친구 아이디 리스트 조회
-        List<Long> friendIds = friendshipReader.getFriendsByUserId(userId);
+        List<Long> friendIds = friendshipReader.findFriendsByUserId(userId);
 
         if (friendIds.isEmpty()) {
             return new FriendshipInfo.RandomFriendResponse(List.of());

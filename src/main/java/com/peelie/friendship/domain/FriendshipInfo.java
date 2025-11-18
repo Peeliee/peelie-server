@@ -20,17 +20,17 @@ public class FriendshipInfo {
         private final String stage1Bio;
         private final String stage2Bio;
         private final String stage3Bio;
-//        private final Long stage;
+        private final Long stage;
         private final String profileImageUrl;
 
-        public FriendSummary(Profile profile) {
+        public FriendSummary(Profile profile, Long stage) {
             this.userId = profile.getUserId();
             this.userName = profile.getUserName();
             this.interactionStyle = profile.getInteractionStyle();
             this.stage1Bio = profile.getStage1Bio();
             this.stage2Bio = profile.getStage2Bio();
             this.stage3Bio = profile.getStage3Bio();
-//            this.stage = profile.getStage();
+            this.stage = stage;
             this.profileImageUrl = profile.getProfileImageUrl();
         }
     }

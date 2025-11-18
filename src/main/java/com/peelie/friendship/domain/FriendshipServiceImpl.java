@@ -32,21 +32,13 @@ public class FriendshipServiceImpl implements FriendshipService {
         Long a = Math.min(senderId, receiverId);
         Long b = Math.max(senderId, receiverId);
 
-        Friendship friendship;
-
         if(!friendshipReader.existPair(a, b)) {  // 기존의 것과 비교해서 없으면 객체 생성 후 저장한다.
             Friendship initfriendship = new Friendship(a, b);
-            friendship = friendshipStore.store(initfriendship);
+            friendshipStore.store(initfriendship);
         }
-        else{ // 이미 존재하면 그 friendship 읽어오기
-            friendship = friendshipReader.getByPair(a, b);
-        }
-
-        // 유저 리더에서 리시버 아이디를 받아온다.
-        Profile profile = profileReader.getProfile(receiverId);
-
-        // 도메인 메서드 getStageFor로 stage 호출
+        Friendship friendship = friendshipReader.getByPair(a, b);
         FriendShipStage stage = friendship.getStageFor(senderId);
+        Profile profile = profileReader.getProfile(receiverId);
 
         return new FriendshipInfo.FriendDetail(profile, stage);
     }

@@ -13,8 +13,8 @@ public class FriendshipReaderImpl implements FriendshipReader {
     private final FriendshipRepository friendshipRepository;
 
     @Override
-    public List<Long> findFriendByUserIds(Long userId) {
-        return friendshipRepository.getFriendshipById(userId);
+    public List<Long> findFriendsByUserId(Long userId) {
+        return friendshipRepository.findFriendsByUserId(userId);
     }
 
     @Override

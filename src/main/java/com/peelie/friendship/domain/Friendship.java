@@ -7,8 +7,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.Objects;
-
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -18,25 +16,28 @@ public class Friendship extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    private Long senderId;
-    private Long receiverId;
+    private Long senderId; // User 1
+    private Long receiverId; // User 2
 
     // 스테이지 이넘값
     @Enumerated(EnumType.STRING)
 
-    private FriendStage UserAfriendStage;
-    private FriendStage UserBfriendStage;
+    private FriendShipStage UserAtoBfriendStage;
+    private FriendShipStage UserBtoAfriendStage;
 
     @Builder
     public Friendship(Long senderId, Long receiverId) {
         this.senderId = senderId;
         this.receiverId = receiverId;
-        this.UserAfriendStage = FriendStage.STAGE_0;
-        this.UserBfriendStage = FriendStage.STAGE_0;
+        this.UserAtoBfriendStage = FriendShipStage.STAGE_0;
+        this.UserBtoAfriendStage = FriendShipStage.STAGE_0;
     }
 
-//    public void changeFriendStage(FriendStage newfriendStage) {
-//        this.friendStage = Objects.requireNonNull(newfriendStage);
-//    }
+    public void changeFriendStage(Long viewerId, FriendShipStage newFriendshipStage) {
+        if (viewerId.equals(senderId)) {
+            this.UserAtoBfriendStage = newFriendshipStage;
+        } else if (viewerId.equals(receiverId)) {
+            this.UserBtoAfriendStage = newFriendshipStage;
+        }
+    }
 }
-

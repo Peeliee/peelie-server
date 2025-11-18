@@ -32,21 +32,27 @@ public class FriendshipServiceImpl implements FriendshipService {
         Long a = Math.min(senderId, receiverId);
         Long b = Math.max(senderId, receiverId);
 
-        // 기존의 것과 비교해서 없으면 객체 생성 후 저장한다.
-        if(!friendshipReader.existPair(a, b)) {
+        Friendship friendship;
+
+        if(!friendshipReader.existPair(a, b)) {  // 기존의 것과 비교해서 없으면 객체 생성 후 저장한다.
             Friendship initfriendship = new Friendship(a, b);
-            friendshipStore.store(initfriendship);
+            friendship = friendshipStore.store(initfriendship);
+        }
+        else{ // 이미 존재하면 그 friendship 읽어오기
+            friendship = friendshipReader.getByPair(a, b);
         }
 
         // 유저 리더에서 리시버 아이디를 받아온다.
         Profile profile = profileReader.getProfile(receiverId);
 
-        return new FriendshipInfo.FriendDetail(profile);
+        // 도메인 메서드 getStageFor로 stage 호출
+        FriendShipStage stage = friendship.getStageFor(senderId);
+
+        return new FriendshipInfo.FriendDetail(profile, stage);
     }
 
     @Override
     public FriendshipInfo.FriendListResponse getFriendList(Long userId) {
-        // 리스트로 친구 목록과 정보 반환 --> n+1 방지해야함
         List<Long> friendsIds = friendshipReader.findFriendsByUserId(userId);
 
         // 바로 프로필에서 조회
@@ -60,7 +66,7 @@ public class FriendshipServiceImpl implements FriendshipService {
     }
 
     @Override
-    public FriendshipInfo.FriendDetail getFriendDetail(Long userId) {
+    public FriendshipInfo.FriendDetail getFriendDetail(Long userId) { //stage에 따라 bio 다르게
         // 프로필 리더로 프로필 정보 반환
         Profile profile = profileReader.getProfile(userId);
 

@@ -3,7 +3,6 @@ package com.peelie.friendship.domain;
 import com.peelie.profile.domain.InteractionStyle;
 import com.peelie.profile.domain.Profile;
 import com.peelie.profile.domain.ProfileInfo;
-import com.peelie.profile.domain.ProfileService;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -12,40 +11,40 @@ import java.util.List;
 @Getter
 public class FriendshipInfo {
 
-    @Getter
-    public static class FriendSummary {
-        private final Long userId;
-        private final String userName;
-        private final InteractionStyle interactionStyle;
-        private final String stage1Bio;
-        private final String stage2Bio;
-        private final String stage3Bio;
-        private final Long stage;
-        private final String profileImageUrl;
-
-        public FriendSummary(Profile profile, Long stage) {
-            this.userId = profile.getUserId();
-            this.userName = profile.getUserName();
-            this.interactionStyle = profile.getInteractionStyle();
-            this.stage1Bio = profile.getStage1Bio();
-            this.stage2Bio = profile.getStage2Bio();
-            this.stage3Bio = profile.getStage3Bio();
-            this.stage = stage;
-            this.profileImageUrl = profile.getProfileImageUrl();
-        }
-    }
+//    @Getter
+//    public static class FriendSummary {
+//        private final Long userId;
+//        private final String userName;
+//        private final InteractionStyle interactionStyle;
+//        private final String stage1Bio;
+//        private final String stage2Bio;
+//        private final String stage3Bio;
+//        private final Long stage;
+//        private final String profileImageUrl;
+//
+//        public FriendSummary(Profile profile, Long stage) {
+//            this.userId = profile.getUserId();
+//            this.userName = profile.getUserName();
+//            this.interactionStyle = profile.getInteractionStyle();
+//            this.stage1Bio = profile.getStage1Bio();
+//            this.stage2Bio = profile.getStage2Bio();
+//            this.stage3Bio = profile.getStage3Bio();
+//            this.stage = stage;
+//            this.profileImageUrl = profile.getProfileImageUrl();
+//        }
+//    }
     // 친구 리스트 조회 응답 래퍼
     @Getter
     @Builder
     public static class FriendListResponse {
-        private final List<FriendSummary> items;
+        private final List<FriendDetail> items;
     }
 
     // 랜덤 추천 5명 조회 응답 래퍼
     @Getter
     @Builder
     public static class RandomFriendResponse {
-        private final List<FriendSummary> items;
+        private final List<FriendDetail> items;
     }
 
     @Getter

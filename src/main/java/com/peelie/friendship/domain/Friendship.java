@@ -27,8 +27,6 @@ public class Friendship extends BaseTimeEntity {
     private FriendStage UserAfriendStage;
     private FriendStage UserBfriendStage;
 
-
-
     @Builder
     public Friendship(Long senderId, Long receiverId) {
         this.senderId = senderId;

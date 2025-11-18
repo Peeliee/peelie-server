@@ -1,5 +1,7 @@
 package com.peelie.friendship.domain;
 
+import com.peelie.common.exception.BaseException;
+import com.peelie.common.exception.ErrorCode;
 import com.peelie.common.jpa.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -39,5 +41,13 @@ public class Friendship extends BaseTimeEntity {
         } else if (viewerId.equals(receiverId)) {
             this.UserBtoAfriendStage = newFriendshipStage;
         }
+    }
+    public FriendShipStage getStageFor(Long viewerId) {
+        if (viewerId.equals(senderId)) {
+            return UserAtoBfriendStage;
+        } else if (viewerId.equals(receiverId)) {
+            return UserBtoAfriendStage;
+        }
+        throw new BaseException("해당 친구 관계에 속한 사용자가 아닙니다.", ErrorCode.VALIDATION_ERROR);
     }
 }

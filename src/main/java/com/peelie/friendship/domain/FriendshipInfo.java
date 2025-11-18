@@ -31,23 +31,24 @@ public class FriendshipInfo {
         private final String userName;
         private final String profileImageUrl;
         private final String instagramId;
-        private final List<ProfileInfo.BioInfo> bio;
+        private final String bio;
         private final InteractionStyle interactionStyle;
         private final ProfileInfo.Card card;
+        private final Long stage;
 
-        public FriendDetail(Profile profile) {
+        public FriendDetail(Profile profile, FriendShipStage stage) {
             this.userId = profile.getUserId();
             this.userName = profile.getUserName();
             this.profileImageUrl = profile.getProfileImageUrl();
             this.instagramId = profile.getInstagramId();
 
             //TODO: 재현님 카드 기능 완성 후 실제 데이터 반영
-            this.bio = List.of(
-                    new ProfileInfo.BioInfo("stage0", ProfileInfo.BioInfo.STAGE0_BIO),
-                    new ProfileInfo.BioInfo("stage1", profile.getStage1Bio()),
-                    new ProfileInfo.BioInfo("stage2", profile.getStage2Bio()),
-                    new ProfileInfo.BioInfo("stage3", profile.getStage3Bio())
-            );
+            this.bio = switch (stage) {
+                case STAGE_0 -> ProfileInfo.BioInfo.STAGE0_BIO;
+                case STAGE_1 -> profile.getStage1Bio();
+                case STAGE_2 -> profile.getStage2Bio();
+                case STAGE_3 -> profile.getStage3Bio();
+            };
 
             this.interactionStyle = profile.getInteractionStyle();
 
@@ -56,10 +57,18 @@ public class FriendshipInfo {
                     new ProfileInfo.Card.StageInfo("임시 Stage2 Title", "Stage2 Subtitle", "Stage2 Content"),
                     new ProfileInfo.Card.StageInfo("임시 Stage3 Title", "Stage3 Subtitle", "Stage3 Content")
             );
+
+            this.stage = (long) stage.ordinal();
         }
     }
 
 
+//this.bio = List.of(
+//            new ProfileInfo.BioInfo("stage0", ProfileInfo.BioInfo.STAGE0_BIO),
+//            new ProfileInfo.BioInfo("stage1", profile.getStage1Bio()),
+//            new ProfileInfo.BioInfo("stage2", profile.getStage2Bio()),
+//            new ProfileInfo.BioInfo("stage3", profile.getStage3Bio())
+//            );
 
 
     }

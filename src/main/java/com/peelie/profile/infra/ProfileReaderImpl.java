@@ -7,6 +7,8 @@ import com.peelie.profile.domain.ProfileReader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 @RequiredArgsConstructor
 public class ProfileReaderImpl implements ProfileReader {
@@ -23,5 +25,10 @@ public class ProfileReaderImpl implements ProfileReader {
     public Profile getProfileByUserId(Long userId) {
         return profileRepository.findByUserId(userId)
                 .orElseThrow(() -> new BaseException(userId + "해당 회원 id 값의 프로필이 없습니다", ErrorCode.NOT_FOUND));
+    }
+
+    @Override
+    public List<Profile> getProfilesByUserIds(List<Long> userIds){
+        return profileRepository.findAllById(userIds);
     }
 }

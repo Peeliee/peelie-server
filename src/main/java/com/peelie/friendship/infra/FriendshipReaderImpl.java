@@ -1,5 +1,6 @@
 package com.peelie.friendship.infra;
 
+import com.peelie.friendship.domain.Friendship;
 import com.peelie.friendship.domain.FriendshipReader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -23,5 +24,13 @@ public class FriendshipReaderImpl implements FriendshipReader {
         Long user2 = Math.max(a, b);
 
         return friendshipRepository.existsByUserId1AndUserId2(user1, user2);
+    }
+
+    @Override
+    public Friendship getByPair(Long a, Long b) {
+        Long user1 = Math.min(a, b);
+        Long user2 = Math.max(a, b);
+
+        return friendshipRepository.findBySenderIdAndReceiverId(user1, user2);
     }
 }

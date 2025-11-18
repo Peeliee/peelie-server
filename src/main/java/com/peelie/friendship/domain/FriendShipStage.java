@@ -1,6 +1,6 @@
 package com.peelie.friendship.domain;
 
-public enum FriendStage {
+public enum FriendShipStage {
     STAGE_0,
     STAGE_1,
     STAGE_2,

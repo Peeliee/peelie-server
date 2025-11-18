@@ -22,7 +22,7 @@ public class Friendship extends BaseTimeEntity {
     // 스테이지 이넘값
     @Enumerated(EnumType.STRING)
 
-    private FriendShipStage UserAtoBfriendStage;
+    private FriendShipStage UserAtoBfriendStage; //각자의 퀴즈 현황에 따라 친구여도 퀴즈가 다를 수 있음
     private FriendShipStage UserBtoAfriendStage;
 
     @Builder

@@ -37,6 +37,7 @@ public class FriendshipServiceImpl implements FriendshipService {
 
         Friendship friendship = friendshipReader.getByPair(senderId, receiverId);
         FriendShipStage stage = friendship.getStageFor(senderId);
+
         Profile profile = profileReader.getProfileByUserId(receiverId);
 
         return new FriendshipInfo.FriendDetail(profile, stage);

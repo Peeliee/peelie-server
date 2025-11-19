@@ -7,6 +7,8 @@ import com.peelie.friendship.domain.FriendshipInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/friendship")
 @RequiredArgsConstructor
@@ -19,16 +21,16 @@ public class FriendshipController {
         Long senderId = UserContextHolder.getUserId();
         FriendshipInfo.FriendDetail detail = friendshipFacade.createFriendship(senderId, request.getUserId());
 
-        return SuccessResponse.created(FriendshipDto.FriendDetailResponse.from(detail));
+        return SuccessResponse.created(FriendshipDto.FriendDetailResponse.from(detail)); //이미 친구관계일 떄 분기
     }
 
     // 나의 친구 목록 조회
     @GetMapping
-    public SuccessResponse getFriendList() {
+    public SuccessResponse<List<FriendshipDto.FriendDetailResponse>> getFriendList() {
         Long userId = UserContextHolder.getUserId();
-        FriendshipInfo.FriendListResponse friendListResponse = friendshipFacade.getFriendList(userId);
+        FriendshipInfo.FriendListResponse info = friendshipFacade.getFriendList(userId);
 
-        return SuccessResponse.ok(FriendshipDto.FriendListResponse.from(friendListResponse));
+        return SuccessResponse.ok(FriendshipDto.mapToDetailList(info.getItems()));
     }
 
     // 친구 상세 조회 (교류 단계가 포함되어있어야해서 나의 아이디 값도 필요함)
@@ -42,11 +44,11 @@ public class FriendshipController {
 
     // 랜덤 친구 5명 조회
     @GetMapping("/random")
-    public SuccessResponse getRandomFriendList() {
+    public SuccessResponse<List<FriendshipDto.FriendDetailResponse>> getRandomFriendList() {
         Long userId = UserContextHolder.getUserId();
-        FriendshipInfo.RandomFriendResponse randomFriendResponse = friendshipFacade.getRandomFriend(userId);
+        FriendshipInfo.RandomFriendResponse info = friendshipFacade.getRandomFriend(userId);
 
-        return SuccessResponse.ok(FriendshipDto.RandomFriendResponse.from(randomFriendResponse));
+        return SuccessResponse.ok(FriendshipDto.mapToDetailList(info.getItems()));
     }
 
 }

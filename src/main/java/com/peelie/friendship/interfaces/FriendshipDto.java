@@ -52,6 +52,13 @@ public class FriendshipDto {
         }
     }
 
+    public static List<FriendDetailResponse> mapToDetailList(List<FriendshipInfo.FriendDetail> infoList) {
+        return infoList.stream()
+                .map(FriendDetailResponse::from)
+                .toList();
+    }
+
+
     @Getter
     @Builder
     public static class RandomFriendResponse {
@@ -65,6 +72,12 @@ public class FriendshipDto {
                     .items(items)
                     .build();
         }
+    }
+
+    public static RandomFriendResponse from(FriendshipInfo.RandomFriendResponse info) {
+        return RandomFriendResponse.builder()
+                .items(mapToDetailList(info.getItems()))
+                .build();
     }
 
     @Getter

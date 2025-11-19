@@ -44,9 +44,9 @@ public class FriendshipServiceImpl implements FriendshipService {
     }
 
     @Override
-    public FriendshipInfo.FriendListResponse getFriendList(Long userId) {
+    public FriendshipInfo.FriendListResponse getFriendList(Long senderId) {
         // 1. 친구 id 목록
-        List<Long> friendIds = friendshipReader.findFriendsByUserId(userId);
+        List<Long> friendIds = friendshipReader.findFriendsByUserId(senderId);
 
         // 2. 프로필 목록 조회
         List<Profile> profiles = profileReader.getProfilesByUserIds(friendIds);
@@ -57,10 +57,10 @@ public class FriendshipServiceImpl implements FriendshipService {
                     Long friendId = profile.getUserId();
 
                     // (userId, friendId) 쌍으로 Friendship 가져오기
-                    Friendship friendship = friendshipReader.getByPair(userId, friendId);
+                    Friendship friendship = friendshipReader.getByPair(senderId, friendId);
 
                     //userId 기준으로 stage 가져오기
-                    FriendShipStage stage = friendship.getStageFor(userId);
+                    FriendShipStage stage = friendship.getStageFor(senderId);
 
                     // stage를 넘겨서 FriendDetail 생성
                     return new FriendshipInfo.FriendDetail(profile, stage);
@@ -71,11 +71,13 @@ public class FriendshipServiceImpl implements FriendshipService {
     }
 
     @Override
-    public FriendshipInfo.FriendDetail getFriendDetail(Long userId) { //stage에 따라 bio 다르게
-        // 프로필 리더로 프로필 정보 반환
-        Profile profile = profileReader.getProfile(userId);
+    public FriendshipInfo.FriendDetail getFriendDetail(Long senderId, Long receiverId) {
+        Profile profile = profileReader.getProfile(receiverId);
 
-        return new FriendshipInfo.FriendDetail(profile);
+        Friendship friendship = friendshipReader.getByPair(senderId, receiverId);
+        FriendShipStage stage = friendship.getStageFor(senderId);
+
+        return new FriendshipInfo.FriendDetail(profile, stage);
     }
 
     @Override

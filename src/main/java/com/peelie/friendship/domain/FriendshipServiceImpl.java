@@ -105,7 +105,18 @@ public class FriendshipServiceImpl implements FriendshipService {
         List<Profile> profiles = profileReader.getProfilesByUserIds(randomFiveIds);
 
         List<FriendshipInfo.FriendDetail> items = profiles.stream()
-                .map(FriendshipInfo.FriendDetail::new)
+                .map(profile -> {
+                    Long friendId = profile.getUserId();
+
+                    // 유저아이디 프렌드아이디 쌍으로 가져오기
+                    Friendship friendship = friendshipReader.getByPair(userId, friendId);
+
+                    // 유저아이디 기준으로 교류단계 가져오기
+                    FriendShipStage stage = friendship.getStageFor(userId);
+
+                    // 교류단계까지 넣어서 FriendDetail 생성
+                    return new FriendshipInfo.FriendDetail(profile, stage);
+                })
                 .toList();
 
         return new FriendshipInfo.RandomFriendResponse(items);

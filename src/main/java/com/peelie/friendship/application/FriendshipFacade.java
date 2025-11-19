@@ -23,8 +23,8 @@ public class FriendshipFacade {
     }
 
     // 친구 상세 조회
-    public FriendshipInfo.FriendDetail getFriendDetail(Long userId) {
-        return friendshipService.getFriendDetail(userId);
+    public FriendshipInfo.FriendDetail getFriendDetail(Long senderId, Long receiverId) {
+        return friendshipService.getFriendDetail(senderId, receiverId);
     }
 
     // 랜덤 친구 5명 조회

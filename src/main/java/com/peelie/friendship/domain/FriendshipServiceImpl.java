@@ -45,13 +45,26 @@ public class FriendshipServiceImpl implements FriendshipService {
 
     @Override
     public FriendshipInfo.FriendListResponse getFriendList(Long userId) {
-        List<Long> friendsIds = friendshipReader.findFriendsByUserId(userId);
+        // 1. 친구 id 목록
+        List<Long> friendIds = friendshipReader.findFriendsByUserId(userId);
 
-        // 바로 프로필에서 조회
-        List<Profile> profile = profileReader.getProfilesByUserIds(friendsIds);
+        // 2. 프로필 목록 조회
+        List<Profile> profiles = profileReader.getProfilesByUserIds(friendIds);
 
-        List<FriendshipInfo.FriendDetail> friends = profile.stream()
-                .map(FriendshipInfo.FriendDetail::new)
+        // 3. 각 프로필에 대해 friendship + stage 계산 후 FriendDetail 생성
+        List<FriendshipInfo.FriendDetail> friends = profiles.stream()
+                .map(profile -> {
+                    Long friendId = profile.getUserId();
+
+                    // (userId, friendId) 쌍으로 Friendship 가져오기
+                    Friendship friendship = friendshipReader.getByPair(userId, friendId);
+
+                    //userId 기준으로 stage 가져오기
+                    FriendShipStage stage = friendship.getStageFor(userId);
+
+                    // stage를 넘겨서 FriendDetail 생성
+                    return new FriendshipInfo.FriendDetail(profile, stage);
+                })
                 .toList();
 
         return new FriendshipInfo.FriendListResponse(friends);

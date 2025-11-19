@@ -10,10 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -40,7 +37,7 @@ public class FriendshipServiceImpl implements FriendshipService {
 
         Friendship friendship = friendshipReader.getByPair(senderId, receiverId);
         FriendShipStage stage = friendship.getStageFor(senderId);
-        Profile profile = profileReader.getProfile(receiverId);
+        Profile profile = profileReader.getProfileByUserId(receiverId);
 
         return new FriendshipInfo.FriendDetail(profile, stage);
     }
@@ -87,33 +84,29 @@ public class FriendshipServiceImpl implements FriendshipService {
         // 친구 아이디 리스트 조회
         List<Long> friendIds = friendshipReader.findFriendsByUserId(userId);
 
-        if (friendIds.isEmpty()) {
+        // null 또는 친구 없음 처리
+        if (friendIds == null || friendIds.isEmpty()) {
             return new FriendshipInfo.RandomFriendResponse(List.of());
         }
 
-        // 24시간 타이머
+        // 24시간 타이머 시드 + 셔플을 위해 가변 리스트로 복사
+        List<Long> shuffledFriendIds = new ArrayList<>(friendIds);
         long seed = Objects.hash(userId, LocalDate.now());
-        Collections.shuffle(friendIds, new Random(seed));
+        Collections.shuffle(shuffledFriendIds, new Random(seed));
 
         // 최대 5명만 추출
-        List<Long> randomFiveIds = friendIds.stream()
+        List<Long> randomFiveIds = shuffledFriendIds.stream()
                 .limit(5)
                 .toList();
 
-        // 프로필을 한 번에 조회 (n+1 방지)
+        // 프로필을 한 번에 조회 (N+1 방지)
         List<Profile> profiles = profileReader.getProfilesByUserIds(randomFiveIds);
 
         List<FriendshipInfo.FriendDetail> items = profiles.stream()
                 .map(profile -> {
                     Long friendId = profile.getUserId();
-
-                    // 유저아이디 프렌드아이디 쌍으로 가져오기
                     Friendship friendship = friendshipReader.getByPair(userId, friendId);
-
-                    // 유저아이디 기준으로 교류단계 가져오기
                     FriendShipStage stage = friendship.getStageFor(userId);
-
-                    // 교류단계까지 넣어서 FriendDetail 생성
                     return new FriendshipInfo.FriendDetail(profile, stage);
                 })
                 .toList();

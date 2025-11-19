@@ -66,4 +66,10 @@ public class FriendshipDto {
                     .build();
         }
     }
+
+    @Getter
+    public static class CreateFriendshipRequest {
+        private Long userId; // 요청 받는 아이디값
+
+    }
 }

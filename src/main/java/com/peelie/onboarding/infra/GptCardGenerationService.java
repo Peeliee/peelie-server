@@ -1,7 +1,5 @@
 package com.peelie.onboarding.infra;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,7 +9,6 @@ import com.peelie.onboarding.domain.OnboardingProcess;
 import com.peelie.onboarding.domain.OnboardingSubCategoryAnswers;
 import com.peelie.profile.domain.Profile;
 import com.peelie.profile.domain.ProfileReader;
-import com.peelie.profile.domain.ProfileService;
 import com.peelie.profile.domain.ProfileStore;
 import com.peelie.questionnaire.domain.QuestionnaireService;
 import com.peelie.questionnaire.domain.category.Category;
@@ -21,9 +18,6 @@ import com.peelie.questionnaire.domain.category.SubCategoryReader;
 import com.peelie.questionnaire.domain.question.QuestionInfo;
 import com.peelie.questionnaire.domain.question.QuestionLevel;
 import com.peelie.questionnaire.domain.question.QuestionOptionInfo;
-import com.theokanning.openai.service.FunctionExecutor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,9 +31,6 @@ import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
-import com.theokanning.openai.completion.chat.ChatFunction; // [추가]
-import com.theokanning.openai.completion.chat.*; // [추가]
-import com.theokanning.openai.service.OpenAiService; // [추가]
 
 
 @Slf4j
@@ -254,7 +245,7 @@ public class GptCardGenerationService {
 
 
             Profile profile = profileReader.getProfileByUserId(userId);
-            profile.updateCardInfoJson(cardInfo);
+            profile.updateCard(cardInfo);
             profileStore.store(profile);
 
             // [핵심 수정]: 최종 결과를 CompletableFuture로 감싸서 반환
@@ -275,7 +266,7 @@ public class GptCardGenerationService {
         try {
             // ✅ 1. cardInfoJson 조회
             Profile profile = profileReader.getProfileByUserId(userId);
-            String cardInfoJson = profile.getCardInfoJson();
+            String cardInfoJson = profile.getCard();
 
             if (cardInfoJson == null || cardInfoJson.isEmpty()) {
                 throw new IllegalStateException("기존 카드 정보가 없습니다.");
@@ -322,7 +313,7 @@ public class GptCardGenerationService {
             ));
 
             String updatedJson = objectMapper.writeValueAsString(cardData);
-            profile.updateCardInfoJson(updatedJson);
+            profile.updateCard(updatedJson);
 
             // ✅ 6. 전체 카드 정보 반환
             return buildCardGenerationFromMap(cardData);

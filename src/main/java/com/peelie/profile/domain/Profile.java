@@ -53,7 +53,7 @@ public class Profile extends BaseTimeEntity {
 
     @Lob
     @Column(columnDefinition = "TEXT")
-    private String cardInfoJson;
+    private String card;
     @Builder
     public Profile(Long userId, String userName, String profileImageUrl, String instagramId) {
         if (userName == null || userName.isBlank()) {
@@ -106,13 +106,13 @@ public class Profile extends BaseTimeEntity {
     public void changeStage3Bio(String newStage3Bio) {
         this.stage3Bio = newStage3Bio;
     }
-    //TODO:  cardInfo용 getter와 setter 필요에 따라 변경
-    public String getCardInfoJson() {
-        return cardInfoJson;
+
+    public String getCard() {
+        return card;
     }
 
-    public void updateCardInfoJson(String cardInfoJson) {
-        this.cardInfoJson = cardInfoJson;
+    public void updateCard(String cardInfoJson) {
+        this.card = cardInfoJson;
     }
     // public void applyOnboarding(Set<Long> categoryIds, InteractionStyle style,
     // String bio) {

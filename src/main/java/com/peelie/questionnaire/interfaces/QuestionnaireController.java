@@ -15,7 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/questionnaire")
 @RequiredArgsConstructor
-public class QuestionnaireController {
+public class QuestionnaireController implements QuestionnaireDoc{
 
     private final QuestionnaireAppService questionnaireAppService;
 

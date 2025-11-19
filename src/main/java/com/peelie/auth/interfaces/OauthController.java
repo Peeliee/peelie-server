@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/oauth")
-public class OauthController {
+public class OauthController implements OauthDoc{
 
     private final OauthFacade oauthFacade;
 

@@ -31,15 +31,14 @@ public class FriendshipServiceImpl implements FriendshipService {
     @Transactional
     public FriendshipInfo.FriendDetail createFriendship(Long senderId, Long receiverId) {
         // 보내는 사람 아이디와 받는 사람 아이디를 입력 받는다. - 파라미터
-        // 무방향성을 위한 대소 비교를 한다.
-        Long a = Math.min(senderId, receiverId);
-        Long b = Math.max(senderId, receiverId);
 
-        if(!friendshipReader.existPair(a, b)) {  // 기존의 것과 비교해서 없으면 객체 생성 후 저장한다.
-            Friendship initfriendship = new Friendship(a, b);
+        // 기존의 것과 비교해서 없으면 객체 생성 후 저장한다.
+        if(!friendshipReader.existPair(senderId, receiverId)) {
+            Friendship initfriendship = new Friendship(senderId, receiverId);
             friendshipStore.store(initfriendship);
         }
-        Friendship friendship = friendshipReader.getByPair(a, b);
+
+        Friendship friendship = friendshipReader.getByPair(senderId, receiverId);
         FriendShipStage stage = friendship.getStageFor(senderId);
         Profile profile = profileReader.getProfile(receiverId);
 
@@ -59,7 +58,7 @@ public class FriendshipServiceImpl implements FriendshipService {
                 .map(profile -> {
                     Long friendId = profile.getUserId();
 
-                    // (userId, friendId) 쌍으로 Friendship 가져오기
+                    // (senderId, friendId) 쌍으로 Friendship 가져오기
                     Friendship friendship = friendshipReader.getByPair(senderId, friendId);
 
                     //userId 기준으로 stage 가져오기

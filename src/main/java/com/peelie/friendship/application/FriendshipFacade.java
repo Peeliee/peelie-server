@@ -17,7 +17,7 @@ public class FriendshipFacade {
         return friendshipService.createFriendship(senderId, receiverId);
     }
 
-    // 친구 목록 조회
+    // 나의 친구 목록 조회
     public FriendshipInfo.FriendListResponse getFriendList(Long userId) {
         return friendshipService.getFriendList(userId);
     }

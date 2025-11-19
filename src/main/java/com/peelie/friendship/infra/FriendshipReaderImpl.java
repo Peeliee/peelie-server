@@ -15,7 +15,12 @@ public class FriendshipReaderImpl implements FriendshipReader {
 
     @Override
     public List<Long> findFriendsByUserId(Long userId) {
-        return friendshipRepository.findFriendsByUserId(userId);
+        List<Friendship> friendships = friendshipRepository.findFriendsBySenderIdOrReceiverId(userId, userId);
+        return friendships.stream()
+                .map(f -> f.getSenderId().equals(userId)
+                        ? f.getReceiverId()
+                        : f.getSenderId())
+                .toList();
     }
 
     @Override
@@ -23,7 +28,7 @@ public class FriendshipReaderImpl implements FriendshipReader {
         Long user1 = Math.min(a, b);
         Long user2 = Math.max(a, b);
 
-        return friendshipRepository.existsByUserId1AndUserId2(user1, user2);
+        return friendshipRepository.existsBySenderIdAndReceiverId(a, b);
     }
 
     @Override
@@ -31,6 +36,6 @@ public class FriendshipReaderImpl implements FriendshipReader {
         Long user1 = Math.min(a, b);
         Long user2 = Math.max(a, b);
 
-        return friendshipRepository.findBySenderIdAndReceiverId(user1, user2);
+        return friendshipRepository.findBySenderIdAndReceiverId(a, b);
     }
 }

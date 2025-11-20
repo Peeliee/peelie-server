@@ -12,7 +12,7 @@ import com.peelie.profile.interfaces.ProfileDto.*;
 @RestController
 @RequestMapping("/api/v1/profile")
 @RequiredArgsConstructor
-public class ProfileController {
+public class ProfileController implements ProfileDoc{
     //TODO: profileInfo 직접 반환 말고 적절한 DTO 생성해서 반환하기
 
     private final ProfileFacade profileFacade;
@@ -35,9 +35,8 @@ public class ProfileController {
     }
 
     // 프로필 수정
-    // 프로필 이름 수정
     @PatchMapping
-    public SuccessResponse updateProfileName(@RequestBody UpdateProfileRequest request) {
+    public SuccessResponse updateProfile(@RequestBody UpdateProfileRequest request) {
         Long userId = UserContextHolder.getUserId();
         ProfileCommand.UpdateCommand command = request.toCommand();
         ProfileInfo profileInfo = profileFacade.updateProfile(userId, command);

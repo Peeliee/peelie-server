@@ -22,6 +22,7 @@ public class FriendshipDto {
         private String bio;
         private InteractionStyle interactionStyle;
         private Long stage;
+        private ProfileInfo.Card card;
 
         public static FriendDetailResponse from(FriendshipInfo.FriendDetail detail) {
             String maskedImage = detail.getStage() <= 1 ? null : detail.getProfileImageUrl();
@@ -34,6 +35,7 @@ public class FriendshipDto {
                     .bio(detail.getBio())
                     .interactionStyle(detail.getInteractionStyle())
                     .stage(detail.getStage())
+                    .card(detail.getCard())
                     .build();
         }
     }

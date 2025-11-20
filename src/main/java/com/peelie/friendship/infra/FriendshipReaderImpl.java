@@ -1,5 +1,7 @@
 package com.peelie.friendship.infra;
 
+import com.peelie.common.exception.BaseException;
+import com.peelie.common.exception.ErrorCode;
 import com.peelie.friendship.domain.Friendship;
 import com.peelie.friendship.domain.FriendshipReader;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +30,7 @@ public class FriendshipReaderImpl implements FriendshipReader {
         Long user1 = Math.min(a, b);
         Long user2 = Math.max(a, b);
 
-        return friendshipRepository.existsBySenderIdAndReceiverId(a, b);
+        return friendshipRepository.existsBySenderIdAndReceiverId(user1, user2);
     }
 
     @Override
@@ -36,6 +38,7 @@ public class FriendshipReaderImpl implements FriendshipReader {
         Long user1 = Math.min(a, b);
         Long user2 = Math.max(a, b);
 
-        return friendshipRepository.findBySenderIdAndReceiverId(a, b);
+        return friendshipRepository.findBySenderIdAndReceiverId(user1, user2)
+                .orElseThrow(() -> new BaseException("친구관계가 존재하지 않습니다.", ErrorCode.VALIDATION_ERROR));
     }
 }

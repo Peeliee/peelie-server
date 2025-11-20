@@ -24,10 +24,12 @@ public class FriendshipDto {
         private Long stage;
 
         public static FriendDetailResponse from(FriendshipInfo.FriendDetail detail) {
+            String maskedImage = detail.getStage() <= 1 ? null : detail.getProfileImageUrl();
+
             return FriendDetailResponse.builder()
                     .userId(detail.getUserId())
                     .userName(detail.getUserName())
-                    .profileImageUrl(detail.getProfileImageUrl())
+                    .profileImageUrl(maskedImage)
                     .instagramId(detail.getInstagramId())
                     .bio(detail.getBio())
                     .interactionStyle(detail.getInteractionStyle())

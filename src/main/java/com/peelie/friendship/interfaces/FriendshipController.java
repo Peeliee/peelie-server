@@ -42,6 +42,13 @@ public class FriendshipController {
         return SuccessResponse.ok(FriendshipDto.FriendDetailResponse.from(getFriendDetail));
     }
 
+    @GetMapping("/{userId}/exists")
+    public SuccessResponse<FriendshipDto.ExistsResponse> checkFriendship(@PathVariable("userId") Long targetUserId) {
+        Long userId = UserContextHolder.getUserId();
+        boolean exists = friendshipFacade.existsFriendship(userId, targetUserId);
+        return SuccessResponse.ok(FriendshipDto.ExistsResponse.from(exists));
+    }
+
     // 랜덤 친구 5명 조회
     @GetMapping("/random")
     public SuccessResponse<List<FriendshipDto.FriendDetailResponse>> getRandomFriendList() {

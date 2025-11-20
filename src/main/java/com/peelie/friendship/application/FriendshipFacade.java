@@ -27,6 +27,11 @@ public class FriendshipFacade {
         return friendshipService.getFriendDetail(senderId, receiverId);
     }
 
+    // 친구 여부 확인
+    public boolean existsFriendship(Long userId, Long receiverId) {
+        return friendshipService.existsFriendship(userId, receiverId);
+    }
+
     // 랜덤 친구 5명 조회
     public FriendshipInfo.RandomFriendResponse getRandomFriend(Long userId) {
         return friendshipService.getRandomFriend(userId);

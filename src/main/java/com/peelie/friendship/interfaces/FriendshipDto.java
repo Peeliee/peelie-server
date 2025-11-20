@@ -85,4 +85,16 @@ public class FriendshipDto {
         private Long userId; // 요청 받는 아이디값
 
     }
+
+    @Getter
+    @Builder
+    public static class ExistsResponse {
+        private boolean exists;
+
+        public static ExistsResponse from(boolean exists) {
+            return ExistsResponse.builder()
+                    .exists(exists)
+                    .build();
+        }
+    }
 }

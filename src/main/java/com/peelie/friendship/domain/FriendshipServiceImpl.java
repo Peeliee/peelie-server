@@ -22,7 +22,6 @@ public class FriendshipServiceImpl implements FriendshipService {
     private final UserReader userReader;
 
 
-    //Todo: 스테이지 단계 계산하는거 추가하기
 
     @Override
     @Transactional
@@ -78,6 +77,11 @@ public class FriendshipServiceImpl implements FriendshipService {
         FriendShipStage stage = friendship.getStageFor(senderId);
 
         return new FriendshipInfo.FriendDetail(profile, stage);
+    }
+
+    @Override
+    public boolean existsFriendship(Long userId, Long receiverId) {
+        return friendshipReader.existPair(userId, receiverId);
     }
 
     @Override

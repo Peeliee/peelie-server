@@ -51,6 +51,9 @@ public class Profile extends BaseTimeEntity {
     @Column(name = "category_id")
     private Set<Long> interestCategoryIds = new HashSet<>();
 
+    @Lob
+    @Column(columnDefinition = "TEXT")
+    private String card;
     @Builder
     public Profile(Long userId, String userName, String profileImageUrl, String instagramId) {
         if (userName == null || userName.isBlank()) {
@@ -104,6 +107,13 @@ public class Profile extends BaseTimeEntity {
         this.stage3Bio = newStage3Bio;
     }
 
+    public String getCard() {
+        return card;
+    }
+
+    public void updateCard(String cardInfoJson) {
+        this.card = cardInfoJson;
+    }
     // public void applyOnboarding(Set<Long> categoryIds, InteractionStyle style,
     // String bio) {
     // this.interestCategoryIds.clear();

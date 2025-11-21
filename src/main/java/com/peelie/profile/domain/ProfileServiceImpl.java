@@ -53,7 +53,7 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     @Transactional
     public void updateInteractionStyle(Long userId, String newInteractionStyle) {
-        Profile  profile = profileReader.getProfileByUserId(userId);
+        Profile profile = profileReader.getProfileByUserId(userId);
 
         profile.changeInteractionStyle(InteractionStyle.valueOf(newInteractionStyle));
     }

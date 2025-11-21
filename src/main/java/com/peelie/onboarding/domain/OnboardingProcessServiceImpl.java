@@ -1,13 +1,19 @@
 package com.peelie.onboarding.domain;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.peelie.common.exception.BaseException;
 import com.peelie.common.exception.ErrorCode;
 import com.peelie.onboarding.infra.GptCardGenerationService;
+import com.peelie.profile.domain.Profile;
+import com.peelie.profile.domain.ProfileReader;
 import com.peelie.profile.domain.ProfileService;
 import com.peelie.questionnaire.domain.category.SubCategory;
 import com.peelie.questionnaire.domain.category.SubCategoryReader;
 import com.peelie.questionnaire.domain.question.QuestionOptionInfo;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,28 +24,32 @@ import com.peelie.questionnaire.domain.question.QuestionType;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ConcurrentHashMap;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OnboardingProcessServiceImpl implements OnboardingProcessService {
     private final OnboardingReader onboardingReader;
     private final OnboardingStore onboardingStore;
-
     private final QuestionnaireService questionnaireService;
     private final SubCategoryReader subCategoryReader;
     private final ProfileService profileService;
     private final GptCardGenerationService gptCardGenerationService;
 
+    // ✅ 추가
+    private final ProfileReader profileReader;
+    private final ObjectMapper objectMapper;
+
+
     private static final Duration GENERATION_TIMEOUT = Duration.ofSeconds(12);
-
-
+    private final Map<Long, CompletableFuture<OnboardingInfo.CardGeneration>> taskStorage = new ConcurrentHashMap<>();
 
     @Override
     @Transactional
     public OnboardingInfo.Process selectCategories(OnboardingCommand.SelectCategories command) {
-
         // 1. 유저의 온보딩 프로세스를 조회하여 있으면 찾기, 없으면 도메인 메서드 start 호출
         OnboardingProcess onboardingProcess;
         if (onboardingReader.existsByUserId(command.getUserId())) {
@@ -56,8 +66,6 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
         return new OnboardingInfo.Process(updated);
     }
 
-
-
     @Override
     @Transactional
     public OnboardingInfo.Process submitSubCategoryAnswers(OnboardingCommand.SubmitSubCategoryAnswers command) {
@@ -71,8 +79,7 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
         // 4. level, 선택형(optionId), 서술형을 검증 및 답변 생성
         List<OnboardingSubCategoryAnswers> newAnswers = new ArrayList<>();
         for (OnboardingCommand.SubmitSubCategoryAnswers.LevelAnswerCommand a : command.getAnswers()) {
-
-            //LevelAnswerCommand.level(문자열)이 DB에 실제 존재하는 QuestionInfo.level(enum)과 일치하는지 검증
+            // LevelAnswerCommand.level(문자열)이 DB에 실제 존재하는 QuestionInfo.level(enum)과 일치하는지 검증
             QuestionInfo q = null;
             for (QuestionInfo cand : questions) {
                 if (cand.getLevel().name().equals(a.getLevel())) {
@@ -84,13 +91,12 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
                 throw new BaseException("해당 레벨(" + a.getLevel() + ")의 질문이 존재하지 않습니다.", ErrorCode.VALIDATION_ERROR);
             }
 
-
             if (q.getType() == QuestionType.CHOICE) {
                 if (a.getOptionId() == null) {
                     throw new BaseException("선택형 질문은 optionId가 필요합니다.", ErrorCode.VALIDATION_ERROR);
                 }
 
-                //q의 옵션들 중 요청된 optionId가 실제로 있는지 검증
+                // q의 옵션들 중 요청된 optionId가 실제로 있는지 검증
                 boolean optionExists = false;
                 if (q.getOptions() != null) {
                     for (QuestionOptionInfo opt : q.getOptions()) {
@@ -101,24 +107,19 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
                     }
                 }
                 if (!optionExists) {
-                    throw new BaseException("유효하지 않은 optionId 입니다.",
-                            ErrorCode.VALIDATION_ERROR);
+                    throw new BaseException("유효하지 않은 optionId 입니다.", ErrorCode.VALIDATION_ERROR);
                 }
-                newAnswers.add(new OnboardingSubCategoryAnswers( //선택형 VO 추가
+                newAnswers.add(new OnboardingSubCategoryAnswers(
                         command.getSubCategoryId(),
                         q.getLevel().name(),
                         a.getOptionId(),
                         null
                 ));
-
-            }
-
-            else { // TEXT
+            } else { // TEXT
                 if (a.getTextAnswer() == null || a.getTextAnswer().isBlank()) {
-                    throw new BaseException("서술형 질문은 textAnswer가 필요합니다. (level=" + a.getLevel() + ")",
-                            ErrorCode.VALIDATION_ERROR);
+                    throw new BaseException("서술형 질문은 textAnswer가 필요합니다. (level=" + a.getLevel() + ")", ErrorCode.VALIDATION_ERROR);
                 }
-                newAnswers.add(new OnboardingSubCategoryAnswers( //서술형 VO 추가
+                newAnswers.add(new OnboardingSubCategoryAnswers(
                         command.getSubCategoryId(),
                         q.getLevel().name(),
                         null,
@@ -134,7 +135,6 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
         return new OnboardingInfo.Process(updated);
     }
 
-
     @Override
     @Transactional
     public OnboardingInfo.Process submitInteractionStyle(OnboardingCommand.SubmitInteraction command) {
@@ -143,7 +143,7 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
         // 2. 현재 상태 검증 + 교류성향 검증 및 온보딩 완료 처리
         process.setInteractionStyle(command.getInteractionStyle());
         // 3. ProfileService 호출 (다른 도메인)
-        profileService.updateInteractionStyle( // TODO: 프로필 도메인 수정 시 추후 반영
+        profileService.updateInteractionStyle(
                 command.getUserId(),
                 command.getInteractionStyle()
         );
@@ -156,26 +156,64 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
     @Override
     @Transactional
     public OnboardingInfo.CardGeneration initializeCard(OnboardingCommand.InitializeCard command) {
-        // TODO: 추후 OnboardingProcess 엔티티 상태 변경 로직과 통합 검토
         if (command.getUserId() == null) {
-            System.err.println("❌ userId is null — JWT 주입 안 됨");
+            log.error("userId is null — JWT 주입 안 됨");
             return OnboardingInfo.CardGeneration.failed();
         }
-        OnboardingInfo.CardGeneration generating = OnboardingInfo.CardGeneration.generating();
 
+        Long userId = command.getUserId();
+
+        // 1. 비동기 작업 시작
+        CompletableFuture<OnboardingInfo.CardGeneration> future =
+                gptCardGenerationService.generateCard(
+                        userId,
+                        command.getCategoryIds());
+
+        // 2. 작업 추적을 위해 Future를 Map에 저장
+        taskStorage.put(userId, future);
+        log.info("✅ GPT generation task STARTED and stored for user: {}", userId);
+
+        // 3. 작업 완료 시 콜백 연결
+        future.whenComplete((result, throwable) -> {
+            if (throwable != null) {
+                log.error(" GPT 카드 생성 비동기 작업 실패 (User: {})", userId, throwable);
+            } else {
+                log.info(" GPT 카드 생성 비동기 작업 완료 (User: {}, Status: {})", userId, result.getGenerationStatus());
+            }
+        });
+
+        // 4. HTTP 요청을 차단하지 않고, 즉시 'GENERATING' 상태 반환
+        return OnboardingInfo.CardGeneration.generating();
+    }
+
+    @Override
+    public OnboardingInfo.CardGeneration getCardGenerationStatus(Long userId) {
+        CompletableFuture<OnboardingInfo.CardGeneration> future = taskStorage.get(userId);
+
+        // 1. 작업(Future)이 존재하지 않는 경우
+        if (future == null) {
+            return OnboardingInfo.CardGeneration.failed();
+        }
+
+        // 2. 작업이 아직 진행 중인 경우
+        if (!future.isDone()) {
+            return OnboardingInfo.CardGeneration.generating();
+        }
+
+        // 3. 작업이 완료된 경우
         try {
-            CompletableFuture<OnboardingInfo.CardGeneration> future =
-                    CompletableFuture.supplyAsync(() ->
-                            gptCardGenerationService.generateCard(
-                                    command.getUserId(),  // ✅ 실제 인증된 사용자 ID
-                                    command.getCategoryIds())
-                    );
+            OnboardingInfo.CardGeneration result = future.join();
 
-            return future.get(GENERATION_TIMEOUT.toSeconds(), TimeUnit.SECONDS);
+            if (result != null) {
+                return result;
+            } else {
+                log.error("Polling user {}: Future completed but result was null unexpectedly", userId);
+                return OnboardingInfo.CardGeneration.failed();
+            }
         } catch (Exception e) {
-            // TODO: 예외 로깅 및 추적 시스템 연동
-            System.err.println("❌ GPT 호출 실패: " + e.getMessage());
+            log.error("Error retrieving status for user {}", userId, e);
             return OnboardingInfo.CardGeneration.failed();
         }
     }
+
 }

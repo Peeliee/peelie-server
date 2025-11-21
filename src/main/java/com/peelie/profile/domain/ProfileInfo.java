@@ -21,13 +21,12 @@ public class ProfileInfo {
         this.profileImageUrl = profile.getProfileImageUrl();
         this.instagramId = profile.getInstagramId();
 
-        //TODO: 재현님 카드 기능 완성 후 실제 데이터 반영
         this.bio = List.of(
                 new BioInfo("stage0", BioInfo.STAGE0_BIO),
                 new BioInfo("stage1", profile.getStage1Bio()),
                 new BioInfo("stage2", profile.getStage2Bio()),
                 new BioInfo("stage3", profile.getStage3Bio())
-                );
+        );
 
         this.interactionStyle = profile.getInteractionStyle();
 

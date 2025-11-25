@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "onboarding_subcategories")
+@Table(name = "questionnaire_subcategories")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SubCategory extends BaseTimeEntity {

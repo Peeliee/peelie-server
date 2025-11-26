@@ -52,11 +52,59 @@ public class FriendshipInfo {
 
             this.interactionStyle = profile.getInteractionStyle();
 
-            this.card = new ProfileInfo.Card(
-                    new ProfileInfo.Card.StageInfo("임시 Stage1 Title", "Stage1 Subtitle", "Stage1 Content"),
-                    new ProfileInfo.Card.StageInfo("임시 Stage2 Title", "Stage2 Subtitle", "Stage2 Content"),
-                    new ProfileInfo.Card.StageInfo("임시 Stage3 Title", "Stage3 Subtitle", "Stage3 Content")
-            );
+            ProfileInfo.Card.StageInfo s1 = new ProfileInfo.Card.StageInfo(null, null, null);
+            ProfileInfo.Card.StageInfo s2 = new ProfileInfo.Card.StageInfo(null, null, null);
+            ProfileInfo.Card.StageInfo s3 = new ProfileInfo.Card.StageInfo(null, null, null);
+
+            switch (stage) {
+                case STAGE_0 -> {
+                    s1 = new ProfileInfo.Card.StageInfo(null, null, null);
+                    s2 = new ProfileInfo.Card.StageInfo(null, null, null);
+                    s3 = new ProfileInfo.Card.StageInfo(null, null, null);
+                }
+                case STAGE_1 -> {
+                    s1 = new ProfileInfo.Card.StageInfo(
+                            "임시 Stage1 Title",
+                            "Stage1 Subtitle",
+                            "Stage1 Content"
+                    );
+                    s2 = new ProfileInfo.Card.StageInfo(null, null, null);
+                    s3 = new ProfileInfo.Card.StageInfo(null, null, null);
+                }
+                case STAGE_2 -> {
+                    // stage1, stage2 공개
+                    s1 = new ProfileInfo.Card.StageInfo(
+                            "임시 Stage1 Title",
+                            "Stage1 Subtitle",
+                            "Stage1 Content"
+                    );
+                    s2 = new ProfileInfo.Card.StageInfo(
+                            "임시 Stage2 Title",
+                            "Stage2 Subtitle",
+                            "Stage2 Content"
+                    );
+                    s3 = new ProfileInfo.Card.StageInfo(null, null, null);
+                }
+                case STAGE_3 -> {
+                    s1 = new ProfileInfo.Card.StageInfo(
+                            "임시 Stage1 Title",
+                            "Stage1 Subtitle",
+                            "Stage1 Content"
+                    );
+                    s2 = new ProfileInfo.Card.StageInfo(
+                            "임시 Stage2 Title",
+                            "Stage2 Subtitle",
+                            "Stage2 Content"
+                    );
+                    s3 = new ProfileInfo.Card.StageInfo(
+                            "임시 Stage3 Title",
+                            "Stage3 Subtitle",
+                            "Stage3 Content"
+                    );
+                }
+            }
+
+            this.card = new ProfileInfo.Card(s1, s2, s3);
 
             this.stage = (long) stage.ordinal();
         }

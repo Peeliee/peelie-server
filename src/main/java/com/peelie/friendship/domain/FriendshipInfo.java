@@ -61,36 +61,4 @@ public class FriendshipInfo {
             this.stage = (long) stage.ordinal();
         }
     }
-
-
-//this.bio = List.of(
-//            new ProfileInfo.BioInfo("stage0", ProfileInfo.BioInfo.STAGE0_BIO),
-//            new ProfileInfo.BioInfo("stage1", profile.getStage1Bio()),
-//            new ProfileInfo.BioInfo("stage2", profile.getStage2Bio()),
-//            new ProfileInfo.BioInfo("stage3", profile.getStage3Bio())
-//            );
-
-
-    }
-//    @Getter
-//    public static class FriendSummary {
-//        private final Long userId;
-//        private final String userName;
-//        private final InteractionStyle interactionStyle;
-//        private final String stage1Bio;
-//        private final String stage2Bio;
-//        private final String stage3Bio;
-//        private final Long stage;
-//        private final String profileImageUrl;
-//
-//        public FriendSummary(Profile profile, Long stage) {
-//            this.userId = profile.getUserId();
-//            this.userName = profile.getUserName();
-//            this.interactionStyle = profile.getInteractionStyle();
-//            this.stage1Bio = profile.getStage1Bio();
-//            this.stage2Bio = profile.getStage2Bio();
-//            this.stage3Bio = profile.getStage3Bio();
-//            this.stage = stage;
-//            this.profileImageUrl = profile.getProfileImageUrl();
-//        }
-//    }
+}

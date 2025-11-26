@@ -45,8 +45,7 @@ public class FriendshipController {
     @GetMapping("/{userId}/exists")
     public SuccessResponse<FriendshipDto.ExistsResponse> checkFriendship(@PathVariable("userId") Long targetUserId) {
         Long userId = UserContextHolder.getUserId();
-        boolean exists = friendshipFacade.existsFriendship(userId, targetUserId)
-                ;
+        boolean exists = friendshipFacade.existsFriendship(userId, targetUserId);
         return SuccessResponse.ok(FriendshipDto.ExistsResponse.from(exists));
     }
 

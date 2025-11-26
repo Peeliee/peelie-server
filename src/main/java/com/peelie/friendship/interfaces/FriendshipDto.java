@@ -14,7 +14,7 @@ public class FriendshipDto {
 
     @Getter
     @Builder
-    public static class FriendDetailResponse {
+    public static class FriendDetail { //친구 관계 즉시 형성, 친구 상세 조회
         private Long userId;
         private String userName;
         private String profileImageUrl;
@@ -24,12 +24,11 @@ public class FriendshipDto {
         private Long stage;
         private ProfileInfo.Card card;
 
-        public static FriendDetailResponse from(FriendshipInfo.FriendDetail detail) {
+        public static FriendDetail from(FriendshipInfo.FriendDetail detail) {
             String maskedImage = detail.getStage() <= 1 ? null : detail.getProfileImageUrl();
             String maskedInstagramId = detail.getStage() <= 2 ? null : detail.getInstagramId();
 
-
-            return FriendDetailResponse.builder()
+            return FriendDetail.builder()
                     .userId(detail.getUserId())
                     .userName(detail.getUserName())
                     .profileImageUrl(maskedImage)
@@ -44,47 +43,36 @@ public class FriendshipDto {
 
     @Getter
     @Builder
-    public static class FriendListResponse {
-        private List<FriendDetailResponse> items;
+    public static class FriendList { //친구 리스트 조회, 랜덤 추천 친구 5명 조회
+        private Long userId;
+        private String userName;
+        private String interactionStyle;
+        private String bio;
+        private Long stage;
+        private String profileUrl;
 
-        public static FriendListResponse from(FriendshipInfo.FriendListResponse info) {
-            List<FriendDetailResponse> items = info.getItems().stream()
-                    .map(FriendDetailResponse::from)
-                    .toList();
+        public static FriendList from(FriendshipInfo.FriendDetail detail) {
+            Long stage = detail.getStage();
+            String maskedImage = detail.getStage() <= 1 ? null : detail.getProfileImageUrl();
 
-            return FriendListResponse.builder()
-                    .items(items)
+            return FriendList.builder()
+                    .userId(detail.getUserId())
+                    .userName(detail.getUserName())
+                    .interactionStyle(detail.getInteractionStyle().name())
+                    .bio(detail.getBio())
+                    .stage(stage)
+                    .profileUrl(maskedImage)
                     .build();
         }
     }
 
-    public static List<FriendDetailResponse> mapToDetailList(List<FriendshipInfo.FriendDetail> infoList) {
+    public static List<FriendList> toListItems(List<FriendshipInfo.FriendDetail> infoList) {
         return infoList.stream()
-                .map(FriendDetailResponse::from)
+                .map(FriendList::from)
                 .toList();
     }
 
 
-    @Getter
-    @Builder
-    public static class RandomFriendResponse {
-        private List<FriendDetailResponse> items;
-        public static RandomFriendResponse from(FriendshipInfo.RandomFriendResponse info) {
-            List<FriendDetailResponse> items = info.getItems().stream()
-                    .map(FriendDetailResponse::from)
-                    .toList();
-
-            return RandomFriendResponse.builder()
-                    .items(items)
-                    .build();
-        }
-    }
-
-    public static RandomFriendResponse from(FriendshipInfo.RandomFriendResponse info) {
-        return RandomFriendResponse.builder()
-                .items(mapToDetailList(info.getItems()))
-                .build();
-    }
 
     @Getter
     public static class CreateFriendshipRequest {

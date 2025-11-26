@@ -8,7 +8,9 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -41,11 +43,11 @@ public class OnboardingInfo {
 
         private static LevelAnswerOut toLevelOut(String level, Long optionId, String textAnswer) {
             return switch (level) {
-                case "L1" -> new LevelAnswerOut(level, optionId, null,    null,    null);
-                case "L2" -> new LevelAnswerOut(level, null,    optionId, null,    null);
-                case "L3" -> new LevelAnswerOut(level, null,    null,     optionId, null);
-                case "L4" -> new LevelAnswerOut(level, null,    null,     null,     textAnswer);
-                default   -> new LevelAnswerOut(level, null,    null,     null,     null);
+                case "L1" -> new LevelAnswerOut(level, optionId, null, null, null);
+                case "L2" -> new LevelAnswerOut(level, null, optionId, null, null);
+                case "L3" -> new LevelAnswerOut(level, null, null, optionId, null);
+                case "L4" -> new LevelAnswerOut(level, null, null, null, textAnswer);
+                default -> new LevelAnswerOut(level, null, null, null, null);
             };
         }
     }

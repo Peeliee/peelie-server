@@ -1,11 +1,9 @@
 package com.peelie.onboarding.domain;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.peelie.common.exception.BaseException;
 import com.peelie.common.exception.ErrorCode;
-import com.peelie.onboarding.infra.GptCardGenerationService;
+import com.peelie.onboarding.infra.CardGeneratorImpl;
 import com.peelie.profile.domain.Profile;
 import com.peelie.profile.domain.ProfileReader;
 import com.peelie.profile.domain.ProfileService;
@@ -37,7 +35,6 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
     private final QuestionnaireService questionnaireService;
     private final SubCategoryReader subCategoryReader;
     private final ProfileService profileService;
-    private final GptCardGenerationService gptCardGenerationService;
 
     // ✅ 추가
     private final ProfileReader profileReader;
@@ -154,56 +151,15 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
 
     @Override
     @Transactional
-    public CardInfo.StageInfo initializeCard(OnboardingCommand.InitializeCard command) {
+    public CardInfo.Stage initializeCard(OnboardingCommand.InitializeCard command) {
 
 
         Long userId = command.getUserId();
         List<Long> categoryIds = command.getCategoryIds();
-
-        // 1. 비동기 작업 생성보다 오히려 db 조회가 더 중요
-
-        // 3. 작업 완료 시 콜백 연결 근데 로그 뿐이네
-//        future.whenComplete((result, throwable) -> {
-//            if (throwable != null) {
-//                log.error(" GPT 카드 생성 비동기 작업 실패 (User: {})", userId, throwable);
-//            } else {
-//                log.info(" GPT 카드 생성 비동기 작업 완료 (User: {}, Status: {})", userId, result.getGenerationStatus());
-//            }
-//        });
-        return new CardInfo.StageInfo();
+        //
+        return new CardInfo.Stage();
         // 4. HTTP 요청을 차단하지 않고, 즉시 'GENERATING' 상태 반환
     }
 
-    @Override
-    public CardInfo.StageInfo  getCardGenerationStatus(Long userId) {
-/*
-        // 1. 작업(Future)이 존재하지 않는 경우
-        if (future == null) {
-            return OnboardingInfo.CardGeneration.failed();
-        }
-
-        // 2. 작업이 아직 진행 중인 경우
-        if (!future.isDone()) {
-            return OnboardingInfo.CardGeneration.generating();
-        }
-
-        // 3. 작업이 완료된 경우
-        try {
-            OnboardingInfo.CardGeneration result = future.join();
-
-            if (result != null) {
-                return result;
-            } else {
-                log.error("Polling user {}: Future completed but result was null unexpectedly", userId);
-                return OnboardingInfo.CardGeneration.failed();
-            }
-        } catch (Exception e) {
-            log.error("Error retrieving status for user {}", userId, e);
-            return OnboardingInfo.CardGeneration.failed();
-        }
-
- */
-        return new CardInfo.StageInfo();
-    }
 
 }

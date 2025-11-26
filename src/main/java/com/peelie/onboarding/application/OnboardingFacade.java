@@ -26,11 +26,11 @@ public class OnboardingFacade {
         return onboardingProcessService.submitInteractionStyle(command);
     }
 
-    public CardInfo.StageInfo initializeCard(OnboardingCommand.InitializeCard command) {
+    public CardInfo.Stage initializeCard(OnboardingCommand.InitializeCard command) {
         return onboardingProcessService.initializeCard(command);
     }
 
-    public CardInfo.StageInfo getCardGenerationStatus(Long userId) {
-        return onboardingProcessService.getCardGenerationStatus(userId);
-    }
+//    public CardInfo.Stage getCardGenerationStatus(Long userId) {
+//        return onboardingProcessService.getCardGenerationStatus(userId);
+//    }
 }

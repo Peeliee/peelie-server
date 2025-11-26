@@ -51,22 +51,20 @@ public class OnboardingController {
     }
 
     @PostMapping("/card/initialize")
-    public SuccessResponse<CardInfo.StageInfo> initializeCard(@RequestBody OnboardingCommand.InitializeCard command) {
+    public SuccessResponse<CardInfo.Stage> initializeCard(@RequestBody OnboardingCommand.InitializeCard command) {
         Long userId = UserContextHolder.getUserId();
         var cmd = command.withUserId(userId);
-        CardInfo.StageInfo result = onboardingFacade.initializeCard(cmd);
+        CardInfo.Stage result = onboardingFacade.initializeCard(cmd);
         //202 accepted 상태 코드 사용해 비동기 작업 요청임을 표시
         return SuccessResponse.of(HttpStatus.ACCEPTED, "Generation started", result);
     }
-
-
-
+// TODO: GET 구현 , facade에서 호출하는 부분도 일시적으로 주석 처리
+    /*
     @GetMapping("/card/status")
     public ResponseEntity<?> getCardGenerationStatus() {
         Long userId = UserContextHolder.getUserId();
         var cmd = OnboardingCommand.GetCardStatus.builder().build().withUserId(userId);
         CardInfo.StageInfo statusResult = onboardingFacade.getCardGenerationStatus(cmd);
 
-    }
-
+    }*/
 }

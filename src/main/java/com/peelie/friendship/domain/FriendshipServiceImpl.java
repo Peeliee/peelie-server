@@ -94,8 +94,21 @@ public class FriendshipServiceImpl implements FriendshipService {
             return new FriendshipInfo.RandomFriendResponse(List.of());
         }
 
+        // stage가 3인 친구들은 제거
+        List<Long> filteredFriendIds = friendIds.stream()
+                .filter(friendId -> {
+                    Friendship friendship = friendshipReader.getByPair(userId, friendId);
+                    FriendShipStage stage = friendship.getStageFor(userId);
+                    return stage != FriendShipStage.STAGE_3;
+                })
+                .toList();
+
+        if (filteredFriendIds.isEmpty()) {
+            return new FriendshipInfo.RandomFriendResponse(List.of());
+        }
+
         // 24시간 타이머 시드 + 셔플을 위해 가변 리스트로 복사
-        List<Long> shuffledFriendIds = new ArrayList<>(friendIds);
+        List<Long> shuffledFriendIds = new ArrayList<>(filteredFriendIds);
         long seed = Objects.hash(userId, LocalDate.now());
         Collections.shuffle(shuffledFriendIds, new Random(seed));
 

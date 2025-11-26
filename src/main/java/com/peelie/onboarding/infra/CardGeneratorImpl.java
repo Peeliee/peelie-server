@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+
 @Service
 public class CardGeneratorImpl implements CardGenerator {
     private final OpenAIClient client;
@@ -17,7 +18,8 @@ public class CardGeneratorImpl implements CardGenerator {
         this.client = openAIClient;
     }
     @Override
-    public CompletableFuture<OnboardingInfo.CardGeneration> generateCard(Long userId, List<Long> categoryIds) {
+    public void generateCard(Long userId, List<Long> categoryIds) {
+        // ChatCompeltion API 호출 로직 구현
 
     }
 }

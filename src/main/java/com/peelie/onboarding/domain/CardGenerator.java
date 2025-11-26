@@ -9,5 +9,5 @@ import java.util.concurrent.CompletableFuture;
 
 public interface CardGenerator {
 
-    CompletableFuture<OnboardingInfo.CardGeneration> generateCard(Long userId, List<Long> categoryIds);
+     void generateCard(Long userId, List<Long> categoryIds);
 }

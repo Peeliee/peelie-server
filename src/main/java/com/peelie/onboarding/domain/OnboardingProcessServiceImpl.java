@@ -45,7 +45,6 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
 
 
     private static final Duration GENERATION_TIMEOUT = Duration.ofSeconds(12);
-    private final Map<Long, CompletableFuture<OnboardingInfo.CardGeneration>> taskStorage = new ConcurrentHashMap<>();
 
     @Override
     @Transactional
@@ -155,41 +154,29 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
 
     @Override
     @Transactional
-    public OnboardingInfo.CardGeneration initializeCard(OnboardingCommand.InitializeCard command) {
-        if (command.getUserId() == null) {
-            log.error("userId is null — JWT 주입 안 됨");
-            return OnboardingInfo.CardGeneration.failed();
-        }
+    public CardInfo.StageInfo initializeCard(OnboardingCommand.InitializeCard command) {
+
 
         Long userId = command.getUserId();
+        List<Long> categoryIds = command.getCategoryIds();
 
-        // 1. 비동기 작업 시작
-        CompletableFuture<OnboardingInfo.CardGeneration> future =
-                gptCardGenerationService.generateCard(
-                        userId,
-                        command.getCategoryIds());
+        // 1. 비동기 작업 생성보다 오히려 db 조회가 더 중요
 
-        // 2. 작업 추적을 위해 Future를 Map에 저장
-        taskStorage.put(userId, future);
-        log.info("✅ GPT generation task STARTED and stored for user: {}", userId);
-
-        // 3. 작업 완료 시 콜백 연결
-        future.whenComplete((result, throwable) -> {
-            if (throwable != null) {
-                log.error(" GPT 카드 생성 비동기 작업 실패 (User: {})", userId, throwable);
-            } else {
-                log.info(" GPT 카드 생성 비동기 작업 완료 (User: {}, Status: {})", userId, result.getGenerationStatus());
-            }
-        });
-
+        // 3. 작업 완료 시 콜백 연결 근데 로그 뿐이네
+//        future.whenComplete((result, throwable) -> {
+//            if (throwable != null) {
+//                log.error(" GPT 카드 생성 비동기 작업 실패 (User: {})", userId, throwable);
+//            } else {
+//                log.info(" GPT 카드 생성 비동기 작업 완료 (User: {}, Status: {})", userId, result.getGenerationStatus());
+//            }
+//        });
+        return new CardInfo.StageInfo();
         // 4. HTTP 요청을 차단하지 않고, 즉시 'GENERATING' 상태 반환
-        return OnboardingInfo.CardGeneration.generating();
     }
 
     @Override
-    public OnboardingInfo.CardGeneration getCardGenerationStatus(Long userId) {
-        CompletableFuture<OnboardingInfo.CardGeneration> future = taskStorage.get(userId);
-
+    public CardInfo.StageInfo  getCardGenerationStatus(Long userId) {
+/*
         // 1. 작업(Future)이 존재하지 않는 경우
         if (future == null) {
             return OnboardingInfo.CardGeneration.failed();
@@ -214,6 +201,9 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
             log.error("Error retrieving status for user {}", userId, e);
             return OnboardingInfo.CardGeneration.failed();
         }
+
+ */
+        return new CardInfo.StageInfo();
     }
 
 }

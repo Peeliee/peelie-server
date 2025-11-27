@@ -1,5 +1,7 @@
 package com.peelie.quiz.domain;
 
+import java.util.List;
+
 public interface QuizGenerator {
-    Quiz generateQuiz();
+    List<QuizInfo> generateQuiz(String prompt);
 }

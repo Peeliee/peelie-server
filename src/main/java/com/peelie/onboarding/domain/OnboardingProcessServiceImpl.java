@@ -156,7 +156,7 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
 
         Long userId = command.getUserId();
         List<Long> categoryIds = command.getCategoryIds();
-        //
+
         return new CardInfo.Stage();
         // 4. HTTP 요청을 차단하지 않고, 즉시 'GENERATING' 상태 반환
     }

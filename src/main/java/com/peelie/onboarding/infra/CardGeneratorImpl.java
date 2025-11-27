@@ -69,6 +69,15 @@ public class CardGeneratorImpl implements CardGenerator {
             inputs.add(userMessageItem);
             inputs.add(systemMessageItem);
 
+
+//            ResponseInputItem userMessageItem = ResponseInputItem
+//                    .messages(
+//                            ResponseInputItem.Message.builder()
+//                                    .role(ResponseInputItem.Message.Role.USER) // 👈 "이건 사용자의 명령이야"라고 명시
+//                                    .content(prompt)
+//                                    .build()
+//                    )
+//                    .build();
             // 1. 응답 형식 스키마 정의
             Map<String, Object> stageCardSchema = Map.of(
                     "type", "object",
@@ -119,26 +128,33 @@ public class CardGeneratorImpl implements CardGenerator {
                     )
                     .build();
 
-            ResponseCreateParams params = ResponseCreateParams.builder()
+             ResponseCreateParams params = ResponseCreateParams.builder()
                     .model(ChatModel.GPT_5_1_CHAT_LATEST)
-                    .input(ResponseCreateParams.Input.ofResponse(inputs))
-                    .text(textConfig)
-                    .build();
+                     .input(ResponseCreateParams.Input.ofResponse(inputs))
+                     .text(textConfig)
+                     .build();
 
             // 3. OpenAI Response API 호출
             Response response = client.responses().create(params);
             // 4. Response에서 JSON 문자열 추출
 
-
-            String responseContent = response._output().asStringOrThrow();
+            // response.toString() 또는 response.data() 등으로 JSON 문자열을 받아야 함
+//            String responseContent = response.toString();
+            String a = response.toString();
+            System.out.println("a = " + a);
+            log.info("OpenAI Response: " + a);
+            String resultTest = response._output().asStringOrThrow();
+            System.out.println("resultTest = " + resultTest);
+            return objectMapper.readValue(resultTest, GeneratedCardPayload.class);
             // 5. JSON String -> GeneratedCardPayload 변환 (ObjectMapper 필요)
-
-            return objectMapper.readValue(responseContent, GeneratedCardPayload.class);
+//            GeneratedCardPayload payload = objectMapper.readValue(responseContent, GeneratedCardPayload.class);
+//
+//            return payload;
 
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("JSON 처리 에러", e);
+            throw new RuntimeException("JSON 처리 에러",e);
         } catch (Exception e) {
-            throw new RuntimeException("OPEN AI API 호출 실패", e);
+            throw new RuntimeException("OPEN AI API 호출 실패",e);
         }
     }
 }

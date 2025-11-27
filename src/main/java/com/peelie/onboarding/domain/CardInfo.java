@@ -35,7 +35,7 @@ public class CardInfo {
 
         return CardInfo.builder()
                 .stages(stages)
-                .stageMapCard(map) // 빌더에 맵도 같이 넣어줌
+                .stageMapCard(map)
                 .build();
     }
 

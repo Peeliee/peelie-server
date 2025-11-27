@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 
 @Entity
-@Table(name = "question_options")
+@Table(name = "questionnaire_question_options")
 @Getter
 public class QuestionOption extends BaseTimeEntity {
 

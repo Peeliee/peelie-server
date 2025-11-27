@@ -1,9 +1,7 @@
 package com.peelie.onboarding.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 import java.util.List;
 
 @Getter
@@ -26,6 +24,7 @@ public class OnboardingData {
         private List<Answer> answers;
 
         @Getter
+        @Setter
         @Builder
         @NoArgsConstructor
         @AllArgsConstructor

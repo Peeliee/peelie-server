@@ -174,7 +174,11 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
         OnboardingData data = new OnboardingData();
         List<OnboardingData.CategoryAnswer> categoryAnswers = new ArrayList<>();
         Set<Long> categories = process.getSelectedCategories();
+
         System.out.println("categories 리스트 " + categories);
+        Set< OnboardingSubCategoryAnswers> subCategoryAnswers  = process.getSubCategoryAnswers();
+
+
 
 
         List<OnboardingSubCategoryAnswers> newAnswers = new ArrayList<>();
@@ -183,20 +187,37 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
 
         for (Long categoryId : categories) {
 
-            System.out.println("출력 확인용 category = ");
             Category category = categoryReader.getCategory(categoryId);
             List<SubCategory> subCategories = category.getSubCategories();
 
             for (SubCategory sub : subCategories) {
                 Long subCategoryId = sub.getId();
-//f etch로  객관식 l1부터 l3가져올 예정
-                List<QuestionInfo> questions = questionnaireService.getQuestionsByIds(categoryId, subCategoryId);
+   //    fetch로  객관식 l1부터 l3가져올 예정 entity => dto 시작
+
+                List<QuestionInfo> questions = questionnaireService.getQuestionsByIds(
+                                                                categoryId, subCategoryId)
+                ;
+
+
+                List<OnboardingData.CategoryAnswer.Answer> dtoAnswers = new ArrayList<>();
+
+                            }
+
+//                System.out.println("dtoAnswers.get(0).toString() = " + dtoAnswers.get(0).toString());
+//                categoryAnswers.add
+
+//                categoryAnswers에 subCategoryAnswers복사
+
+//                    QuestionInfo q = null;
+//                    for (QuestionInfo cand : questions) {
+//                        if (cand.getLevel().name().equals(a.getLevel())) {
+//
+//                        }
+//                    }
+
+                }
 
             }
-
-        }
-
-
         return data;
 
     }

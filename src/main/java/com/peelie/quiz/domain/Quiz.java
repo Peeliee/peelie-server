@@ -19,6 +19,10 @@ public class Quiz extends BaseTimeEntity {
     @Column(unique = true)
     private Long userId;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "stage", nullable = false)
+    private QuizStage stage;
+
     @Lob
     @Column(name = "quiz_question")
     private String question;
@@ -30,8 +34,9 @@ public class Quiz extends BaseTimeEntity {
     private String wrongAnswer;
 
     @Builder
-    public Quiz(Long userId, String question, String rightAnswer, String wrongAnswer) {
+    public Quiz(Long userId, QuizStage stage, String question, String rightAnswer, String wrongAnswer) {
         this.userId = userId;
+        this.stage = stage;
         this.question = question;
         this.rightAnswer = rightAnswer;
         this.wrongAnswer = wrongAnswer;

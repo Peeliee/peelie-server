@@ -7,8 +7,7 @@ import com.peelie.onboarding.infra.CardGeneratorImpl;
 import com.peelie.profile.domain.Profile;
 import com.peelie.profile.domain.ProfileReader;
 import com.peelie.profile.domain.ProfileService;
-import com.peelie.questionnaire.domain.category.SubCategory;
-import com.peelie.questionnaire.domain.category.SubCategoryReader;
+import com.peelie.questionnaire.domain.category.*; //import  com.peelie.questionnaire.domain.category.CategoryReader;
 import com.peelie.questionnaire.domain.question.QuestionOptionInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +22,9 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -39,9 +41,8 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
     // ✅ 추가
     private final ProfileReader profileReader;
     private final ObjectMapper objectMapper;
+    private final CategoryReader categoryReader;
 
-
-    private static final Duration GENERATION_TIMEOUT = Duration.ofSeconds(12);
 
     @Override
     @Transactional
@@ -157,9 +158,52 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
         Long userId = command.getUserId();
         List<Long> categoryIds = command.getCategoryIds();
 
+        OnboardingProcess process = onboardingReader.findOnboardingProcessByUserId(userId);
+
+        OnboardingData onboardingData = buildOnboardingData(process);
+
+//        SubCategory subCategory = subCategoryReader.getSubCategory(subCategoryId);
+
+//       SubCategory sub = subCategoryReader.getSubCategory(,command.getSubCategoryId());
+
+
         return new CardInfo.Stage();
-        // 4. HTTP 요청을 차단하지 않고, 즉시 'GENERATING' 상태 반환
     }
 
+    private OnboardingData buildOnboardingData(OnboardingProcess process) {
+        OnboardingData data = new OnboardingData();
+        List<OnboardingData.CategoryAnswer> categoryAnswers = new ArrayList<>();
+        Set<Long> categories = process.getSelectedCategories();
+        System.out.println("categories 리스트 " + categories);
+
+
+        List<OnboardingSubCategoryAnswers> newAnswers = new ArrayList<>();
+//    for (OnboardingCommand.SubmitSubCategoryAnswers.LevelAnswerCommand a : command.getAnswers()) {
+//    LevelAnswerCommand.level(문자열)이 DB에 실제 존재하는 QuestionInfo.level(enum)과 일치하는지 검증
+
+        for (Long categoryId : categories) {
+
+            System.out.println("출력 확인용 category = ");
+            Category category = categoryReader.getCategory(categoryId);
+            List<SubCategory> subCategories = category.getSubCategories();
+
+            for (SubCategory sub : subCategories) {
+                Long subCategoryId = sub.getId();
+//f etch로  객관식 l1부터 l3가져올 예정
+                List<QuestionInfo> questions = questionnaireService.getQuestionsByIds(categoryId, subCategoryId);
+
+            }
+
+        }
+
+
+        return data;
+
+    }
+
+//  질문 목록 가져오기
 
 }
+
+
+

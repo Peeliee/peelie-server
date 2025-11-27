@@ -11,7 +11,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @OpenAPIDefinition(
-        servers = {@Server(url = "http://localhost:8080", description = "로컬 환경")},
+        servers = {
+                @Server(url = "http://localhost:8080", description = "로컬 서버"),
+                @Server(url = "http://54.180.112.120:8080", description = "배포 서버")
+                },
         info = @Info(
                 title = "Peelie API 명세",
                 description = "Peelie API 명세",
@@ -28,7 +31,7 @@ public class SwaggerConfig {
         SecurityScheme securityScheme = new SecurityScheme()
                 .name(jwtSchemeName)
                 .type(SecurityScheme.Type.HTTP) // HTTP 방식
-                .scheme("bearer") // 스킴 타입은 bearer
+                .scheme("bearer") // 스킴 타입 bearer
                 .bearerFormat("JWT"); // Bearer 포맷은 JWT
 
         // 2. Security Requirement 정의 (모든 API에 적용)

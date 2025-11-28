@@ -16,6 +16,7 @@ public class QuizCommand {
         return Quiz.builder()
                 .userId(userId)
                 .stage(quizStage)
+                .question(question)
                 .rightAnswer(rightAnswer)
                 .wrongAnswer(wrongAnswer)
                 .build();

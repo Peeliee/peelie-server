@@ -3,5 +3,6 @@ package com.peelie.quiz.domain;
 import java.util.List;
 
 public interface QuizService {
-    List<QuizInfo> createQuiz(Long userId);
+    List<QuizCommand> createQuiz(Long userId);
+    void registerQuiz(Long userId, List<QuizCommand> quizzes);
 }

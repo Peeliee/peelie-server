@@ -28,13 +28,13 @@ public class UserAnswerLoader {
     private final QuestionReader questionReader;
     private final ProfileReader profileReader;
 
-    public PromptCommand generatePromptCommand(Long userId) {
+    public UserAnswer load(Long userId) {
         OnboardingProcess onboardingProcess = onboardingReader.findOnboardingProcessByUserId(userId);
-        return buildPromptCommand(userId, onboardingProcess);
+        return buildUserAnswer(userId, onboardingProcess);
     }
 
-    // OnboardingProcess의 답변 데이터를 PromptCommand로 변환
-    private PromptCommand buildPromptCommand(Long userId, OnboardingProcess onboardingProcess) {
+    // OnboardingProcess의 답변 데이터를 UserAnswer로 변환
+    private UserAnswer buildUserAnswer(Long userId, OnboardingProcess onboardingProcess) {
         // 프로필 조회하여 사용자 이름 획득
         Profile profile = profileReader.getProfileByUserId(userId);
 
@@ -44,7 +44,7 @@ public class UserAnswerLoader {
                 .collect(Collectors.toSet());
 
         // 각 서브카테고리별 답변 정보 구성
-        List<PromptCommand.SubCategoryAnswer> subCategoryAnswers = new ArrayList<>();
+        List<UserAnswer.SubCategoryAnswer> subCategoryAnswers = new ArrayList<>();
         for (Long subCategoryId : subCategoryIds) {
             // 해당 서브카테고리의 모든 답변 필터링
             List<OnboardingSubCategoryAnswers> answersForSubCategory =
@@ -53,11 +53,11 @@ public class UserAnswerLoader {
                             .collect(Collectors.toList());
 
             // 서브카테고리 답변 정보 생성
-            PromptCommand.SubCategoryAnswer subCategoryAnswer = buildSubCategoryAnswer(subCategoryId, answersForSubCategory);
+            UserAnswer.SubCategoryAnswer subCategoryAnswer = buildSubCategoryAnswer(subCategoryId, answersForSubCategory);
             subCategoryAnswers.add(subCategoryAnswer);
         }
 
-        return PromptCommand.builder()
+        return UserAnswer.builder()
                 .userId(userId)
                 .userName(profile.getUserName())
                 .answers(subCategoryAnswers)
@@ -65,7 +65,7 @@ public class UserAnswerLoader {
     }
 
     // 서브카테고리 하나에 대한 답변 정보 구성
-    private PromptCommand.SubCategoryAnswer buildSubCategoryAnswer(
+    private UserAnswer.SubCategoryAnswer buildSubCategoryAnswer(
             Long subCategoryId,
             List<OnboardingSubCategoryAnswers> answers) {
 
@@ -78,11 +78,11 @@ public class UserAnswerLoader {
                 .collect(Collectors.toList());
 
         // 각 답변을 QuestionAnswer로 변환
-        List<PromptCommand.QuestionAnswer> questionAnswers = sortedAnswers.stream()
+        List<UserAnswer.QuestionAnswer> questionAnswers = sortedAnswers.stream()
                 .map(this::buildQuestionAnswer)
                 .collect(Collectors.toList());
 
-        return PromptCommand.SubCategoryAnswer.builder()
+        return UserAnswer.SubCategoryAnswer.builder()
                 .categoryName(subCategory.getCategory().getName())
                 .subCategoryName(subCategory.getName())
                 .categoryQuestion(subCategory.getCategory().getCategoryQuestion()) // L0 정보
@@ -91,7 +91,7 @@ public class UserAnswerLoader {
     }
 
     // 개별 질문에 대한 답변 정보 구성
-    private PromptCommand.QuestionAnswer buildQuestionAnswer(OnboardingSubCategoryAnswers answer) {
+    private UserAnswer.QuestionAnswer buildQuestionAnswer(OnboardingSubCategoryAnswers answer) {
         // 질문 내용 조회 - subCategory의 questions에서 level로 찾기
         SubCategory subCategory = subCategoryReader.getSubCategory(answer.getSubCategoryId());
         Question question = subCategory.getQuestions().stream()
@@ -110,7 +110,7 @@ public class UserAnswerLoader {
             answerContent = option.getContent();
         }
 
-        return PromptCommand.QuestionAnswer.builder()
+        return UserAnswer.QuestionAnswer.builder()
                 .level(answer.getLevel())
                 .question(question.getContent())
                 .answer(answerContent)

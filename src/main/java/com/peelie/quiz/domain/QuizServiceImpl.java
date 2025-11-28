@@ -1,6 +1,6 @@
 package com.peelie.quiz.domain;
 
-import com.peelie.prompt.PromptCommand;
+import com.peelie.prompt.UserAnswer;
 import com.peelie.prompt.PromptGenerator;
 import com.peelie.prompt.UserAnswerLoader;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ public class QuizServiceImpl implements QuizService {
 
     @Override
     public List<QuizInfo> createQuiz(Long userId) {
-        PromptCommand promptCommand = userAnswerLoader.generatePromptCommand(userId);
+        UserAnswer promptCommand = userAnswerLoader.load(userId);
         String prompt = promptGenerator.generatePrompt(promptCommand);
         return quizGenerator.generateQuiz(prompt);
     }

@@ -7,7 +7,7 @@ import java.util.List;
 
 @Getter
 @Builder
-public class PromptCommand {
+public class UserAnswer {
     private final Long userId;
     private final String userName;
     private final List<SubCategoryAnswer> answers;

@@ -6,10 +6,7 @@ import com.google.genai.types.GenerateContentConfig;
 import com.google.genai.types.GenerateContentResponse;
 import com.peelie.common.exception.BaseException;
 import com.peelie.common.exception.ErrorCode;
-import com.peelie.quiz.domain.Quiz;
-import com.peelie.quiz.domain.QuizGenerator;
-import com.peelie.quiz.domain.QuizInfo;
-import com.peelie.quiz.domain.QuizStage;
+import com.peelie.quiz.domain.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -26,7 +23,7 @@ public class GeminiQuizGenerator implements QuizGenerator {
     private final ObjectMapper objectMapper;
 
     @Override
-    public List<QuizInfo> generateQuiz(String prompt) {
+    public List<QuizCommand> generateQuiz(String prompt) {
         try {
             GenerateContentResponse response = geminiClient.models.generateContent(
                     "gemini-2.0-flash",
@@ -37,7 +34,7 @@ public class GeminiQuizGenerator implements QuizGenerator {
             String responseText = response.text();
 
             // JSON 파싱 및 QuizInfo 리스트 생성
-            List<QuizInfo> allQuizzes = parseGeminiResponse(responseText);
+            List<QuizCommand> allQuizzes = parseGeminiResponse(responseText);
 
             return allQuizzes;
 
@@ -46,7 +43,7 @@ public class GeminiQuizGenerator implements QuizGenerator {
         }
     }
 
-    private List<QuizInfo> parseGeminiResponse(String responseJson) {
+    private List<QuizCommand> parseGeminiResponse(String responseJson) {
         try {
             // JSON을 GeminiQuizResponse로 역직렬화
             GeminiQuizResponse response = objectMapper.readValue(responseJson, GeminiQuizResponse.class);
@@ -56,15 +53,15 @@ public class GeminiQuizGenerator implements QuizGenerator {
             }
 
             // 각 퀴즈 데이터를 QuizInfo로 변환
-            List<QuizInfo> quizInfoList = new ArrayList<>();
+            List<QuizCommand> initQuizList = new ArrayList<>();
             for (GeminiQuizResponse.GeminiQuizData quizData : response.getQuizzes()) {
-                QuizInfo quizInfo = convertToQuizInfo(quizData);
-                if (quizInfo != null) {
-                    quizInfoList.add(quizInfo);
+                QuizCommand quizCommand = convertToQuizCommand(quizData);
+                if (quizCommand != null) {
+                    initQuizList.add(quizCommand);
                 }
             }
 
-            return quizInfoList;
+            return initQuizList;
 
         } catch (BaseException e) {
             throw e;
@@ -74,7 +71,7 @@ public class GeminiQuizGenerator implements QuizGenerator {
     }
 
     // GeminiQuizData를 QuizInfo로 변환
-    private QuizInfo convertToQuizInfo(GeminiQuizResponse.GeminiQuizData quizData) {
+    private QuizCommand convertToQuizCommand(GeminiQuizResponse.GeminiQuizData quizData) {
         // 필수 필드 검증
         if (!isValidQuizData(quizData)) {
             return null;
@@ -92,17 +89,14 @@ public class GeminiQuizGenerator implements QuizGenerator {
             return null;
         }
 
-        // Quiz 엔티티 생성
-        // TODO: 퀴즈 엔티티 말고 별도의 클래스 만들어서 하는 걸로 개선하기
-        Quiz quiz = Quiz.builder()
-                .userId(null)
-                .stage(stage)
+        QuizCommand initQuiz = QuizCommand.builder()
+                .quizStage(stage)
                 .question(quizData.getQuestion())
                 .rightAnswer(quizData.getRightAnswer())
                 .wrongAnswer(quizData.getWrongAnswer())
                 .build();
 
-        return new QuizInfo(quiz);
+        return initQuiz;
     }
 
     // 퀴즈 데이터 필드가 모두 존재하는지 검증

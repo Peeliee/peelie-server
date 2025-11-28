@@ -5,6 +5,8 @@ import com.peelie.quiz.domain.QuizStore;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 @RequiredArgsConstructor
 public class QuizStoreImpl implements QuizStore {
@@ -14,5 +16,10 @@ public class QuizStoreImpl implements QuizStore {
     @Override
     public Quiz store(Quiz quiz) {
         return quizRepository.save(quiz);
+    }
+
+    @Override
+    public List<Quiz> storeAll(List<Quiz> quizzes) {
+        return quizRepository.saveAll(quizzes);
     }
 }

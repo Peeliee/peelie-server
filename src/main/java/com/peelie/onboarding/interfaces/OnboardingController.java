@@ -7,6 +7,7 @@ import com.peelie.onboarding.domain.card.CardInfo;
 import com.peelie.onboarding.domain.OnboardingCommand;
 import com.peelie.onboarding.domain.OnboardingInfo;
 import com.peelie.onboarding.domain.card.CreateCardResponse;
+import com.peelie.onboarding.domain.card.GetCardResponse;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
@@ -54,13 +55,19 @@ public class OnboardingController {
         //202 accepted 상태 코드 사용해 비동기 작업 요청임을 표시
         return SuccessResponse.ok(result);
     }
-// TODO: GET 구현 , facade에서 호출하는 부분도 일시적으로 주석 처리
-    /*
-    @GetMapping("/card/status")
-    public ResponseEntity<?> getCardGenerationStatus() {
-        Long userId = UserContextHolder.getUserId();
-        var cmd = OnboardingCommand.GetCardStatus.builder().build().withUserId(userId);
-        CardInfo.StageInfo statusResult = onboardingFacade.getCardGenerationStatus(cmd);
 
-    }*/
+    @PostMapping("/card/regenerate")
+    public SuccessResponse<CreateCardResponse> regenerateCard(@RequestBody OnboardingCommand.RegenerateCard command) {
+        Long userId = UserContextHolder.getUserId();
+        var cmd = command.withUserId(userId);
+        var result = onboardingFacade.regenerateCard(cmd);
+        //202 accepted 상태 코드 사용해 비동기 작업 요청임을 표시
+        return SuccessResponse.ok(result);
+    }
+    @GetMapping("/card/status")
+    public SuccessResponse<GetCardResponse> getCardGenerationStatus() {
+        Long userId = UserContextHolder.getUserId();
+        var result = onboardingFacade.getCard(userId);
+        return SuccessResponse.ok(result);
+    }
 }

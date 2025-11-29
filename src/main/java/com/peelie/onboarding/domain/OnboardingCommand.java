@@ -86,6 +86,17 @@ public class OnboardingCommand {
         }
     }
 
+    // 재생성 요청시에 request body에 넣을 필드가 추가될 수도 있음
+    @Getter
+    @Builder
+    public static class RegenerateCard {
+        private Long userId;
+        // 재생성 전용 옵션이 나중에 추가될 수 있음 (예: private boolean useNewModel;)
+        public RegenerateCard withUserId(Long userId) {
+            this.userId = userId;
+            return this;
+        }
+    }
     @Getter
     @Builder
     @ToString
@@ -98,5 +109,6 @@ public class OnboardingCommand {
             return this;
         }
     }
+
 
 }

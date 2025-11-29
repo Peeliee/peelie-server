@@ -30,6 +30,9 @@ public class OnboardingFacade {
         return onboardingProcessService.initializeCard(command);
     }
 
+    public CreateCardResponse regenerateCard(OnboardingCommand.RegenerateCard command) {
+        return onboardingProcessService.regenerateCard(command);
+    }
     public GetCardResponse getCard(Long userId) {
         return onboardingProcessService.getCard(userId);
     }

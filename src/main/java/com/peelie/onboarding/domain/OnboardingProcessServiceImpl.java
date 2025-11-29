@@ -150,38 +150,15 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public CreateCardResponse initializeCard(OnboardingCommand.InitializeCard command) {
+        return processCardGeneration(command.getUserId());
+    }
 
-        Long userId = command.getUserId();
-        List<Long> categoryIds = command.getCategoryIds();
-
-        OnboardingProcess onboardingProcess = onboardingReader.findOnboardingProcessByUserId(userId);
-        // 카테고리 3개임을 검증하는 로직은 별도 추가 x
-        OnboardingData onboardingData = buildOnboardingData(onboardingProcess);
-
-        log.info("비동기 작업 요청 시작");
-        // 비동기 카드 생성 요청
-        CompletableFuture<GeneratedCardPayload> future =
-                gptCardGenerationService.generateCard(onboardingData);
-
-        future.thenAccept(
-                // TODO:  CardInfo를 DB에 JPA코드 이용해  저장하는 로직 추가 필요
-                payload -> {
-                    CardInfo cardInfo = CardInfo.builder()
-                            .stage1(new CardInfo.Stage(payload.getStage1().getTitle(), payload.getStage1().getSubtitle(), payload.getStage1().getContent()))
-                            .stage2(new CardInfo.Stage(payload.getStage2().getTitle(), payload.getStage2().getSubtitle(), payload.getStage2().getContent()))
-                            .stage3(new CardInfo.Stage(payload.getStage3().getTitle(), payload.getStage3().getSubtitle(), payload.getStage3().getContent()))
-                            .build();
-                }).exceptionally(ex -> {
-            return null;
-        });
-
-        return CreateCardResponse.builder()
-                .status("GENERATING")
-                .reason(REASON_GENERATING)
-                .data(null) // 생성할 때는 데이터 없음
-                .build();
+    @Override
+    @Transactional(readOnly = true)
+    public CreateCardResponse regenerateCard(OnboardingCommand.RegenerateCard command) {
+        return processCardGeneration(command.getUserId());
     }
 
     @Override
@@ -202,7 +179,40 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
 //    }
         return null;
     }
+    private CreateCardResponse processCardGeneration(Long userId) {
 
+        OnboardingProcess onboardingProcess = onboardingReader.findOnboardingProcessByUserId(userId);
+
+        OnboardingData onboardingData = buildOnboardingData(onboardingProcess);
+
+        CompletableFuture<GeneratedCardPayload> future =
+                gptCardGenerationService.generateCard(onboardingData);
+
+        // 비동기 카드 재생성 요청
+
+
+        future.thenAccept(
+                // TODO:  CardInfo를 DB에 JPA코드 이용해  저장하는 로직 추가 필요
+                // 아래 코드는 iniial 생성 기준으로 로직 작성
+                payload -> {
+                    CardInfo cardInfo = CardInfo.builder()
+                            .stage1(new CardInfo.Stage(payload.getStage1().getTitle(), payload.getStage1().getSubtitle(), payload.getStage1().getContent()))
+                            .stage2(new CardInfo.Stage(payload.getStage2().getTitle(), payload.getStage2().getSubtitle(), payload.getStage2().getContent()))
+                            .stage3(new CardInfo.Stage(payload.getStage3().getTitle(), payload.getStage3().getSubtitle(), payload.getStage3().getContent()))
+                            .build();
+
+                // 추후 profileservice의 코드로 변경 없으면 생성, 있으면 수정(update) 로직이면 좋겠음 s
+                }).exceptionally(ex -> {
+                    log.info("카드생성 실패,ex)");
+            return null;
+        });
+
+        return CreateCardResponse.builder()
+                .status("GENERATING")
+                .reason(REASON_GENERATING)
+                .data(null) // 생성할 때는 데이터 없고 프론트에서 GET으로 정보 가져올 예정
+                .build();
+    }
     private OnboardingData buildOnboardingData(OnboardingProcess process) {
         OnboardingData data = new OnboardingData();
         List<OnboardingData.CategoryAnswer> categoryAnswers = new ArrayList<>();

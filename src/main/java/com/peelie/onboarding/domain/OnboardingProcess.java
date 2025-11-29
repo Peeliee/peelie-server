@@ -22,20 +22,13 @@ public class OnboardingProcess extends BaseTimeEntity {
     private Long userId;
 
     @ElementCollection
-    @CollectionTable(name = "onboarding_selected_categories",
-            joinColumns = @JoinColumn(name = "onboarding_process_id"))
+    @CollectionTable(name = "onboarding_selected_categories", joinColumns = @JoinColumn(name = "onboarding_process_id"))
     @Column(name = "category_id")
     private Set<Long> selectedCategories = new HashSet<>();
 
-
     @ElementCollection
-    @CollectionTable(name = "onboarding_subcategory_answers",
-            joinColumns = @JoinColumn(name = "onboarding_process_id"))
+    @CollectionTable(name = "onboarding_subcategory_answers", joinColumns = @JoinColumn(name = "onboarding_process_id"))
     private Set<OnboardingSubCategoryAnswers> subCategoryAnswers = new HashSet<>();
-
-
-
-
 
     public static OnboardingProcess start(Long userId) {
         if (userId == null) {
@@ -46,34 +39,32 @@ public class OnboardingProcess extends BaseTimeEntity {
         return process;
     }
 
-
-    public void setCategories(Collection<Long> ids) { //카테고리 선택 검증
-        //요청 바디가 아예 비어있지 않은지 검증
+    public void setCategories(Collection<Long> ids) { // 카테고리 선택 검증
+        // 요청 바디가 아예 비어있지 않은지 검증
         if (ids == null || ids.isEmpty()) {
             throw new BaseException("카테고리 목록이 비어 있습니다.", ErrorCode.VALIDATION_ERROR);
         }
 
-        //중복 검증을 위해 Set으로 변환
+        // 중복 검증을 위해 Set으로 변환
         Set<Long> unique = new HashSet<>(ids);
 
-        //개수 체크
-        if ( unique.size() != 3) {
+        // 개수 체크
+        if (unique.size() != 3) {
             throw new BaseException("카테고리는 중복 없이 정확히 3개를 선택해야 합니다.", ErrorCode.VALIDATION_ERROR);
         }
 
-        //ids에 null이 포함되어있지 않은지 검증
+        // ids에 null이 포함되어있지 않은지 검증
         if (unique.stream().anyMatch(Objects::isNull)) {
             throw new BaseException("카테고리 ID가 유효하지 않습니다.", ErrorCode.VALIDATION_ERROR);
         }
 
-        //카테고리 선택
+        // 카테고리 선택
         this.selectedCategories.clear();
         this.selectedCategories.addAll(unique);
     }
 
-
     public void setSubCategoryAnswers(Long subCategoryId, List<OnboardingSubCategoryAnswers> answers) {
-        if (subCategoryId == null || answers == null ||  answers.isEmpty()) {
+        if (subCategoryId == null || answers == null || answers.isEmpty()) {
             throw new BaseException("subCategoryId 또는 answers가 유효하지 않습니다.", ErrorCode.VALIDATION_ERROR);
         }
         // 기존에 있던 동일 subCategoryId의 답변들 제거
@@ -82,7 +73,6 @@ public class OnboardingProcess extends BaseTimeEntity {
         // 새 답변 추가
         subCategoryAnswers.addAll(answers);
     }
-
 
     public void setInteractionStyle(String interactionStyle) {
         // 교류 성향 값 검증

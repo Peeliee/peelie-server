@@ -3,6 +3,7 @@ package com.peelie.onboarding.infra;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+
 import com.openai.models.responses.*;
 import com.peelie.onboarding.domain.card.CardGenerator;
 import com.peelie.onboarding.domain.card.GeneratedCardPayload;
@@ -11,8 +12,6 @@ import com.peelie.onboarding.domain.card.OnboardingData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.openai.models.responses.ResponseCreateParams;
 
 import java.util.Map;
 import java.util.List;
@@ -24,10 +23,6 @@ import java.util.concurrent.Executor;
 import com.openai.client.OpenAIClient;
 import com.openai.models.ChatModel;
 import com.openai.core.JsonValue;
-//import com.openai.models.responses.ResponseFormatTextConfig;
-//import com.openai.models.responses.ResponseFormatTextJsonSchemaConfig;
-//import com.openai.models.responses.ResponseTextConfig;
-//import com.openai.models.responses.ResponseInputItem;
 
 
 @Slf4j

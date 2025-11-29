@@ -52,45 +52,61 @@ public class FriendshipInfo {
 
             this.interactionStyle = profile.getInteractionStyle();
 
-            this.card = new ProfileInfo.Card(
-                    new ProfileInfo.Card.StageInfo("임시 Stage1 Title", "Stage1 Subtitle", "Stage1 Content"),
-                    new ProfileInfo.Card.StageInfo("임시 Stage2 Title", "Stage2 Subtitle", "Stage2 Content"),
-                    new ProfileInfo.Card.StageInfo("임시 Stage3 Title", "Stage3 Subtitle", "Stage3 Content")
-            );
+            ProfileInfo.Card.StageInfo s1 = new ProfileInfo.Card.StageInfo(null, null, null);
+            ProfileInfo.Card.StageInfo s2 = new ProfileInfo.Card.StageInfo(null, null, null);
+            ProfileInfo.Card.StageInfo s3 = new ProfileInfo.Card.StageInfo(null, null, null);
+
+            switch (stage) {
+                case STAGE_0 -> {
+                    s1 = new ProfileInfo.Card.StageInfo(null, null, null);
+                    s2 = new ProfileInfo.Card.StageInfo(null, null, null);
+                    s3 = new ProfileInfo.Card.StageInfo(null, null, null);
+                }
+                case STAGE_1 -> {
+                    s1 = new ProfileInfo.Card.StageInfo(
+                            "임시 Stage1 Title",
+                            "Stage1 Subtitle",
+                            "Stage1 Content"
+                    );
+                    s2 = new ProfileInfo.Card.StageInfo(null, null, null);
+                    s3 = new ProfileInfo.Card.StageInfo(null, null, null);
+                }
+                case STAGE_2 -> {
+                    // stage1, stage2 공개
+                    s1 = new ProfileInfo.Card.StageInfo(
+                            "임시 Stage1 Title",
+                            "Stage1 Subtitle",
+                            "Stage1 Content"
+                    );
+                    s2 = new ProfileInfo.Card.StageInfo(
+                            "임시 Stage2 Title",
+                            "Stage2 Subtitle",
+                            "Stage2 Content"
+                    );
+                    s3 = new ProfileInfo.Card.StageInfo(null, null, null);
+                }
+                case STAGE_3 -> {
+                    s1 = new ProfileInfo.Card.StageInfo(
+                            "임시 Stage1 Title",
+                            "Stage1 Subtitle",
+                            "Stage1 Content"
+                    );
+                    s2 = new ProfileInfo.Card.StageInfo(
+                            "임시 Stage2 Title",
+                            "Stage2 Subtitle",
+                            "Stage2 Content"
+                    );
+                    s3 = new ProfileInfo.Card.StageInfo(
+                            "임시 Stage3 Title",
+                            "Stage3 Subtitle",
+                            "Stage3 Content"
+                    );
+                }
+            }
+
+            this.card = new ProfileInfo.Card(s1, s2, s3);
 
             this.stage = (long) stage.ordinal();
         }
     }
-
-
-//this.bio = List.of(
-//            new ProfileInfo.BioInfo("stage0", ProfileInfo.BioInfo.STAGE0_BIO),
-//            new ProfileInfo.BioInfo("stage1", profile.getStage1Bio()),
-//            new ProfileInfo.BioInfo("stage2", profile.getStage2Bio()),
-//            new ProfileInfo.BioInfo("stage3", profile.getStage3Bio())
-//            );
-
-
-    }
-//    @Getter
-//    public static class FriendSummary {
-//        private final Long userId;
-//        private final String userName;
-//        private final InteractionStyle interactionStyle;
-//        private final String stage1Bio;
-//        private final String stage2Bio;
-//        private final String stage3Bio;
-//        private final Long stage;
-//        private final String profileImageUrl;
-//
-//        public FriendSummary(Profile profile, Long stage) {
-//            this.userId = profile.getUserId();
-//            this.userName = profile.getUserName();
-//            this.interactionStyle = profile.getInteractionStyle();
-//            this.stage1Bio = profile.getStage1Bio();
-//            this.stage2Bio = profile.getStage2Bio();
-//            this.stage3Bio = profile.getStage3Bio();
-//            this.stage = stage;
-//            this.profileImageUrl = profile.getProfileImageUrl();
-//        }
-//    }
+}

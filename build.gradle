@@ -42,11 +42,13 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
     implementation 'io.jsonwebtoken:jjwt-impl:0.12.3'
     implementation 'io.jsonwebtoken:jjwt-jackson:0.12.3'
+
+    implementation 'com.google.genai:google-genai:1.28.0'
+
     implementation 'com.fasterxml.jackson.core:jackson-databind'
     //schema structure 강제 용
     implementation("com.openai:openai-java:4.8.0")
 }
-
 tasks.named('test') {
     useJUnitPlatform()
 }

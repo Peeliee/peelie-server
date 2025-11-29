@@ -3,8 +3,8 @@ package com.peelie.onboarding.domain;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.peelie.common.exception.BaseException;
 import com.peelie.common.exception.ErrorCode;
+import com.peelie.onboarding.domain.card.*;
 import com.peelie.onboarding.infra.CardGeneratorImpl;
-import com.peelie.profile.domain.Profile;
 import com.peelie.profile.domain.ProfileReader;
 import com.peelie.profile.domain.ProfileService;
 import com.peelie.questionnaire.domain.category.*; //import  com.peelie.questionnaire.domain.category.CategoryReader;
@@ -18,15 +18,13 @@ import com.peelie.questionnaire.domain.QuestionnaireService;
 import com.peelie.questionnaire.domain.question.QuestionInfo;
 import com.peelie.questionnaire.domain.question.QuestionType;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
-
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
+
+import static com.peelie.onboarding.domain.card.CreateCardResponse.REASON_GENERATING;
+
 
 @Slf4j
 @Service
@@ -37,8 +35,9 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
     private final QuestionnaireService questionnaireService;
     private final SubCategoryReader subCategoryReader;
     private final ProfileService profileService;
+    private final CardGeneratorImpl gptCardGenerationService;
 
-    // ✅ 추가
+
     private final ProfileReader profileReader;
     private final ObjectMapper objectMapper;
     private final CategoryReader categoryReader;
@@ -152,22 +151,56 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
 
     @Override
     @Transactional
-    public CardInfo.Stage initializeCard(OnboardingCommand.InitializeCard command) {
-
+    public CreateCardResponse initializeCard(OnboardingCommand.InitializeCard command) {
 
         Long userId = command.getUserId();
         List<Long> categoryIds = command.getCategoryIds();
 
-        OnboardingProcess process = onboardingReader.findOnboardingProcessByUserId(userId);
+        OnboardingProcess onboardingProcess = onboardingReader.findOnboardingProcessByUserId(userId);
+        // 카테고리 3개임을 검증하는 로직은 별도 추가 x
+        OnboardingData onboardingData = buildOnboardingData(onboardingProcess);
 
-        OnboardingData onboardingData = buildOnboardingData(process);
+        log.info("비동기 작업 요청 시작");
+        // 비동기 카드 생성 요청
+        CompletableFuture<GeneratedCardPayload> future =
+                gptCardGenerationService.generateCard(onboardingData);
 
-//        SubCategory subCategory = subCategoryReader.getSubCategory(subCategoryId);
+        future.thenAccept(
+                // TODO:  CardInfo를 DB에 JPA코드 이용해  저장하는 로직 추가 필요
+                payload -> {
+                    CardInfo cardInfo = CardInfo.builder()
+                            .stage1(new CardInfo.Stage(payload.getStage1().getTitle(), payload.getStage1().getSubtitle(), payload.getStage1().getContent()))
+                            .stage2(new CardInfo.Stage(payload.getStage2().getTitle(), payload.getStage2().getSubtitle(), payload.getStage2().getContent()))
+                            .stage3(new CardInfo.Stage(payload.getStage3().getTitle(), payload.getStage3().getSubtitle(), payload.getStage3().getContent()))
+                            .build();
+                }).exceptionally(ex -> {
+            return null;
+        });
 
-//       SubCategory sub = subCategoryReader.getSubCategory(,command.getSubCategoryId());
+        return CreateCardResponse.builder()
+                .status("GENERATING")
+                .reason(REASON_GENERATING)
+                .data(null) // 생성할 때는 데이터 없음
+                .build();
+    }
 
-
-        return new CardInfo.Stage();
+    @Override
+    public GetCardResponse getCard(Long userId) {
+        //TODO: userId로 카드 정보 조회하는 로직 추가 필요
+        //Profile 도메인 객체에서 카드 정보 조회
+//        if (cardInfo == null) {
+//            return GetCardResponse.builder()
+//                    .status("GENERATING")  // 아직 처리 중
+//                    .data(null)
+//                    .build();
+//        }
+//
+//        return GetCardResponse.builder()
+//                .status(GetCardResponse.STATUS_GENERATED)
+//                .data(cardInfo)
+//                .build();
+//    }
+        return null;
     }
 
     private OnboardingData buildOnboardingData(OnboardingProcess process) {
@@ -175,10 +208,9 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
         List<OnboardingData.CategoryAnswer> categoryAnswers = new ArrayList<>();
         Set<Long> categories = process.getSelectedCategories();
 
-        System.out.println("categories 리스트 " + categories);
         Set< OnboardingSubCategoryAnswers> subCategoryAnswers  = process.getSubCategoryAnswers();
 
-
+//  사용자가 선택한 카테고리 3개에 대해
 
 
         List<OnboardingSubCategoryAnswers> newAnswers = new ArrayList<>();
@@ -192,39 +224,17 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
 
             for (SubCategory sub : subCategories) {
                 Long subCategoryId = sub.getId();
-   //    fetch로  객관식 l1부터 l3가져올 예정 entity => dto 시작
-
+                //    fetch로  객관식 l1부터 l3가져올 예정 entity => dto 시작
                 List<QuestionInfo> questions = questionnaireService.getQuestionsByIds(
-                                                                categoryId, subCategoryId)
-                ;
-
-
+                        categoryId, subCategoryId);
                 List<OnboardingData.CategoryAnswer.Answer> dtoAnswers = new ArrayList<>();
-
-                            }
-
-//                System.out.println("dtoAnswers.get(0).toString() = " + dtoAnswers.get(0).toString());
-//                categoryAnswers.add
-
-//                categoryAnswers에 subCategoryAnswers복사
-
-//                    QuestionInfo q = null;
-//                    for (QuestionInfo cand : questions) {
-//                        if (cand.getLevel().name().equals(a.getLevel())) {
-//
-//                        }
-//                    }
-
-                }
-
             }
+        }
         return data;
+            }
 
     }
 
-//  질문 목록 가져오기
-
-}
 
 
 

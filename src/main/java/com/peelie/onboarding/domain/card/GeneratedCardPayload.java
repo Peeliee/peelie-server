@@ -1,4 +1,4 @@
-package com.peelie.onboarding.domain;
+package com.peelie.onboarding.domain.card;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;

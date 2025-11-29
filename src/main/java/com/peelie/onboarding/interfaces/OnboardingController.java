@@ -1,20 +1,16 @@
 package com.peelie.onboarding.interfaces;
 
 import com.peelie.common.context.UserContextHolder;
-import com.peelie.common.response.ErrorResponse;
 import com.peelie.common.response.SuccessResponse;
 import com.peelie.onboarding.application.OnboardingFacade;
-import com.peelie.onboarding.domain.CardInfo;
+import com.peelie.onboarding.domain.card.CardInfo;
 import com.peelie.onboarding.domain.OnboardingCommand;
 import com.peelie.onboarding.domain.OnboardingInfo;
-import com.peelie.onboarding.domain.CardInfo;
+import com.peelie.onboarding.domain.card.CreateCardResponse;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/onboarding")
@@ -51,12 +47,12 @@ public class OnboardingController {
     }
 
     @PostMapping("/card/initialize")
-    public SuccessResponse<CardInfo.Stage> initializeCard(@RequestBody OnboardingCommand.InitializeCard command) {
+    public SuccessResponse<CreateCardResponse> initializeCard(@RequestBody OnboardingCommand.InitializeCard command) {
         Long userId = UserContextHolder.getUserId();
         var cmd = command.withUserId(userId);
-        CardInfo.Stage result = onboardingFacade.initializeCard(cmd);
+        var result = onboardingFacade.initializeCard(cmd);
         //202 accepted 상태 코드 사용해 비동기 작업 요청임을 표시
-        return SuccessResponse.of(HttpStatus.ACCEPTED, "Generation started", result);
+        return SuccessResponse.ok(result);
     }
 // TODO: GET 구현 , facade에서 호출하는 부분도 일시적으로 주석 처리
     /*

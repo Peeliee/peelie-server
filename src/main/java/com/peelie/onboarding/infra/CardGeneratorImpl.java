@@ -164,7 +164,6 @@ public class CardGeneratorImpl implements CardGenerator {
 
                 // 4.  Response에서 필요한 응답만 추출
                 String resultJson = extractJsonString(response);
-                log.info("Generated Card  resultJson: {}", resultJson);
                 return objectMapper.readValue(resultJson, GeneratedCardPayload.class);
 
             } catch (Exception e) {

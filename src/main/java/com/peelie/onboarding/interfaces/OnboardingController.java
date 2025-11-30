@@ -3,14 +3,11 @@ package com.peelie.onboarding.interfaces;
 import com.peelie.common.context.UserContextHolder;
 import com.peelie.common.response.SuccessResponse;
 import com.peelie.onboarding.application.OnboardingFacade;
-import com.peelie.onboarding.domain.card.CardInfo;
 import com.peelie.onboarding.domain.OnboardingCommand;
 import com.peelie.onboarding.domain.OnboardingInfo;
 import com.peelie.onboarding.domain.card.CreateCardResponse;
-import com.peelie.onboarding.domain.card.GetCardResponse;
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

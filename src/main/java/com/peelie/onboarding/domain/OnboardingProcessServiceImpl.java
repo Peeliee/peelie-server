@@ -157,7 +157,6 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
 
         CardOnboardingData cardOnboardingData = cardOnboardingDataLoader.load(userId);
 
-        String onboardingJson = buildOnboardingData(cardOnboardingData);
         CompletableFuture<GeneratedCardPayload> future =
                 gptCardGenerationService.generateCard(cardOnboardingData);
 
@@ -165,15 +164,9 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
                 // TODO:  CardInfo를 DB에 JPA코드 이용해 저장하는 로직 추가 필요
                 // 아래 코드는 최초 생성 기준으로 로직 작성
                 payload -> {
-                    CardInfo cardInfo = CardInfo.builder()
-                            .stage1(new CardInfo.Stage(payload.getStage1().getTitle(), payload.getStage1().getSubtitle(), payload.getStage1().getContent()))
-                            .stage2(new CardInfo.Stage(payload.getStage2().getTitle(), payload.getStage2().getSubtitle(), payload.getStage2().getContent()))
-                            .stage3(new CardInfo.Stage(payload.getStage3().getTitle(), payload.getStage3().getSubtitle(), payload.getStage3().getContent()))
-                            .build();
-
-                }).exceptionally(ex -> {
-                    log.info("카드생성 실패,ex)");
-            return null;
+                }
+        ).exceptionally(ex -> {
+                    throw new RuntimeException("카드 생성 실패", ex);
         });
 
         return CreateCardResponse.builder()
@@ -183,111 +176,10 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
                 .build();
     }
 
-    private String buildOnboardingData(CardOnboardingData cardOnboardingData) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("{\n");
 
-        // stage1: L0 + L1
-        appendStage(sb, "stage1", cardOnboardingData.getStage1(), true, List.of("L1"));
 
-        sb.append(",\n");
 
-        // stage2: L2 + L3
-        appendStage(sb, "stage2", cardOnboardingData.getStage2(), false, List.of("L2", "L3"));
 
-        sb.append(",\n");
-
-        // stage3: L4
-        appendStage(sb, "stage3", cardOnboardingData.getStage3(), false, List.of("L4"));
-
-        sb.append("\n}");
-        return sb.toString();
-    }
-
-    private void appendStage(StringBuilder sb,
-                             String stageName,
-                             List<CardOnboardingData.CategoryAnswer> categories,
-                             boolean includeL0,
-                             List<String> levels) {
-
-        java.util.function.Function<String, String> escape = (value) -> {
-            if (value == null) return "";
-            return value
-                    .replace("\\", "\\\\")
-                    .replace("\"", "\\\"")
-                    .replace("\n", "\\n")
-                    .replace("\r", "\\r");
-        };
-
-        sb.append("  \"").append(stageName).append("\": [\n");
-
-        if (categories == null) {
-            categories = List.of();
-        }
-
-        for (int i = 0; i < categories.size(); i++) {
-            CardOnboardingData.CategoryAnswer cat = categories.get(i);
-
-            sb.append("    {\n");
-            sb.append("      \"userName\": \"").append(escape(cat.getUserName())).append("\",\n");
-            sb.append("      \"categoryName\": \"").append(escape(cat.getCategoryName())).append("\",\n");
-            sb.append("      \"categoryQuestion\": \"").append(escape(cat.getCategoryQuestion())).append("\",\n");
-            sb.append("      \"answers\": [\n");
-
-            boolean firstAnswer = true;
-
-            // stage1일 때만 L0 포함
-            if (includeL0 && cat.getCategoryQuestion() != null) {
-                sb.append("        {\n");
-                sb.append("          \"level\": \"L0\",\n");
-                sb.append("          \"question\": \"").append(escape(cat.getCategoryQuestion())).append("\",\n");
-                sb.append("          \"answer\": \"").append(escape(cat.getCategoryName())).append("\"\n");
-                sb.append("        }");
-                firstAnswer = false;
-            }
-
-            // L1~L4 중 필요한 level만 포함
-            List<CardOnboardingData.Answer> answers = cat.getAnswers();
-            if (answers != null) {
-                for (CardOnboardingData.Answer qa : answers) {
-                    if (!levels.contains(qa.getLevel())) {
-                        continue;
-                    }
-
-                    if (!firstAnswer) {
-                        sb.append(",\n");
-                    } else {
-                        firstAnswer = false;
-                    }
-
-                    sb.append("        {\n");
-                    sb.append("          \"level\": \"").append(escape(qa.getLevel())).append("\",\n");
-                    sb.append("          \"question\": \"").append(escape(qa.getQuestion())).append("\",\n");
-                    sb.append("          \"answer\": \"").append(escape.apply(qa.getAnswer())).append("\"\n");
-                    sb.append("        }");
-                }
-            }
-
-            sb.append("\n      ]\n");
-            sb.append("    }");
-
-            if (i < categories.size() - 1) {
-                sb.append(",");
-            }
-            sb.append("\n");
-        }
-
-        sb.append("  ]");
-    }
-
-    private String escape(String value) {
-        if (value == null) return "";
-        return value
-                .replace("\\", "\\\\")
-                .replace("\"", "\\\"")
-                .replace("\n", "\\n")
-                .replace("\r", "\\r");
-    }
 
 
 }

@@ -13,7 +13,7 @@ import lombok.Getter;
 public class CreateCardResponse {
     private String status;
     private String reason;
-    private final CardInfo data;
+    private final GeneratedCardPayload data;
 
     public static final String STATUS_GENERATING = "GENERATING";
     public static final String REASON_GENERATING = "카드를 생성하고 있습니다. 잠시만 기다려주세요.";

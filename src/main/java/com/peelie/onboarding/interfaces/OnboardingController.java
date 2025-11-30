@@ -45,7 +45,7 @@ public class OnboardingController implements OnboardingDoc {
     }
 
     @PostMapping("/card/initialize")
-    public SuccessResponse<CreateCardResponse> initializeCard() {
+    public SuccessResponse initializeCard() {
         var result = onboardingFacade.initializeCard();
         return SuccessResponse.ok(result);
     }

@@ -3,6 +3,7 @@ package com.peelie.onboarding.domain;
 import com.peelie.common.context.UserContextHolder;
 import com.peelie.common.exception.BaseException;
 import com.peelie.common.exception.ErrorCode;
+import com.peelie.common.response.SuccessResponse;
 import com.peelie.onboarding.domain.card.*;
 import com.peelie.onboarding.infra.CardGeneratorImpl;
 import com.peelie.profile.domain.ProfileReader;
@@ -22,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import static com.peelie.onboarding.domain.card.CreateCardResponse.REASON_GENERATING;
 
 
 @Slf4j
@@ -34,7 +34,7 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
     private final QuestionnaireService questionnaireService;
     private final SubCategoryReader subCategoryReader;
     private final ProfileService profileService;
-    private final CardGeneratorImpl gptCardGenerationService;
+    private final CardGeneratorImpl cardGeneratorImpl;
     private final CardOnboardingDataLoader cardOnboardingDataLoader;
 
 
@@ -158,11 +158,9 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
         CardOnboardingData cardOnboardingData = cardOnboardingDataLoader.load(userId);
 
         CompletableFuture<GeneratedCardPayload> future =
-                gptCardGenerationService.generateCard(cardOnboardingData);
+                cardGeneratorImpl.generateCard(cardOnboardingData);
 
         future.thenAccept(
-                // TODO:  CardInfo를 DB에 JPA코드 이용해 저장하는 로직 추가 필요
-                // 아래 코드는 최초 생성 기준으로 로직 작성
                 payload -> {
                 }
         ).exceptionally(ex -> {
@@ -170,16 +168,11 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
         });
 
         return CreateCardResponse.builder()
-                .status("GENERATING")
-                .reason(REASON_GENERATING)
-                .data(null) // 생성할 때는 데이터 없고 프론트에서 GET으로 정보 가져올 예정
+                .status("Generating")
+                .reason("card generation in progress")
+                .data(null)
                 .build();
     }
-
-
-
-
-
 
 
 }

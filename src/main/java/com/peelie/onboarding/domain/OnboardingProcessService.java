@@ -1,5 +1,7 @@
 package com.peelie.onboarding.domain;
 
+
+import com.peelie.common.response.SuccessResponse;
 import com.peelie.onboarding.domain.card.CreateCardResponse;
 
 public interface OnboardingProcessService {

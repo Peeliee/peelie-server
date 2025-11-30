@@ -3,7 +3,7 @@ package com.peelie.onboarding.interfaces;
 import com.peelie.common.response.SuccessResponse;
 import com.peelie.onboarding.domain.OnboardingCommand;
 import com.peelie.onboarding.domain.OnboardingInfo;
-import com.peelie.onboarding.domain.card.CreateCardResponse;
+import com.peelie.onboarding.domain.card.GeneratedCardPayload;
 import org.springframework.web.bind.annotation.RequestBody;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,6 +28,6 @@ public interface OnboardingDoc {
     @Operation(
             summary = "온보딩 카드 최초 생성 요청",
             description = "사용자의 온보딩 응답을 기반으로 3단계의 카드 생성을 비동기로 요청합니다.")
-    SuccessResponse<CreateCardResponse> initializeCard();
+    SuccessResponse<GeneratedCardPayload> initializeCard();
 
 }

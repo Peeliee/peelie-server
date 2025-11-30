@@ -7,7 +7,7 @@ import com.peelie.onboarding.domain.card.*;
 import com.peelie.onboarding.infra.CardGeneratorImpl;
 import com.peelie.profile.domain.ProfileReader;
 import com.peelie.profile.domain.ProfileService;
-import com.peelie.questionnaire.domain.category.*; //import  com.peelie.questionnaire.domain.category.CategoryReader;
+import com.peelie.questionnaire.domain.category.*;
 import com.peelie.questionnaire.domain.question.QuestionOptionInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

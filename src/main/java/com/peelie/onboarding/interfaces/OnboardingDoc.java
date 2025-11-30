@@ -11,7 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "Onboarding", description = "온보딩 API 명세")
 public interface OnboardingDoc {
 
-    @Operation(summary = "온보딩 카테고리 선택", description = "사용자가 온보딩에서 관심 카테고리(최대 N개)를 선택합니다.")
+    @Operation(summary = "온보딩 카테고리 선택", description = "사용자가 온보딩에서 관심 카테고리(최대 3개)를 선택합니다.")
     SuccessResponse<OnboardingInfo.Process> selectCategories(
             @RequestBody OnboardingCommand.SelectCategories command);
 

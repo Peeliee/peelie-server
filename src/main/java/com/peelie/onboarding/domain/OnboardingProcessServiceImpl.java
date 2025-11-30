@@ -20,7 +20,6 @@ import com.peelie.questionnaire.domain.question.QuestionType;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 import static com.peelie.onboarding.domain.card.CreateCardResponse.REASON_GENERATING;
@@ -36,7 +35,7 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
     private final SubCategoryReader subCategoryReader;
     private final ProfileService profileService;
     private final CardGeneratorImpl gptCardGenerationService;
-
+    private final CardOnboardingDataLoader cardOnboardingDataLoader;
 
     private final ProfileReader profileReader;
     private final ObjectMapper objectMapper;
@@ -183,10 +182,16 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
 
         OnboardingProcess onboardingProcess = onboardingReader.findOnboardingProcessByUserId(userId);
 
-        OnboardingData onboardingData = buildOnboardingData(onboardingProcess);
+        CardOnboardingData cardOnboardingData = cardOnboardingDataLoader.load(userId);
 
+        log.info("stage1 size = {}", cardOnboardingData.getStage1() == null ? null : cardOnboardingData.getStage1().size());
+        log.info("stage2 size = {}", cardOnboardingData.getStage2() == null ? null : cardOnboardingData.getStage2().size());
+        log.info("stage3 size = {}", cardOnboardingData.getStage3() == null ? null : cardOnboardingData.getStage3().size());
+
+        String onboardingJson = buildOnboardingData(cardOnboardingData);
+        log.info("[ DEBUG2] 온보딩 데이터 JSON: {}", onboardingJson);
         CompletableFuture<GeneratedCardPayload> future =
-                gptCardGenerationService.generateCard(onboardingData);
+                gptCardGenerationService.generateCard(cardOnboardingData);
 
         // 비동기 카드 재생성 요청
 
@@ -213,35 +218,119 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
                 .data(null) // 생성할 때는 데이터 없고 프론트에서 GET으로 정보 가져올 예정
                 .build();
     }
-    private OnboardingData buildOnboardingData(OnboardingProcess process) {
-        OnboardingData data = new OnboardingData();
-        List<OnboardingData.CategoryAnswer> categoryAnswers = new ArrayList<>();
-        Set<Long> categories = process.getSelectedCategories();
 
-        Set< OnboardingSubCategoryAnswers> subCategoryAnswers  = process.getSubCategoryAnswers();
+    private String buildOnboardingData(CardOnboardingData cardOnboardingData) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{\n");
 
-//  사용자가 선택한 카테고리 3개에 대해
+        // stage1: L0 + L1
+        appendStage(sb, "stage1", cardOnboardingData, true, List.of("L1"));
 
+        sb.append(",\n");
 
-        List<OnboardingSubCategoryAnswers> newAnswers = new ArrayList<>();
-//    for (OnboardingCommand.SubmitSubCategoryAnswers.LevelAnswerCommand a : command.getAnswers()) {
-//    LevelAnswerCommand.level(문자열)이 DB에 실제 존재하는 QuestionInfo.level(enum)과 일치하는지 검증
+        // stage2: L2 + L3
+        appendStage(sb, "stage2", cardOnboardingData, false, List.of("L2", "L3"));
 
-        for (Long categoryId : categories) {
+        sb.append(",\n");
 
-            Category category = categoryReader.getCategory(categoryId);
-            List<SubCategory> subCategories = category.getSubCategories();
+        // stage3: L4
+        appendStage(sb, "stage3", cardOnboardingData, false, List.of("L4"));
 
-            for (SubCategory sub : subCategories) {
-                Long subCategoryId = sub.getId();
-                //    fetch로  객관식 l1부터 l3가져올 예정 entity => dto 시작
-                List<QuestionInfo> questions = questionnaireService.getQuestionsByIds(
-                        categoryId, subCategoryId);
-                List<OnboardingData.CategoryAnswer.Answer> dtoAnswers = new ArrayList<>();
-            }
+        sb.append("\n}");
+        return sb.toString();
+    }
+
+    private void appendStage(StringBuilder sb,
+                             String stageName,
+                             CardOnboardingData cardOnboardingData,
+                             boolean includeL0,
+                             List<String> levels) {
+
+        // 간단한 escape 로직을 메서드 내부에 람다로 정의
+        java.util.function.Function<String, String> escape = (value) -> {
+            if (value == null) return "";
+            return value
+                    .replace("\\", "\\\\")
+                    .replace("\"", "\\\"")
+                    .replace("\n", "\\n")
+                    .replace("\r", "\\r");
+        };
+
+        sb.append("  \"").append(stageName).append("\": [\n");
+        sb.append("  \"").append(stageName).append("\": [\n");
+
+        // stageName에 따라 올바른 리스트 선택
+        List<CardOnboardingData.CategoryAnswer> categoryAnswers;
+        switch (stageName) {
+            case "stage1":
+                categoryAnswers = cardOnboardingData.getStage1();
+                break;
+            case "stage2":
+                categoryAnswers = cardOnboardingData.getStage2();
+                break;
+            case "stage3":
+                categoryAnswers = cardOnboardingData.getStage3();
+                break;
+            default:
+                categoryAnswers = List.of();
         }
-        return data;
+        if (categoryAnswers == null) {
+            categoryAnswers = List.of();
+        }
+        for (int i = 0; i < categoryAnswers.size(); i++) {
+            CardOnboardingData.CategoryAnswer category = categoryAnswers.get(i);
+
+            sb.append("    {\n");
+            sb.append("      \"userName\": \"").append(escape.apply(category.getUserName())).append("\",\n");
+            sb.append("      \"categoryName\": \"").append(escape.apply(category.getCategoryName())).append("\",\n");
+            sb.append("      \"categoryQuestion\": \"").append(escape.apply(category.getCategoryQuestion())).append("\",\n");
+            sb.append("      \"answers\": [\n");
+
+            boolean firstAnswer = true;
+
+            if (includeL0 && category.getCategoryQuestion() != null) {
+                sb.append("        {\n");
+                sb.append("          \"level\": \"L0\",\n");
+                sb.append("          \"question\": \"").append(escape.apply(category.getCategoryQuestion())).append("\",\n");
+                // subCategoryName이 없으므로, 임시로 categoryName을 답변으로 사용
+                sb.append("          \"answer\": \"").append(escape.apply(category.getCategoryName())).append("\"\n");
+                sb.append("        }");
+                firstAnswer = false;
             }
+
+            List<CardOnboardingData.Answer> answers = category.getAnswers();
+            if (answers != null) {
+                for (CardOnboardingData.Answer qa : answers) {
+                    if (!levels.contains(qa.getLevel())) {
+                        continue;
+                    }
+
+                    if (!firstAnswer) {
+                        sb.append(",\n");
+                    } else {
+                        firstAnswer = false;
+                    }
+
+                    sb.append("        {\n");
+                    sb.append("          \"level\": \"").append(escape.apply(qa.getLevel())).append("\",\n");
+                    sb.append("          \"question\": \"").append(escape.apply(qa.getQuestion())).append("\",\n");
+                    sb.append("          \"answer\": \"").append(escape.apply(qa.getAnswer())).append("\"\n");
+                    sb.append("        }");
+                }
+            }
+
+            sb.append("\n      ]\n");
+            sb.append("    }");
+
+            if (i < categoryAnswers.size() - 1) {
+                sb.append(",");
+            }
+            sb.append("\n");
+        }
+
+        sb.append("  ]");
+    }
+
 
     }
 

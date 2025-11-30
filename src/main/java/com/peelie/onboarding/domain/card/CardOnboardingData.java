@@ -8,7 +8,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OnboardingData {
+public class CardOnboardingData {
     //RequestDTO for gpt api
     private List<CategoryAnswer> stage1;
     private List<CategoryAnswer> stage2;
@@ -16,22 +16,19 @@ public class OnboardingData {
 
     @Getter
     @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
     public static class CategoryAnswer {
         private String userName;
         private String categoryName;
+        private String categoryQuestion;
         private List<Answer> answers;
 
-        @Getter
-        @Setter
-        @Builder
-        @NoArgsConstructor
-        @AllArgsConstructor
-        public static class Answer {
-            private String level;
-            private String question;
-            private String answer;
-        }
+
+    }
+    @Getter
+    @Builder
+    public static class Answer {
+        private String level;
+        private String question;
+        private String answer;
     }
 }

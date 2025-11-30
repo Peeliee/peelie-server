@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.openai.models.responses.*;
 import com.peelie.onboarding.domain.card.CardGenerator;
 import com.peelie.onboarding.domain.card.GeneratedCardPayload;
-import com.peelie.onboarding.domain.card.OnboardingData;
+import com.peelie.onboarding.domain.card.CardOnboardingData;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
@@ -40,7 +39,7 @@ public class CardGeneratorImpl implements CardGenerator {
     }
 
     @Override
-    public CompletableFuture<GeneratedCardPayload> generateCard(OnboardingData data) {
+    public CompletableFuture<GeneratedCardPayload> generateCard(CardOnboardingData data) {
         return CompletableFuture.supplyAsync(() -> {
             try {
             //  GPT 5버전도 여전히 ObjectMapper 필요-> OnboardingData를 JSON 문자열로 변환
@@ -124,6 +123,7 @@ public class CardGeneratorImpl implements CardGenerator {
 
                 // 4.  Response에서 필요한 응답만 추출
                 String resultJson = extractJsonString(response);
+                System.out.println("resultJson = " + resultJson);
                 GeneratedCardPayload payload = objectMapper.readValue(resultJson, GeneratedCardPayload.class);
                 return payload;
 

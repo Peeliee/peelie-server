@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/onboarding")
 @RequiredArgsConstructor
-public class OnboardingController {
+public class OnboardingController implements OnboardingDoc {
 
     private final OnboardingFacade onboardingFacade;
 

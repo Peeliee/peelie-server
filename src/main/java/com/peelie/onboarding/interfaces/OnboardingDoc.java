@@ -20,7 +20,7 @@ public interface OnboardingDoc {
             @RequestBody OnboardingCommand.SubmitSubCategoryAnswers command
     );
 
-    @Operation(summary = "온보딩 인터랙션 스타일 선택", description = "사용자가 원하는 상호작용(카드/퀴즈 등) 스타일을 선택합니다.")
+    @Operation(summary = "교류성향 선택", description = "사용자가 원하는 교류 스타일을 선택합니다.")
     SuccessResponse<OnboardingInfo.Process> submitInteractionStyle(
             @RequestBody OnboardingCommand.SubmitInteraction command
     );
@@ -28,8 +28,6 @@ public interface OnboardingDoc {
     @Operation(
             summary = "온보딩 카드 최초 생성 요청",
             description = "사용자의 온보딩 응답을 기반으로 3단계의 카드 생성을 비동기로 요청합니다.")
-    SuccessResponse<CreateCardResponse> initializeCard(
-            @RequestBody OnboardingCommand.InitializeCard command
-    );
+    SuccessResponse<CreateCardResponse> initializeCard();
 
 }

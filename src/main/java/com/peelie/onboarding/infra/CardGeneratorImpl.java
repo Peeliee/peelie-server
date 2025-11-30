@@ -91,8 +91,7 @@ public class CardGeneratorImpl implements CardGenerator {
     public CompletableFuture<GeneratedCardPayload> generateCard(CardOnboardingData data) {
         return CompletableFuture.supplyAsync(() -> {
             try {
-                //  GPT 5버전도 여전히 ObjectMapper 필요-> OnboardingData를 JSON 문자열로 변환
-                String promptUser = objectMapper.writeValueAsString(data); // higu
+                String promptUser = data.toString();
                 List<ResponseInputItem> inputs = new ArrayList<>();
                 // 사용자 prompt와 시스템 prompt를 inputs라는 변수에 담음
                 ResponseInputItem userMessageItem = ResponseInputItem.ofMessage(

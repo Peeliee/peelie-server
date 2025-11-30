@@ -26,14 +26,8 @@ public class OnboardingFacade {
         return onboardingProcessService.submitInteractionStyle(command);
     }
 
-    public CreateCardResponse initializeCard(OnboardingCommand.InitializeCard command) {
-        return onboardingProcessService.initializeCard(command);
+    public CreateCardResponse initializeCard() {
+        return onboardingProcessService.initializeCard();
     }
 
-    public CreateCardResponse regenerateCard(OnboardingCommand.RegenerateCard command) {
-        return onboardingProcessService.regenerateCard(command);
-    }
-    public GetCardResponse getCard(Long userId) {
-        return onboardingProcessService.getCard(userId);
-    }
 }

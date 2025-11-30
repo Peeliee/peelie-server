@@ -48,26 +48,9 @@ public class OnboardingController implements OnboardingDoc {
     }
 
     @PostMapping("/card/initialize")
-    public SuccessResponse<CreateCardResponse> initializeCard(@RequestBody OnboardingCommand.InitializeCard command) {
-        Long userId = UserContextHolder.getUserId();
-        var cmd = command.withUserId(userId);
-        var result = onboardingFacade.initializeCard(cmd);
-        //202 accepted 상태 코드 사용해 비동기 작업 요청임을 표시
+    public SuccessResponse<CreateCardResponse> initializeCard() {
+        var result = onboardingFacade.initializeCard();
         return SuccessResponse.ok(result);
     }
 
-    @PostMapping("/card/regenerate")
-    public SuccessResponse<CreateCardResponse> regenerateCard(@RequestBody OnboardingCommand.RegenerateCard command) {
-        Long userId = UserContextHolder.getUserId();
-        var cmd = command.withUserId(userId);
-        var result = onboardingFacade.regenerateCard(cmd);
-        //202 accepted 상태 코드 사용해 비동기 작업 요청임을 표시
-        return SuccessResponse.ok(result);
-    }
-    @GetMapping("/card/status")
-    public SuccessResponse<GetCardResponse> getCardGenerationStatus() {
-        Long userId = UserContextHolder.getUserId();
-        var result = onboardingFacade.getCard(userId);
-        return SuccessResponse.ok(result);
-    }
 }

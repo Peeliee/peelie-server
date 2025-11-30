@@ -154,7 +154,7 @@ public class CardOnboardingDataLoader {
         // 답변 내용 결정
         String answerContent;
         if ("L4".equals(answer.getLevel())) {
-            // L4는 텍스트 답변
+            // L4는 텍스트 답변 - OnboardingSubcategoryAnswers에서 가져옴
             answerContent = answer.getTextAnswer();
         } else {
             // L1~L3는 선택지 내용 조회

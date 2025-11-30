@@ -24,11 +24,21 @@ public class CardOnboardingData {
 
 
     }
+
     @Getter
     @Builder
     public static class Answer {
         private String level;
         private String question;
         private String answer;
+    }
+
+    @Override
+    public String toString() {
+        return "CardOnboardingData{" +
+                "stage1=" + stage1 +
+                ", stage2=" + stage2 +
+                ", stage3=" + stage3 +
+                '}';
     }
 }

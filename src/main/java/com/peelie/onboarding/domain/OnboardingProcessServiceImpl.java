@@ -1,6 +1,6 @@
 package com.peelie.onboarding.domain;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.peelie.common.context.UserContextHolder;
 import com.peelie.common.exception.BaseException;
 import com.peelie.common.exception.ErrorCode;
 import com.peelie.onboarding.domain.card.*;
@@ -147,34 +147,10 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
 
     @Override
     @Transactional(readOnly = true)
-    public CreateCardResponse initializeCard(OnboardingCommand.InitializeCard command) {
-        return processCardGeneration(command.getUserId());
+    public CreateCardResponse initializeCard() {
+        return processCardGeneration(UserContextHolder.getUserId());
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public CreateCardResponse regenerateCard(OnboardingCommand.RegenerateCard command) {
-        return processCardGeneration(command.getUserId());
-    }
-
-    @Override
-    public GetCardResponse getCard(Long userId) {
-        //TODO: userId로 카드 정보 조회하는 로직 추가 필요
-        //Profile 도메인 객체에서 카드 정보 조회
-//        if (cardInfo == null) {
-//            return GetCardResponse.builder()
-//                    .status("GENERATING")  // 아직 처리 중
-//                    .data(null)
-//                    .build();
-//        }
-//
-//        return GetCardResponse.builder()
-//                .status(GetCardResponse.STATUS_GENERATED)
-//                .data(cardInfo)
-//                .build();
-//    }
-        return null;
-    }
     private CreateCardResponse processCardGeneration(Long userId) {
 
         OnboardingProcess onboardingProcess = onboardingReader.findOnboardingProcessByUserId(userId);
@@ -234,7 +210,6 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
                              boolean includeL0,
                              List<String> levels) {
 
-        // 간단한 escape 로직을 메서드 내부에 람다로 정의
         java.util.function.Function<String, String> escape = (value) -> {
             if (value == null) return "";
             return value
@@ -315,7 +290,7 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
     }
 
 
-    }
+}
 
 
 

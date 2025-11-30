@@ -127,13 +127,8 @@ public class CardOnboardingDataLoader {
                 .collect(Collectors.toList());
         // 각 답변을 CardOnboardingData.Answer로 변환
         List<CardOnboardingData.Answer> answerDtos = sortedAnswers.stream()
-                .map(this::buildCardAnswer)   // ⬅️ 새로 만든 메서드
+                .map(this::buildCardAnswer)
                 .collect(Collectors.toList());
-
-//    // 각 답변을 QuestionAnswer로 변환
-//    List<CardOnboardingData.Answer> questionAnswers = sortedAnswers.stream()
-//            .map(this::buildQuestionAnswer)
-//            .collect(Collectors.toList());
 
         return CardOnboardingData.CategoryAnswer.builder()
                 .userName(userName)                                           //  userName 채우기

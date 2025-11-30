@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
+
 @Component
 @RequiredArgsConstructor
 public class CardOnboardingDataLoader {
@@ -50,7 +52,7 @@ public class CardOnboardingDataLoader {
             List<OnboardingSubCategoryAnswers> answersForSubCategory =
                     onboardingProcess.getSubCategoryAnswers().stream()
                             .filter(answer -> answer.getSubCategoryId().equals(subCategoryId))
-                            .collect(Collectors.toList());
+                            .collect(toList());
 
             // 서브카테고리 답변 정보 생성
             CardOnboardingData.CategoryAnswer categoryAnswer = buildSubCategoryAnswer(userName,subCategoryId, answersForSubCategory);
@@ -68,7 +70,7 @@ public class CardOnboardingDataLoader {
             // stage1 : L0, L1
             List<CardOnboardingData.Answer> stage1Answers = allAnswers.stream()
                     .filter(a -> "L0".equals(a.getLevel()) || "L1".equals(a.getLevel()))
-                    .collect(Collectors.toList());
+                    .collect(toList());
             if (!stage1Answers.isEmpty()) {
                 stage1.add(CardOnboardingData.CategoryAnswer.builder()
                         .userName(categoryAnswer.getUserName())
@@ -81,7 +83,7 @@ public class CardOnboardingDataLoader {
             // stage2 : L2, L3
             List<CardOnboardingData.Answer> stage2Answers = allAnswers.stream()
                     .filter(a -> "L2".equals(a.getLevel()) || "L3".equals(a.getLevel()))
-                    .collect(Collectors.toList());
+                    .collect(toList());
             if (!stage2Answers.isEmpty()) {
                 stage2.add(CardOnboardingData.CategoryAnswer.builder()
                         .userName(categoryAnswer.getUserName())
@@ -94,7 +96,7 @@ public class CardOnboardingDataLoader {
             // stage3 : L4
             List<CardOnboardingData.Answer> stage3Answers = allAnswers.stream()
                     .filter(a -> "L4".equals(a.getLevel()))
-                    .collect(Collectors.toList());
+                    .collect(toList());
             if (!stage3Answers.isEmpty()) {
                 stage3.add(CardOnboardingData.CategoryAnswer.builder()
                         .userName(categoryAnswer.getUserName())
@@ -124,11 +126,11 @@ public class CardOnboardingDataLoader {
         // 레벨별로 정렬 (L1 -> L2 -> L3 -> L4)
         List<OnboardingSubCategoryAnswers> sortedAnswers = answers.stream()
                 .sorted(Comparator.comparing(OnboardingSubCategoryAnswers::getLevel))
-                .collect(Collectors.toList());
+                .collect(toList());
         // 각 답변을 CardOnboardingData.Answer로 변환
         List<CardOnboardingData.Answer> answerDtos = sortedAnswers.stream()
                 .map(this::buildCardAnswer)
-                .collect(Collectors.toList());
+                .collect(toList());
 
         return CardOnboardingData.CategoryAnswer.builder()
                 .userName(userName)                                           //  userName 채우기

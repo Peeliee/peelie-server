@@ -37,9 +37,6 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
     private final CardGeneratorImpl gptCardGenerationService;
     private final CardOnboardingDataLoader cardOnboardingDataLoader;
 
-    private final ProfileReader profileReader;
-    private final ObjectMapper objectMapper;
-    private final CategoryReader categoryReader;
 
 
     @Override

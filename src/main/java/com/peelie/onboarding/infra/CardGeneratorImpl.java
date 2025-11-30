@@ -91,95 +91,88 @@ public class CardGeneratorImpl implements CardGenerator {
     public CompletableFuture<GeneratedCardPayload> generateCard(CardOnboardingData data) {
         return CompletableFuture.supplyAsync(() -> {
             try {
-            //  GPT 5버전도 여전히 ObjectMapper 필요-> OnboardingData를 JSON 문자열로 변환
-            String promptUser = objectMapper.writeValueAsString(data); // higu
+                //  GPT 5버전도 여전히 ObjectMapper 필요-> OnboardingData를 JSON 문자열로 변환
+                String promptUser = objectMapper.writeValueAsString(data); // higu
+                List<ResponseInputItem> inputs = new ArrayList<>();
+                // 사용자 prompt와 시스템 prompt를 inputs라는 변수에 담음
+                ResponseInputItem userMessageItem = ResponseInputItem.ofMessage(
+                        ResponseInputItem.Message.builder()
+                                .role(ResponseInputItem.Message.Role.USER)
+                                .addInputTextContent(promptUser)  // 여기에 프롬프트 내용
+                                .build()
+                );
+                ResponseInputItem systemMessageItem = ResponseInputItem.ofMessage(
+                        ResponseInputItem.Message.builder()
+                                .role(ResponseInputItem.Message.Role.SYSTEM)
+                                .addInputTextContent(SYSTEM_PROMPT)
+                                .build()
+                );
+                inputs.add(userMessageItem);
+                inputs.add(systemMessageItem);
 
-            List<ResponseInputItem> inputs = new ArrayList<>();
+                // 1. 응답 형식 stage내부 스키마 정의
+                Map<String, Object> stageCardSchema = Map.of(
+                        "type", "object",
+                        "properties", Map.of(
+                                "title", Map.of("type", "string"),
+                                "subtitle", Map.of("type", "string"),
+                                "content", Map.of("type", "string")
+                        ),
+                        "required", List.of("title", "subtitle", "content"), // 필수 필드
+                        "additionalProperties", false
+                );
 
-            ResponseInputItem userMessageItem = ResponseInputItem.ofMessage(
-                    ResponseInputItem.Message.builder()
-                            .role(ResponseInputItem.Message.Role.USER)
-                            .addInputTextContent(promptUser)  // 여기에 프롬프트 내용
-                            .build()
-            );
-            ResponseInputItem systemMessageItem = ResponseInputItem.ofMessage(
-                    ResponseInputItem.Message.builder()
-                            .role(ResponseInputItem.Message.Role.SYSTEM)
-                            .addInputTextContent(SYSTEM_PROMPT)
-                            .build()
-            );
-            inputs.add(userMessageItem);
-            inputs.add(systemMessageItem);
+                    //  2. 전체 구조 스키마 정의
+                Map<String, Object> rootSpec = Map.of(
+                        "type", "object",
+                        "properties", Map.of(
+                                "stage1", stageCardSchema,
+                                "stage2", stageCardSchema,
+                                "stage3", stageCardSchema
+                        ),
+                        "required", List.of("stage1", "stage2", "stage3"),
+                        "additionalProperties", false
+                );
 
+                ResponseFormatTextJsonSchemaConfig.Schema.Builder schemaBuilder =
+                        ResponseFormatTextJsonSchemaConfig.Schema.builder();
+                rootSpec.forEach((k, v) -> {
+                    schemaBuilder.putAdditionalProperty(k, JsonValue.from(v));
+                });
 
-            // 1. 응답 형식 stage내부 스키마 정의
-            Map<String, Object> stageCardSchema = Map.of(
-                    "type", "object",
-                    "properties", Map.of(
-                            "title", Map.of("type", "string"),
-                            "subtitle", Map.of("type", "string"),
-                            "content", Map.of("type", "string")
-                    ),
-                    "required", List.of("title", "subtitle", "content"), // 필수 필드
-                    "additionalProperties", false
-            );
+                ResponseFormatTextJsonSchemaConfig jsonSchemaConfig =
+                        ResponseFormatTextJsonSchemaConfig.builder()
+                                .name("generated_card_payload")
+                                .schema(schemaBuilder.build())
+                                .strict(true)
+                                .build();
 
-                //  2. 전체 구조 스키마 정의
-            Map<String, Object> rootSpec = Map.of(
-                    "type", "object",
-                    "properties", Map.of(
-                            "stage1", stageCardSchema,
-                            "stage2", stageCardSchema,
-                            "stage3", stageCardSchema
-                    ),
-                    "required", List.of("stage1", "stage2", "stage3"),
-                    "additionalProperties", false
-            );
+                ResponseTextConfig textConfig = ResponseTextConfig.builder()
+                        .format(
+                                ResponseFormatTextConfig.ofJsonSchema(jsonSchemaConfig)
+                        )
+                        .build();
 
+                ResponseCreateParams params = ResponseCreateParams.builder()
+                        .model(ChatModel.GPT_5_1_CHAT_LATEST)
+                        .input(ResponseCreateParams.Input.ofResponse(inputs))
+                        .text(textConfig)
+                        .build();
 
-            ResponseFormatTextJsonSchemaConfig.Schema.Builder schemaBuilder =
-                    ResponseFormatTextJsonSchemaConfig.Schema.builder();
-            rootSpec.forEach((k, v) -> {
-                schemaBuilder.putAdditionalProperty(k, JsonValue.from(v));
-            });
-
-            ResponseFormatTextJsonSchemaConfig jsonSchemaConfig =
-                    ResponseFormatTextJsonSchemaConfig.builder()
-                            .name("generated_card_payload")
-                            .schema(schemaBuilder.build())
-                            .strict(true)
-                            .build();
-
-            ResponseTextConfig textConfig = ResponseTextConfig.builder()
-                    .format(
-                            ResponseFormatTextConfig.ofJsonSchema(jsonSchemaConfig)
-                    )
-                    .build();
-
-            ResponseCreateParams params = ResponseCreateParams.builder()
-                    .model(ChatModel.GPT_5_1_CHAT_LATEST)
-                    .input(ResponseCreateParams.Input.ofResponse(inputs))
-                    .text(textConfig)
-                    .build();
-
-
-            // 3. OpenAI Response API 호출
-            Response response = client.responses().create(params);
+                // 3. OpenAI Response API 호출
+                Response response = client.responses().create(params);
 
 
-            // 4.  Response에서 필요한 응답만 추출
-            String resultJson = extractJsonString(response);
-            log.info("Generated Card  resultJson: {}", resultJson);
-            GeneratedCardPayload payload = objectMapper.readValue(resultJson, GeneratedCardPayload.class);
-            return payload;
+                // 4.  Response에서 필요한 응답만 추출
+                String resultJson = extractJsonString(response);
+                log.info("Generated Card  resultJson: {}", resultJson);
+                return objectMapper.readValue(resultJson, GeneratedCardPayload.class);
 
-
-        } catch (Exception e) {
-            throw new RuntimeException("카드 생성 중 오류", e);
-        }
+            } catch (Exception e) {
+                throw new RuntimeException("카드 생성 중 오류", e);
+            }
         }, customExecutor);
     }
-
 
     /*** [Util Method]
      * GPT 5.1은 reasoning블록 먼저 반환 후에 message를 반환

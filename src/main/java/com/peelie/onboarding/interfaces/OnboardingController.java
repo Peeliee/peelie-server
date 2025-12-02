@@ -46,9 +46,9 @@ public class OnboardingController implements OnboardingDoc {
     @PostMapping("/card/initialize")
     public SuccessResponse generateCard() {
         onboardingFacade.generateCard();
-        // SuccessResponse.of(status.value(), message, data); 방식 사용
+        // SuccessResponse.of(status.value(), message, data) 방식 사용
         return SuccessResponse.of(
-                202, "카드 생성 완료", null);
+                202, "카드 생성 비동기 요청 완료", null);
 
     }
 }

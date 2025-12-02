@@ -3,10 +3,7 @@ package com.peelie.onboarding.domain;
 import com.peelie.common.context.UserContextHolder;
 import com.peelie.common.exception.BaseException;
 import com.peelie.common.exception.ErrorCode;
-import com.peelie.common.response.SuccessResponse;
 import com.peelie.onboarding.domain.card.*;
-import com.peelie.onboarding.infra.CardGeneratorImpl;
-import com.peelie.profile.domain.ProfileReader;
 import com.peelie.profile.domain.ProfileService;
 import com.peelie.questionnaire.domain.category.*;
 import com.peelie.questionnaire.domain.question.QuestionOptionInfo;
@@ -147,11 +144,11 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
 
     @Override
     @Transactional(readOnly = true)
-    public CreateCardResponse generateCard() {
-        return processCardGeneration(UserContextHolder.getUserId());
+    public void generateCard() {
+        processCardGeneration(UserContextHolder.getUserId());
     }
 
-    private CreateCardResponse processCardGeneration(Long userId) {
+    private void processCardGeneration(Long userId) {
 
         OnboardingProcess onboardingProcess = onboardingReader.findOnboardingProcessByUserId(userId);
 
@@ -164,14 +161,10 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
                 payload -> {
                 }
         ).exceptionally(ex -> {
-                    throw new RuntimeException("카드 생성 실패", ex);
+            ex.printStackTrace();
+            return null;
         });
 
-        return CreateCardResponse.builder()
-                .status("Generating")
-                .reason("card generation in progress")
-                .data(null)
-                .build();
     }
 
 

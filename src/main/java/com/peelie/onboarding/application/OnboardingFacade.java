@@ -3,7 +3,6 @@ package com.peelie.onboarding.application;
 import com.peelie.onboarding.domain.OnboardingCommand;
 import com.peelie.onboarding.domain.OnboardingInfo;
 import com.peelie.onboarding.domain.OnboardingProcessService;
-import com.peelie.onboarding.domain.card.CreateCardResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -25,8 +24,8 @@ public class OnboardingFacade {
         return onboardingProcessService.submitInteractionStyle(command);
     }
 
-    public CreateCardResponse generateCard() {
-        return onboardingProcessService.generateCard();
+    public void generateCard() {
+        onboardingProcessService.generateCard();
     }
 
 }

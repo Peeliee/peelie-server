@@ -5,7 +5,6 @@ import com.peelie.common.response.SuccessResponse;
 import com.peelie.onboarding.application.OnboardingFacade;
 import com.peelie.onboarding.domain.OnboardingCommand;
 import com.peelie.onboarding.domain.OnboardingInfo;
-import com.peelie.onboarding.domain.card.CreateCardResponse;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.web.bind.annotation.*;
@@ -46,8 +45,10 @@ public class OnboardingController implements OnboardingDoc {
 
     @PostMapping("/card/initialize")
     public SuccessResponse generateCard() {
-        var result = onboardingFacade.generateCard();
-        return SuccessResponse.ok(result);
-    }
+        onboardingFacade.generateCard();
+        // SuccessResponse.of(status.value(), message, data); 방식 사용
+        return SuccessResponse.of(
+                202, "카드 생성 완료", null);
 
+    }
 }

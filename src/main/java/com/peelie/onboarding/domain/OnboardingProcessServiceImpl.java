@@ -34,7 +34,7 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
     private final QuestionnaireService questionnaireService;
     private final SubCategoryReader subCategoryReader;
     private final ProfileService profileService;
-    private final CardGeneratorImpl cardGeneratorImpl;
+    private final CardGenerator cardGenerator;
     private final CardOnboardingDataLoader cardOnboardingDataLoader;
 
 
@@ -158,7 +158,7 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
         CardOnboardingData cardOnboardingData = cardOnboardingDataLoader.load(userId);
 
         CompletableFuture<GeneratedCardPayload> future =
-                cardGeneratorImpl.generateCard(cardOnboardingData);
+                cardGenerator.generateCard(cardOnboardingData);
 
         future.thenAccept(
                 payload -> {

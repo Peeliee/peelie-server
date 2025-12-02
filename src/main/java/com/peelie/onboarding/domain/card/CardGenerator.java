@@ -6,6 +6,6 @@ import java.util.concurrent.CompletableFuture;
 
 public interface CardGenerator {
 
-     CompletableFuture<GeneratedCardPayload> generateCard(CardOnboardingData data) throws JsonProcessingException;
+     CompletableFuture<GeneratedCardPayload> generateCard(CardOnboardingData data);
 
 }

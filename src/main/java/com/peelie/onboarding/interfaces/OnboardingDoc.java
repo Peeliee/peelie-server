@@ -26,8 +26,8 @@ public interface OnboardingDoc {
     );
 
     @Operation(
-            summary = "온보딩 카드 최초 생성 요청",
-            description = "사용자의 온보딩 응답을 기반으로 3단계의 카드 생성을 비동기로 요청합니다.")
-    SuccessResponse<GeneratedCardPayload> initializeCard();
+            summary = "온보딩 카드 생성 요청",
+            description = "사용자의 온보딩 응답을 기반으로 3단계의 카드 생성을 비동기로 요청합니다. 카드 재생성도 같은 API를 이용")
+    SuccessResponse<GeneratedCardPayload> generateCard();
 
 }

@@ -8,7 +8,9 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -41,11 +43,11 @@ public class OnboardingInfo {
 
         private static LevelAnswerOut toLevelOut(String level, Long optionId, String textAnswer) {
             return switch (level) {
-                case "L1" -> new LevelAnswerOut(level, optionId, null,    null,    null);
-                case "L2" -> new LevelAnswerOut(level, null,    optionId, null,    null);
-                case "L3" -> new LevelAnswerOut(level, null,    null,     optionId, null);
-                case "L4" -> new LevelAnswerOut(level, null,    null,     null,     textAnswer);
-                default   -> new LevelAnswerOut(level, null,    null,     null,     null);
+                case "L1" -> new LevelAnswerOut(level, optionId, null, null, null);
+                case "L2" -> new LevelAnswerOut(level, null, optionId, null, null);
+                case "L3" -> new LevelAnswerOut(level, null, null, optionId, null);
+                case "L4" -> new LevelAnswerOut(level, null, null, null, textAnswer);
+                default -> new LevelAnswerOut(level, null, null, null, null);
             };
         }
     }
@@ -71,44 +73,6 @@ public class OnboardingInfo {
         private final Long L3AnswerId;
         @JsonProperty("L4Answer")
         private final String L4Answer;
-    }
-
-    @Getter
-    @Builder
-    public static class CardGeneration {
-        private String generationStatus;
-        private StageCard stage1;
-        private StageCard stage2;
-        private StageCard stage3;
-
-        public static CardGeneration generating() {
-            return CardGeneration.builder().generationStatus("GENERATING").build();
-        }
-
-        public static CardGeneration failed() {
-            return CardGeneration.builder().generationStatus("FAILED").build();
-        }
-
-        public static CardGeneration done(StageCard s1, StageCard s2, StageCard s3) {
-            return CardGeneration.builder()
-                    .generationStatus("DONE")
-                    .stage1(s1)
-                    .stage2(s2)
-                    .stage3(s3)
-                    .build();
-        }
-
-
-    }
-
-
-    // TODO: 향후 CardGeneration 외 Info 클래스들과 공통 구조화 필요
-    @Getter
-    @Builder
-    public static class StageCard {
-        private String title;
-        private String subtitle;
-        private String content;
     }
 
 }

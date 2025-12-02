@@ -5,7 +5,6 @@ import com.peelie.onboarding.domain.OnboardingInfo;
 import com.peelie.onboarding.domain.OnboardingProcessService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,12 +24,8 @@ public class OnboardingFacade {
         return onboardingProcessService.submitInteractionStyle(command);
     }
 
-    public OnboardingInfo.CardGeneration initializeCard(OnboardingCommand.InitializeCard command) {
-        return onboardingProcessService.initializeCard(command);
-    }
-
-    public OnboardingInfo.CardGeneration getCardGenerationStatus(OnboardingCommand.GetCardStatus command) {
-        return onboardingProcessService.getCardGenerationStatus(command.getUserId());
+    public void generateCard() {
+        onboardingProcessService.generateCard();
     }
 
 }

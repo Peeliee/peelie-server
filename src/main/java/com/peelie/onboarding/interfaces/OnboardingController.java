@@ -1,23 +1,18 @@
 package com.peelie.onboarding.interfaces;
 
 import com.peelie.common.context.UserContextHolder;
-import com.peelie.common.response.ErrorResponse;
 import com.peelie.common.response.SuccessResponse;
 import com.peelie.onboarding.application.OnboardingFacade;
 import com.peelie.onboarding.domain.OnboardingCommand;
 import com.peelie.onboarding.domain.OnboardingInfo;
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/onboarding")
 @RequiredArgsConstructor
-public class OnboardingController {
+public class OnboardingController implements OnboardingDoc {
 
     private final OnboardingFacade onboardingFacade;
 
@@ -49,46 +44,11 @@ public class OnboardingController {
     }
 
     @PostMapping("/card/initialize")
-    public SuccessResponse<OnboardingInfo.CardGeneration> initializeCard(@RequestBody OnboardingCommand.InitializeCard command) {
-        Long userId = UserContextHolder.getUserId();
-        var cmd = command.withUserId(userId);
-        OnboardingInfo.CardGeneration result = onboardingFacade.initializeCard(cmd);
-        return SuccessResponse.of(HttpStatus.CREATED, "Generation started", result);
+    public SuccessResponse generateCard() {
+        onboardingFacade.generateCard();
+        // SuccessResponse.of(status.value(), message, data) 방식 사용
+        return SuccessResponse.of(
+                202, "카드 생성 비동기 요청 완료", null);
+
     }
-
-
-
-    @GetMapping("/card/status")
-    public ResponseEntity<?> getCardGenerationStatus() {
-        Long userId = UserContextHolder.getUserId();
-        var cmd = OnboardingCommand.GetCardStatus.builder().build().withUserId(userId);
-        OnboardingInfo.CardGeneration statusResult = onboardingFacade.getCardGenerationStatus(cmd);
-
-        String status = statusResult.getGenerationStatus();
-
-        switch (status) {
-            case "DONE":
-                // [성공] 200 OK
-                return ResponseEntity
-                        .status(HttpStatus.OK)
-                        .body(SuccessResponse.ok(statusResult));
-
-            case "GENERATING":// [진행 중] 202 ACCEPTED
-                return ResponseEntity
-                        .status(HttpStatus.ACCEPTED)
-                        .body(SuccessResponse.ok(statusResult));
-
-            case "FAILED":
-            default:
-                // [실패] 500 Internal Server Error
-                return ResponseEntity
-                        .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body(ErrorResponse.of(
-                                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                                "Generation failed.",
-                                null,
-                                "카드가 아직 생성되지 않았습니다."));
-        }
-    }
-
 }

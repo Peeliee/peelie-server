@@ -15,12 +15,12 @@ public interface OnboardingDoc {
     SuccessResponse<OnboardingInfo.Process> selectCategories(
             @RequestBody OnboardingCommand.SelectCategories command);
 
-    @Operation(summary = "온보딩 서브카테고리 답변 제출", description = "사용자가 선택한 서브카테고리에 대해 L1~L4 온보딩 답변을 제출합니다.")
+    @Operation(summary = "온보딩 서브카테고리 답변 제출", description = "사용자가 선택한 카테고리 3개의 L0(subcategory)와 L2~L4 응답을 제출합니다.")
     SuccessResponse<OnboardingInfo.Process> SubmitSubCategoryAnswers(
             @RequestBody OnboardingCommand.SubmitSubCategoryAnswers command
     );
 
-    @Operation(summary = "교류성향 선택", description = "사용자가 원하는 교류 스타일을 선택합니다.")
+    @Operation(summary = "교류성향 선택", description = "사용자가 본인의 교류 성향을 선택합니다.")
     SuccessResponse<OnboardingInfo.Process> submitInteractionStyle(
             @RequestBody OnboardingCommand.SubmitInteraction command
     );

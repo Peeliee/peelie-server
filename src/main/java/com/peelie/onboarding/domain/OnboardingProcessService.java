@@ -1,7 +1,6 @@
 package com.peelie.onboarding.domain;
 
 
-import com.peelie.common.response.SuccessResponse;
 import com.peelie.onboarding.domain.card.CreateCardResponse;
 
 public interface OnboardingProcessService {
@@ -11,7 +10,7 @@ public interface OnboardingProcessService {
     OnboardingInfo.Process submitSubCategoryAnswers(OnboardingCommand.SubmitSubCategoryAnswers command);
 
     OnboardingInfo.Process submitInteractionStyle(OnboardingCommand.SubmitInteraction command);
-    // [신규] 1. 카드 생성용
-    CreateCardResponse initializeCard();
+    // 신규 카드 생성과 재생성은 같은 메서드 이용
+    CreateCardResponse generateCard();
 
 }

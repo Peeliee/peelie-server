@@ -4,7 +4,6 @@ import com.peelie.onboarding.domain.OnboardingCommand;
 import com.peelie.onboarding.domain.OnboardingInfo;
 import com.peelie.onboarding.domain.OnboardingProcessService;
 import com.peelie.onboarding.domain.card.CreateCardResponse;
-import com.peelie.onboarding.domain.card.GeneratedCardPayload;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -26,8 +25,8 @@ public class OnboardingFacade {
         return onboardingProcessService.submitInteractionStyle(command);
     }
 
-    public CreateCardResponse initializeCard() {
-        return onboardingProcessService.initializeCard();
+    public CreateCardResponse generateCard() {
+        return onboardingProcessService.generateCard();
     }
 
 }

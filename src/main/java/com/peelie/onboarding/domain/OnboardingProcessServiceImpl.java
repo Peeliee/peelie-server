@@ -147,7 +147,7 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
 
     @Override
     @Transactional(readOnly = true)
-    public CreateCardResponse initializeCard() {
+    public CreateCardResponse generateCard() {
         return processCardGeneration(UserContextHolder.getUserId());
     }
 

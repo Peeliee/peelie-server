@@ -16,7 +16,10 @@ public enum ErrorCode {
     // 인증 관련 에러 코드 추가
     TOKEN_NOT_FOUND(401, "요청 헤더에 토큰이 존재하지 않습니다."),
     TOKEN_INVALID(401, "유효하지 않은 토큰입니다."),
-    TOKEN_EXPIRED(401, "만료된 토큰입니다.");
+    TOKEN_EXPIRED(401, "만료된 토큰입니다."),
+
+    //GPT 관련 에러 추가
+    GPT_NOT_AVAILABLE(500, "GPT API에서 에러 발생했습니다.");
 
     private final int status;
     private final String errorMsg;

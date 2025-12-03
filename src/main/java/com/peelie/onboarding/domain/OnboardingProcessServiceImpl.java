@@ -1,13 +1,8 @@
 package com.peelie.onboarding.domain;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.peelie.common.exception.BaseException;
 import com.peelie.common.exception.ErrorCode;
-import com.peelie.onboarding.infra.GptCardGenerationService;
-import com.peelie.profile.domain.Profile;
-import com.peelie.profile.domain.ProfileReader;
 import com.peelie.profile.domain.ProfileService;
 import com.peelie.questionnaire.domain.category.SubCategory;
 import com.peelie.questionnaire.domain.category.SubCategoryReader;
@@ -24,28 +19,19 @@ import com.peelie.questionnaire.domain.question.QuestionType;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class OnboardingProcessServiceImpl implements OnboardingProcessService {
+
     private final OnboardingReader onboardingReader;
     private final OnboardingStore onboardingStore;
     private final QuestionnaireService questionnaireService;
     private final SubCategoryReader subCategoryReader;
     private final ProfileService profileService;
-    private final GptCardGenerationService gptCardGenerationService;
-
-    // ✅ 추가
-    private final ProfileReader profileReader;
     private final ObjectMapper objectMapper;
-
-
-    private static final Duration GENERATION_TIMEOUT = Duration.ofSeconds(12);
-    private final Map<Long, CompletableFuture<OnboardingInfo.CardGeneration>> taskStorage = new ConcurrentHashMap<>();
 
     @Override
     @Transactional
@@ -152,68 +138,4 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
         // 5. 결과 반환
         return new OnboardingInfo.Process(process);
     }
-
-    @Override
-    @Transactional
-    public OnboardingInfo.CardGeneration initializeCard(OnboardingCommand.InitializeCard command) {
-        if (command.getUserId() == null) {
-            log.error("userId is null — JWT 주입 안 됨");
-            return OnboardingInfo.CardGeneration.failed();
-        }
-
-        Long userId = command.getUserId();
-
-        // 1. 비동기 작업 시작
-        CompletableFuture<OnboardingInfo.CardGeneration> future =
-                gptCardGenerationService.generateCard(
-                        userId,
-                        command.getCategoryIds());
-
-        // 2. 작업 추적을 위해 Future를 Map에 저장
-        taskStorage.put(userId, future);
-        log.info("✅ GPT generation task STARTED and stored for user: {}", userId);
-
-        // 3. 작업 완료 시 콜백 연결
-        future.whenComplete((result, throwable) -> {
-            if (throwable != null) {
-                log.error(" GPT 카드 생성 비동기 작업 실패 (User: {})", userId, throwable);
-            } else {
-                log.info(" GPT 카드 생성 비동기 작업 완료 (User: {}, Status: {})", userId, result.getGenerationStatus());
-            }
-        });
-
-        // 4. HTTP 요청을 차단하지 않고, 즉시 'GENERATING' 상태 반환
-        return OnboardingInfo.CardGeneration.generating();
-    }
-
-    @Override
-    public OnboardingInfo.CardGeneration getCardGenerationStatus(Long userId) {
-        CompletableFuture<OnboardingInfo.CardGeneration> future = taskStorage.get(userId);
-
-        // 1. 작업(Future)이 존재하지 않는 경우
-        if (future == null) {
-            return OnboardingInfo.CardGeneration.failed();
-        }
-
-        // 2. 작업이 아직 진행 중인 경우
-        if (!future.isDone()) {
-            return OnboardingInfo.CardGeneration.generating();
-        }
-
-        // 3. 작업이 완료된 경우
-        try {
-            OnboardingInfo.CardGeneration result = future.join();
-
-            if (result != null) {
-                return result;
-            } else {
-                log.error("Polling user {}: Future completed but result was null unexpectedly", userId);
-                return OnboardingInfo.CardGeneration.failed();
-            }
-        } catch (Exception e) {
-            log.error("Error retrieving status for user {}", userId, e);
-            return OnboardingInfo.CardGeneration.failed();
-        }
-    }
-
 }

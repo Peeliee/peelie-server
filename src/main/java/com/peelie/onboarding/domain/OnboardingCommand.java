@@ -71,32 +71,4 @@ public class OnboardingCommand {
             return this;
         }
     }
-
-    @Getter
-    @Builder
-    @ToString
-    public static class InitializeCard {
-        @JsonIgnore
-        private Long userId;
-        private List<Long> categoryIds;
-
-        public InitializeCard withUserId(Long userId) {
-            this.userId = userId;
-            return this;
-        }
-    }
-
-    @Getter
-    @Builder
-    @ToString
-    public static class GetCardStatus {
-        @JsonIgnore
-        private Long userId;
-
-        public GetCardStatus withUserId(Long userId) {
-            this.userId = userId;
-            return this;
-        }
-    }
-
 }

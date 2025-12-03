@@ -5,6 +5,8 @@ import com.peelie.common.response.SuccessResponse;
 import com.peelie.onboarding.application.OnboardingFacade;
 import com.peelie.onboarding.domain.OnboardingCommand;
 import com.peelie.onboarding.domain.OnboardingInfo;
+import com.peelie.onboarding.domain.card.BioResponse;
+import com.peelie.onboarding.domain.card.CardGenerator;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 public class OnboardingController implements OnboardingDoc {
 
     private final OnboardingFacade onboardingFacade;
-
+    private final CardGenerator cardGenerator;
     @PutMapping("/categories")
     public SuccessResponse<OnboardingInfo.Process> selectCategories(
             @RequestBody OnboardingCommand.SelectCategories command) {
@@ -44,11 +46,17 @@ public class OnboardingController implements OnboardingDoc {
     }
 
     @PostMapping("/card/initialize")
-    public SuccessResponse generateCard() {
+    public SuccessResponse<Void> generateCard() {
         onboardingFacade.generateCard();
         // SuccessResponse.of(status.value(), message, data) 방식 사용
-        return SuccessResponse.of(
+        return SuccessResponse.<Void>of(
                 202, "카드 생성 비동기 요청 완료", null);
-
     }
+
+    @GetMapping("/card/test-bio")
+    public SuccessResponse<BioResponse> testGenerateIntroWithCard(@RequestParam int cardStageNo) {
+        BioResponse bioResponse = cardGenerator.generateIntroWithCard(cardStageNo);
+        return SuccessResponse.ok(bioResponse);
+    }
+
 }

@@ -4,6 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.peelie.common.exception.BaseException;
 import com.peelie.common.exception.ErrorCode;
 import com.peelie.profile.domain.ProfileService;
+import com.peelie.prompt.PromptGenerator;
+import com.peelie.prompt.UserAnswer;
+import com.peelie.prompt.UserAnswerLoader;
 import com.peelie.questionnaire.domain.category.SubCategory;
 import com.peelie.questionnaire.domain.category.SubCategoryReader;
 import com.peelie.questionnaire.domain.question.QuestionOptionInfo;
@@ -16,10 +19,8 @@ import com.peelie.questionnaire.domain.QuestionnaireService;
 import com.peelie.questionnaire.domain.question.QuestionInfo;
 import com.peelie.questionnaire.domain.question.QuestionType;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Service
@@ -32,6 +33,10 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
     private final SubCategoryReader subCategoryReader;
     private final ProfileService profileService;
     private final ObjectMapper objectMapper;
+
+    private final UserAnswerLoader userAnswerLoader;
+    private final PromptGenerator promptGenerator;
+    private final CardGenerator cardGenerator;
 
     @Override
     @Transactional
@@ -137,5 +142,12 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
         onboardingStore.store(process);
         // 5. 결과 반환
         return new OnboardingInfo.Process(process);
+    }
+
+    @Override
+    public InitCardsResponse generateInitCards(Long userId) {
+        UserAnswer userAnswer = userAnswerLoader.load(userId);
+        String userPrompt = promptGenerator.generatePrompt(userAnswer);
+        return cardGenerator.generateCards(userPrompt);
     }
 }

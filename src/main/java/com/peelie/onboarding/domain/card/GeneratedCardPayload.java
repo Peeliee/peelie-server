@@ -1,11 +1,14 @@
 package com.peelie.onboarding.domain.card;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class GeneratedCardPayload {
     @JsonProperty(required = true)
     private StageCardPayload stage1;
@@ -17,13 +20,21 @@ public class GeneratedCardPayload {
     private StageCardPayload stage3;
 
     @Getter
-    @NoArgsConstructor
+    @AllArgsConstructor
+    @NoArgsConstructor()
     public static class StageCardPayload {
-        @JsonProperty(required = true)
+        @JsonProperty
         private String title;
-        @JsonProperty(required = true)
+        @JsonProperty
         private String subtitle;
-        @JsonProperty(required = true)
+        @JsonProperty
         private String content;
+
+
+        public String toStringContent() {
+            return "title: " + this.title + "\n"
+                    + "subtitle: " + this.subtitle + "\n"
+                    + "content: " + this.content;
+        }
     }
 }

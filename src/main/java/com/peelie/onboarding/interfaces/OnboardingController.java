@@ -1,18 +1,13 @@
 package com.peelie.onboarding.interfaces;
 
 import com.peelie.common.context.UserContextHolder;
-import com.peelie.common.response.ErrorResponse;
 import com.peelie.common.response.SuccessResponse;
 import com.peelie.onboarding.application.OnboardingFacade;
+import com.peelie.onboarding.domain.GeneratedCardBio;
 import com.peelie.onboarding.domain.OnboardingCommand;
 import com.peelie.onboarding.domain.OnboardingInfo;
 import lombok.RequiredArgsConstructor;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/onboarding")
@@ -45,6 +40,13 @@ public class OnboardingController {
         Long userId = UserContextHolder.getUserId();
         var cmd = command.withUserId(userId);
         var result = onboardingFacade.submitInteractionStyle(cmd);
+        return SuccessResponse.ok(result);
+    }
+
+    @GetMapping("/card-bio")
+    public SuccessResponse generateInitCards() {
+        Long userId = UserContextHolder.getUserId();
+        GeneratedCardBio result = onboardingFacade.generateInitCards(userId);
         return SuccessResponse.ok(result);
     }
 }

@@ -24,13 +24,4 @@ public class OnboardingFacade {
     public OnboardingInfo.Process submitInteractionStyle(OnboardingCommand.SubmitInteraction command) {
         return onboardingProcessService.submitInteractionStyle(command);
     }
-
-    public OnboardingInfo.CardGeneration initializeCard(OnboardingCommand.InitializeCard command) {
-        return onboardingProcessService.initializeCard(command);
-    }
-
-    public OnboardingInfo.CardGeneration getCardGenerationStatus(OnboardingCommand.GetCardStatus command) {
-        return onboardingProcessService.getCardGenerationStatus(command.getUserId());
-    }
-
 }

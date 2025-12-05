@@ -7,4 +7,6 @@ public interface OnboardingProcessService {
     OnboardingInfo.Process submitSubCategoryAnswers(OnboardingCommand.SubmitSubCategoryAnswers command);
 
     OnboardingInfo.Process submitInteractionStyle(OnboardingCommand.SubmitInteraction command);
+
+    GeneratedCardBio generateCardBio(Long userId);
 }

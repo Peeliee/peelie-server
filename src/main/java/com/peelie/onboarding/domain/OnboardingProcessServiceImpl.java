@@ -3,16 +3,18 @@ package com.peelie.onboarding.domain;
 import com.peelie.common.exception.BaseException;
 import com.peelie.common.exception.ErrorCode;
 import com.peelie.profile.domain.ProfileService;
+import com.peelie.prompt.PromptGenerator;
+import com.peelie.prompt.UserAnswer;
+import com.peelie.prompt.UserAnswerLoader;
+import com.peelie.questionnaire.domain.QuestionnaireService;
 import com.peelie.questionnaire.domain.category.SubCategory;
 import com.peelie.questionnaire.domain.category.SubCategoryReader;
+import com.peelie.questionnaire.domain.question.QuestionInfo;
 import com.peelie.questionnaire.domain.question.QuestionOptionInfo;
+import com.peelie.questionnaire.domain.question.QuestionType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.peelie.questionnaire.domain.QuestionnaireService;
-import com.peelie.questionnaire.domain.question.QuestionInfo;
-import com.peelie.questionnaire.domain.question.QuestionType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +28,10 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
     private final QuestionnaireService questionnaireService;
     private final SubCategoryReader subCategoryReader;
     private final ProfileService profileService;
+
+    private final UserAnswerLoader userAnswerLoader;
+    private final PromptGenerator promptGenerator;
+    private final CardBioGenerator cardBioGenerator;
 
     @Override
     @Transactional
@@ -131,5 +137,12 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
         onboardingStore.store(process);
         // 5. 결과 반환
         return new OnboardingInfo.Process(process);
+    }
+
+    @Override
+    public GeneratedCardBio generateCardBio(Long userId) {
+        UserAnswer userAnswer = userAnswerLoader.load(userId);
+        String userPrompt = promptGenerator.generatePrompt(userAnswer);
+        return cardBioGenerator.generate(userPrompt);
     }
 }

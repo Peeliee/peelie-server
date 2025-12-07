@@ -26,7 +26,7 @@ public class GeminiQuizGenerator implements QuizGenerator {
     public List<QuizCommand> generateQuiz(String prompt) {
         try {
             GenerateContentResponse response = geminiClient.models.generateContent(
-                    "gemini-2.0-flash",
+                    "gemini-2.5-flash",
                     QUIZ_SYSTEM_PROMPT + prompt,
                     geminiJsonConfig
             );

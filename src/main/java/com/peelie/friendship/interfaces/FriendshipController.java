@@ -12,7 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/friendship")
 @RequiredArgsConstructor
-public class FriendshipController {
+public class FriendshipController implements FriendshipDoc {
     private final FriendshipFacade friendshipFacade;
 
     // 친구 관계 즉시 형성

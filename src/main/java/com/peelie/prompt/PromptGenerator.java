@@ -1,12 +1,17 @@
 package com.peelie.prompt;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class PromptGenerator {
 
-    public String generatePrompt(UserAnswer userAnswer) {
+    private final UserAnswerLoader userAnswerLoader;
 
+    public String generatePrompt(Long userId) {
+
+        UserAnswer userAnswer = userAnswerLoader.load(userId);
         StringBuilder prompt = new StringBuilder();
 
         prompt.append("\n\n=== 사용자 프로필 ===\n\n");

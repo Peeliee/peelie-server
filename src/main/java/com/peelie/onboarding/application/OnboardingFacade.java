@@ -1,11 +1,11 @@
 package com.peelie.onboarding.application;
 
+import com.peelie.onboarding.domain.GeneratedCardBio;
 import com.peelie.onboarding.domain.OnboardingCommand;
 import com.peelie.onboarding.domain.OnboardingInfo;
 import com.peelie.onboarding.domain.OnboardingProcessService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,12 +25,8 @@ public class OnboardingFacade {
         return onboardingProcessService.submitInteractionStyle(command);
     }
 
-    public OnboardingInfo.CardGeneration initializeCard(OnboardingCommand.InitializeCard command) {
-        return onboardingProcessService.initializeCard(command);
+    public GeneratedCardBio generateInitCards(Long userId) {
+        return onboardingProcessService.generateCardBio(userId);
+        // TODO: 여기에서 프로필에 저장하거나, 프로필에서 온보딩 서비스 코드를 호출할 지 추후 결정
     }
-
-    public OnboardingInfo.CardGeneration getCardGenerationStatus(OnboardingCommand.GetCardStatus command) {
-        return onboardingProcessService.getCardGenerationStatus(command.getUserId());
-    }
-
 }

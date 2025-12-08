@@ -4,8 +4,6 @@ import com.peelie.common.exception.BaseException;
 import com.peelie.common.exception.ErrorCode;
 import com.peelie.profile.domain.ProfileService;
 import com.peelie.prompt.PromptGenerator;
-import com.peelie.prompt.UserAnswer;
-import com.peelie.prompt.UserAnswerLoader;
 import com.peelie.questionnaire.domain.QuestionnaireService;
 import com.peelie.questionnaire.domain.category.SubCategory;
 import com.peelie.questionnaire.domain.category.SubCategoryReader;
@@ -29,7 +27,6 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
     private final SubCategoryReader subCategoryReader;
     private final ProfileService profileService;
 
-    private final UserAnswerLoader userAnswerLoader;
     private final PromptGenerator promptGenerator;
     private final CardBioGenerator cardBioGenerator;
 
@@ -141,8 +138,7 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
 
     @Override
     public GeneratedCardBio generateCardBio(Long userId) {
-        UserAnswer userAnswer = userAnswerLoader.load(userId);
-        String userPrompt = promptGenerator.generatePrompt(userAnswer);
+        String userPrompt = promptGenerator.generatePrompt(userId);
         return cardBioGenerator.generate(userPrompt);
     }
 }

@@ -30,8 +30,8 @@ public class Friendship extends BaseTimeEntity {
 
     @Builder
     public Friendship(Long senderId, Long receiverId) {
-        this.senderId = senderId;
-        this.receiverId = receiverId;
+        this.senderId = Math.min(senderId, receiverId);
+        this.receiverId = Math.max(senderId, receiverId);
         this.UserAtoBfriendStage = FriendShipStage.STAGE_0;
         this.UserBtoAfriendStage = FriendShipStage.STAGE_0;
     }

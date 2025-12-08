@@ -29,6 +29,6 @@ public class ProfileReaderImpl implements ProfileReader {
 
     @Override
     public List<Profile> getProfilesByUserIds(List<Long> userIds){
-        return profileRepository.findAllById(userIds);
+        return profileRepository.findAllByUserIdIn(userIds);
     }
 }

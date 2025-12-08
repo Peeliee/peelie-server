@@ -71,7 +71,7 @@ public class FriendshipServiceImpl implements FriendshipService {
 
     @Override
     public FriendshipInfo.FriendDetail getFriendDetail(Long senderId, Long receiverId) {
-        Profile profile = profileReader.getProfile(receiverId);
+        Profile profile = profileReader.getProfileByUserId(receiverId);
 
         Friendship friendship = friendshipReader.getByPair(senderId, receiverId);
         FriendShipStage stage = friendship.getStageFor(senderId);

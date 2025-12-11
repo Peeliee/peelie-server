@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -39,6 +40,31 @@ public class Profile extends BaseTimeEntity {
 
     @Lob
     private String stage3Bio;
+
+    //TODO: 가독성 너무 구려짐.. 나중에 리팩토링 필요
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "title", column = @Column(name = "stage1_title")),
+            @AttributeOverride(name = "subtitle", column = @Column(name = "stage1_subtitle")),
+            @AttributeOverride(name = "content", column = @Column(name = "stage1_content"))
+    })
+    private Card stage1Card;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "title", column = @Column(name = "stage2_title")),
+            @AttributeOverride(name = "subtitle", column = @Column(name = "stage2_subtitle")),
+            @AttributeOverride(name = "content", column = @Column(name = "stage2_content"))
+    })
+    private Card stage2Card;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "title", column = @Column(name = "stage3_title")),
+            @AttributeOverride(name = "subtitle", column = @Column(name = "stage3_subtitle")),
+            @AttributeOverride(name = "content", column = @Column(name = "stage3_content"))
+    })
+    private Card stage3Card;
 
     @Column(unique = true)
     private Long userId;
@@ -102,5 +128,17 @@ public class Profile extends BaseTimeEntity {
 
     public void changeStage3Bio(String newStage3Bio) {
         this.stage3Bio = newStage3Bio;
+    }
+
+    public void setCards(List<Card> cards) {
+        this.stage1Card = cards.get(0);
+        this.stage2Card = cards.get(1);
+        this.stage3Card = cards.get(2);
+    }
+
+    public void setBios(List<String> bios) {
+        this.stage1Bio = bios.get(0);
+        this.stage2Bio = bios.get(1);
+        this.stage3Bio = bios.get(2);
     }
 }

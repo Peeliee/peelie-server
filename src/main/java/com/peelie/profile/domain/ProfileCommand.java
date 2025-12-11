@@ -20,7 +20,6 @@ public class ProfileCommand {
                     .instagramId(instagramId)
                     .profileImageUrl(imageUrl)
                     .build();
-
         }
     }
 
@@ -34,6 +33,16 @@ public class ProfileCommand {
         private final String stage1Bio;
         private final String stage2Bio;
         private final String stage3Bio;
+    }
 
+    @Getter
+    @Builder
+    public static class ApplyOnboardingResult {
+        private final Card stage1Card;
+        private final Card stage2Card;
+        private final Card stage3Card;
+        private final String stage1Bio;
+        private final String stage2Bio;
+        private final String stage3Bio;
     }
 }

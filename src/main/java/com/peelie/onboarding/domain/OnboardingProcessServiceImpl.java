@@ -11,11 +11,13 @@ import com.peelie.questionnaire.domain.question.QuestionInfo;
 import com.peelie.questionnaire.domain.question.QuestionOptionInfo;
 import com.peelie.questionnaire.domain.question.QuestionType;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 
 @Service
@@ -137,8 +139,9 @@ public class OnboardingProcessServiceImpl implements OnboardingProcessService {
     }
 
     @Override
-    public GeneratedCardBio generateCardBio(Long userId) {
-        String userPrompt = promptGenerator.generatePrompt(userId);
-        return cardBioGenerator.generate(userPrompt);
+    @Async("asyncExecutor")
+    public CompletableFuture<GeneratedCardBio> generateCardBio(String userPrompt) {
+        GeneratedCardBio generatedResult = cardBioGenerator.generate(userPrompt);
+        return CompletableFuture.completedFuture(generatedResult);
     }
 }

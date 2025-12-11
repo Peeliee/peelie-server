@@ -12,6 +12,7 @@ import com.peelie.questionnaire.domain.question.QuestionOption;
 import com.peelie.questionnaire.domain.question.QuestionReader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -28,6 +29,7 @@ public class UserAnswerLoader {
     private final QuestionReader questionReader;
     private final ProfileReader profileReader;
 
+    @Transactional(readOnly = true)
     public UserAnswer load(Long userId) {
         OnboardingProcess onboardingProcess = onboardingReader.findOnboardingProcessByUserId(userId);
         return buildUserAnswer(userId, onboardingProcess);

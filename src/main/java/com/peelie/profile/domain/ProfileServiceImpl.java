@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ProfileServiceImpl implements ProfileService {
@@ -73,5 +75,13 @@ public class ProfileServiceImpl implements ProfileService {
         profile.changeStage3Bio(command.getStage3Bio());
 
         return new ProfileInfo(profile);
+    }
+
+    @Override
+    @Transactional
+    public void applyOnboarding(Long userId, ProfileCommand.ApplyOnboardingResult command) {
+        Profile profile = profileReader.getProfileByUserId(userId);
+        profile.setBios(List.of(command.getStage1Bio(), command.getStage2Bio(), command.getStage3Bio()));
+        profile.setCards(List.of(command.getStage1Card(), command.getStage2Card(), command.getStage3Card()));
     }
 }

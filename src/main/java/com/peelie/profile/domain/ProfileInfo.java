@@ -30,18 +30,22 @@ public class ProfileInfo {
 
         this.interactionStyle = profile.getInteractionStyle();
 
-        //TODO: 재현님 카드 기능 완성 후 실제 데이터 반영
         this.card = new Card(
-                new Card.StageInfo("임시 Stage1 Title", "Stage1 Subtitle", "Stage1 Content"),
-                new Card.StageInfo("임시 Stage2 Title", "Stage2 Subtitle", "Stage1 Content"),
-                new Card.StageInfo("임시 Stage3 Title", "Stage3 Subtitle", "Stage1 Content")
+                new Card.StageInfo(profile.getStage1Card().getTitle(),
+                        profile.getStage1Card().getSubtitle(),
+                        profile.getStage1Card().getContent()),
+                new Card.StageInfo(profile.getStage2Card().getTitle(),
+                        profile.getStage2Card().getSubtitle(),
+                        profile.getStage2Card().getContent()),
+                new Card.StageInfo(profile.getStage3Card().getTitle(),
+                        profile.getStage3Card().getSubtitle(),
+                        profile.getStage3Card().getContent())
         );
     }
 
     @Getter
     @AllArgsConstructor
     public static class BioInfo {
-        // TODO: 임시 메시지 나중에 실제 자기소개 메시지 나오면 변경
         public static final String STAGE0_BIO = "자기소개가 없어요 퀴즈를 풀어주세요.";
 
         private final String stage;

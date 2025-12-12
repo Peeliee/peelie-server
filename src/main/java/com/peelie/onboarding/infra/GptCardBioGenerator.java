@@ -33,8 +33,6 @@ public class GptCardBioGenerator implements CardBioGenerator {
 
         StructuredResponse<GeneratedCardBio> response = openAIClient.responses().create(params);
 
-        System.out.println("response.toString() = " + response.toString());
-
         return response.output().stream()
                 .flatMap(item -> item.message().stream())
                 .flatMap(message -> message.content().stream())

@@ -3,7 +3,6 @@ package com.peelie.onboarding.interfaces;
 import com.peelie.common.context.UserContextHolder;
 import com.peelie.common.response.SuccessResponse;
 import com.peelie.onboarding.application.OnboardingFacade;
-import com.peelie.onboarding.domain.GeneratedCardBio;
 import com.peelie.onboarding.domain.OnboardingCommand;
 import com.peelie.onboarding.domain.OnboardingInfo;
 import lombok.RequiredArgsConstructor;
@@ -46,7 +45,7 @@ public class OnboardingController {
     @GetMapping("/card-bio")
     public SuccessResponse generateInitCards() {
         Long userId = UserContextHolder.getUserId();
-        GeneratedCardBio result = onboardingFacade.generateInitCards(userId);
-        return SuccessResponse.ok(result);
+        onboardingFacade.generateInitCards(userId);
+        return SuccessResponse.ok("카드 및 한줄 소개 생성 중.");
     }
 }
